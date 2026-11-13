@@ -1,0 +1,35 @@
+/* Design tokens. Names are a contract: widgets and generated tools use them. */
+:root {
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #f1eee7;
+  --text: #1f1d1a;
+  --muted: #6b665e;
+  --border: #e2ddd3;
+  --accent: #c2410c;
+  --accent-text: #ffffff;
+  --accent-soft: #fbe9df;
+  --danger: #b91c1c;
+  --ok: #15803d;
+  --shadow: 0 1px 2px rgb(31 29 26 / 6%), 0 4px 16px rgb(31 29 26 / 6%);
+}
+
+:root[data-theme="dark"] {
+  --bg: #171512;
+  --surface: #211e1a;
+  --surface-2: #2a2621;
+  --text: #f1ede6;
+  --muted: #a39c90;
+  --border: #38332c;
+  --accent: #f97316;
+  --accent-text: #1a1206;
+  --accent-soft: #3a2413;
+  --danger: #f87171;
+  --ok: #4ade80;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 30%);
+}

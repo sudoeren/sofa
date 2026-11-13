@@ -1,0 +1,32 @@
+{
+  "name": "@sofra/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
+    "build": "tsup src/index.ts --format esm --target node22 --clean --no-splitting --noExternal @sofra/shared --noExternal @sofra/widgets",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "@hocuspocus/provider": "^4.8.0",
+    "@types/ws": "^8.18.2",
+    "tsup": "^9.0.0"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.104",
+    "@ai-sdk/openai": "^4.0.117",
+    "@ai-sdk/openai-compatible": "^3.0.92",
+    "@hocuspocus/server": "^4.8.0",
+    "@hono/node-server": "^2.1.8",
+    "@sofra/shared": "workspace:*",
+    "@sofra/widgets": "workspace:*",
+    "ai": "^7.0.172",
+    "hono": "^4.13.18",
+    "nanoid": "^6.0.2",
+    "ws": "^8.23.0",
+    "yjs": "^13.6.33",
+    "zod": "^4.6.7"
+  }
+}
