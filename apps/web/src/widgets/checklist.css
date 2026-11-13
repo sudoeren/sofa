@@ -1,0 +1,221 @@
+.cl-root,
+.cl-root * {
+  box-sizing: border-box;
+}
+.cl-root {
+  container-type: inline-size;
+}
+.cl-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cl-progress-text {
+  flex: none;
+  min-width: 84px;
+  text-align: right;
+  color: var(--muted);
+}
+.cl-progress-text.is-complete {
+  color: var(--ok);
+  font-weight: 600;
+}
+.cl-progress .w-bar.is-complete > span {
+  background: var(--ok);
+}
+.cl-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cl-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+.cl-heading h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cl-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 3px 2px 3px 4px;
+  border-radius: var(--radius-sm);
+}
+.cl-item:hover,
+.cl-item:focus-within {
+  background: var(--surface-2);
+}
+.cl-check {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent-text);
+  cursor: pointer;
+  outline-offset: 2px;
+  position: relative;
+}
+/* larger hit target than the visible box */
+.cl-check::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+.cl-check:hover {
+  border-color: var(--accent);
+}
+.cl-check:focus-visible {
+  outline: 2px solid var(--accent);
+}
+.cl-check[aria-checked="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.cl-text {
+  font: inherit;
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 4px;
+  margin: 0 -4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+.cl-text:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.cl-text-edit {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+.cl-text-edit .w-inline-edit {
+  margin: 0 -4px;
+  padding: 3px;
+}
+.cl-item.is-done .cl-text {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.cl-claim {
+  font: inherit;
+  font-size: 12px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cl-claim:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.cl-claim:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.cl-claim.is-claimed {
+  padding: 0 8px 0 3px;
+  border: 1px solid transparent;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.cl-item:hover .cl-claim.is-claimed,
+.cl-item:focus-within .cl-claim.is-claimed {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.cl-claim-name {
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cl-item.is-done .cl-claim {
+  opacity: 0.7;
+}
+.cl-remove {
+  flex: none;
+  opacity: 0;
+}
+.cl-item:hover .cl-remove,
+.cl-item:focus-within .cl-remove {
+  opacity: 1;
+}
+@media (hover: none) {
+  .cl-remove {
+    opacity: 0.6;
+  }
+}
+.cl-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 3px 2px 3px 4px;
+}
+.cl-add-icon {
+  flex: none;
+  width: 20px;
+  color: var(--muted);
+}
+.cl-add .w-inline-edit {
+  flex: 1 1 auto;
+  margin: 0;
+}
+.cl-add-btn {
+  flex: none;
+  padding: 3px 10px;
+  font-size: 12px;
+}
+@container (max-width: 340px) {
+  .cl-claim-name {
+    display: none;
+  }
+  .cl-claim {
+    padding: 0 6px;
+  }
+  .cl-claim.is-claimed {
+    padding: 0 3px;
+  }
+  .cl-item,
+  .cl-add {
+    gap: 8px;
+  }
+}
