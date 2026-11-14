@@ -55,7 +55,21 @@ export type ServerConfig = {
   provider: string | null;
   model: string | null;
   templates: TemplateInfo[];
+  /** example spaces offered on the landing page */
+  examples: ExampleInfo[];
+  /** set when this server is a public demo (SOFA_DEMO=1) */
+  demo: boolean;
+  /** spaces are deleted after this many hours without changes; 0 means never */
+  spaceTtlHours: number;
 };
+
+export type ExampleInfo = { id: string; title: string; description: string };
+
+/**
+ * POST /api/examples/:exampleId  body { user } -> 201 SpaceInfo
+ * Creates a new, unlocked space filled with the example's tools, state and materials.
+ */
+export const useExampleBody = z.object({ user: userSchema });
 
 /**
  * POST /api/spaces/:id/generate -> 202 { messageId }
@@ -99,6 +113,28 @@ export type FileInfo = { fileId: string; name: string; mime: string; size: numbe
 /** POST /api/spaces/:id/links  body { url } -> 200 LinkPreview */
 export const linkBody = z.object({ url: z.string().url().max(2000) });
 export type LinkPreview = { url: string; title: string; description: string };
+
+/**
+ * Export and import of a whole space, so a space from the demo can move to a self-hosted
+ * server. Uploaded files are not included (materials keep their names; links to files break).
+ *
+ * GET /api/spaces/:id/export -> 200 SpaceExport (attachment, application/json)
+ * POST /api/import  body SpaceExport -> 201 SpaceInfo (a new space; optional password)
+ */
+export const SPACE_EXPORT_FORMAT = "sofa-space";
+export const SPACE_EXPORT_VERSION = 1;
+export const spaceExportSchema = z.object({
+  format: z.literal(SPACE_EXPORT_FORMAT),
+  version: z.literal(SPACE_EXPORT_VERSION),
+  title: z.string().trim().min(1).max(LIMITS.titleLength),
+  exportedAt: z.number(),
+  /** Y.encodeStateAsUpdate of the space document, base64 */
+  doc: z.string().min(1).max(20 * 1024 * 1024),
+});
+export type SpaceExport = z.infer<typeof spaceExportSchema>;
+export const importBody = spaceExportSchema.extend({
+  password: z.string().min(4).max(200).optional(),
+});
 
 /** WebSocket: /collab, Hocuspocus protocol, document name = space id. */
 export const COLLAB_PATH = "/collab";
