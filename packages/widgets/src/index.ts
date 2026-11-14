@@ -16,6 +16,14 @@ export type { ItineraryConfig } from "./defs/itinerary";
 export type { PollConfig } from "./defs/poll";
 export type { SeatingConfig } from "./defs/seating";
 export type { TableConfig } from "./defs/table";
+export {
+  EXAMPLES,
+  type ExampleMaterial,
+  type ExampleMember,
+  type ExampleSpace,
+  type ExampleTool,
+  getExample,
+} from "./examples";
 export type { WidgetDef } from "./types";
 
 // biome-ignore lint/suspicious/noExplicitAny: heterogeneous config types

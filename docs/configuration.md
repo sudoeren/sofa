@@ -12,6 +12,7 @@ Sofa reads its settings from environment variables. In development it also loads
 | `SOFA_WEB_DIR`          | `apps/web/dist` next to the server     | Built web app to serve. The Docker image sets it.                                                                                                                                                         |
 | `SOFA_SPACE_TTL_HOURS`  | `0` (never)                            | Delete spaces, with their files, after this many hours without changes. Checked hourly; a space open in someone's browser is kept. Useful for public demo servers.                                        |
 | `SOFA_TRUST_PROXY_HOPS` | `0`                                    | Number of reverse proxies in front of Sofa. With 1 or more, rate limits use the client address from `X-Forwarded-For` instead of the proxy's. Coolify or Caddy alone: 1. Cloudflare in front of those: 2. |
+| `SOFA_DEMO`             | unset                                  | Set to `1` or `true` on a public demo server. The web app is told through `/api/config` so it can say that spaces are temporary and offer to export them; combine it with `SOFA_SPACE_TTL_HOURS`.         |
 
 ## AI
 
@@ -36,4 +37,5 @@ These are set in code (`packages/shared/src/api.ts`, `apps/server/src/app.ts`):
 - files: 10 MB each, 50 per space
 - AI requests: 10 per minute per space, one running at a time per space
 - password attempts: 10 per 10 minutes per space and address
-- new spaces: 30 per minute per address
+- new spaces: 30 per minute per address (spaces created from an example or an import count too)
+- imports: exports up to 20 MB; uploaded files are not part of an export

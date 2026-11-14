@@ -95,7 +95,7 @@ describe("spaces", () => {
 describe("config, generate and templates", () => {
   it("reports ai info and templates", async () => {
     const res = await fetch(`${s.base}/api/config`);
-    expect(await res.json()).toEqual({
+    expect(await res.json()).toMatchObject({
       aiEnabled: true,
       provider: "fake",
       model: "fake-1",

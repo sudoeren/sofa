@@ -5,30 +5,41 @@ import { Readable } from "node:stream";
 import type { HttpBindings } from "@hono/node-server";
 import {
   COLLAB_PATH,
+  chatArray,
   createSpaceBody,
   type FileInfo,
   type GenerateResponse,
   generateBody,
+  importBody,
   isSpaceId,
   LIMITS,
   type LinkPreview,
   linkBody,
+  type Material,
+  materialsArray,
+  metaMap,
   newId,
   newSpaceId,
   nextToolOrder,
   putTool,
   type ServerConfig,
+  SPACE_EXPORT_FORMAT,
+  SPACE_EXPORT_VERSION,
+  type SpaceExport,
   type SpaceInfo,
   type ToolRecord,
+  toolsMap,
   type UnlockResponse,
   type UseTemplateResponse,
   unlockBody,
+  useExampleBody,
   useTemplateBody,
 } from "@sofa/shared";
-import type { WidgetDef } from "@sofa/widgets";
+import { EXAMPLES, type ExampleSpace, type WidgetDef } from "@sofa/widgets";
 import { type Context, Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { HTTPException } from "hono/http-exception";
+import * as Y from "yjs";
 import type { z } from "zod";
 import {
   bearerToken,
@@ -73,12 +84,20 @@ export type AppDeps = {
   widgets: WidgetDef<any>[];
   preview: LinkPreviewer;
   rateLimits?: Partial<RateLimits>;
+  /** example spaces offered on the landing page (default: the built-in catalog) */
+  examples?: ExampleSpace[];
 };
 
 type Env = { Bindings: Partial<HttpBindings> };
 type Ctx = Context<Env>;
 
 const JSON_BODY_BYTES = 64 * 1024;
+/** an exported document may be up to 20 MB of base64, plus the JSON around it */
+const IMPORT_BODY_BYTES = 20 * 1024 * 1024 + 64 * 1024;
+/** what an imported document may hold; far above anything a real space reaches */
+const IMPORT_CAPS = { tools: 200, chat: 5000, materials: 2000 } as const;
+const SPACE_ROOTS = new Set(["meta", "materials", "chat", "tools"]);
+
 /** multipart framing on top of the file itself */
 const UPLOAD_BODY_BYTES = LIMITS.fileBytes + 64 * 1024;
 
@@ -149,8 +168,66 @@ function spaceInfo(space: SpaceRow): SpaceInfo {
   };
 }
 
+/** File name part of an export: lower-case words joined by dashes. */
+export function slugify(title: string): string {
+  const slug = title
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+    .replace(/-+$/, "");
+  return slug || "space";
+}
+
+/**
+ * Decode an exported document into a fresh Y.Doc and check that it looks like a space:
+ * only the known shared types, of the right kinds, nothing pending, sane sizes.
+ * Returns null for anything else.
+ */
+export function decodeSpaceDoc(base64: string): Y.Doc | null {
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(base64) || base64.length % 4 === 1) return null;
+  const update = new Uint8Array(Buffer.from(base64, "base64"));
+  if (update.length === 0) return null;
+  const doc = new Y.Doc();
+  try {
+    Y.applyUpdate(doc, update);
+    // Missing dependencies mean the bytes are not a whole document.
+    if (doc.store.pendingStructs !== null || doc.store.pendingDs !== null) throw new Error();
+    for (const name of doc.share.keys()) if (!SPACE_ROOTS.has(name)) throw new Error();
+    const meta = metaMap(doc);
+    if (typeof meta.get("title") !== "string") throw new Error();
+    const tools = toolsMap(doc);
+    const materials = materialsArray(doc);
+    const chat = chatArray(doc);
+    // A root written as another kind of type keeps its content where this one does not look.
+    if (meta._start !== null || tools._start !== null) throw new Error();
+    if (materials._map.size > 0 || chat._map.size > 0) throw new Error();
+    if (tools.size > IMPORT_CAPS.tools) throw new Error();
+    if (materials.length > IMPORT_CAPS.materials) throw new Error();
+    if (chat.length > IMPORT_CAPS.chat) throw new Error();
+    for (const [id, tool] of tools.entries()) {
+      if (!(tool instanceof Y.Map) || tool.get("id") !== id) throw new Error();
+      const state = tool.get("state");
+      if (state !== undefined && !(state instanceof Y.Map)) throw new Error();
+    }
+    for (const list of [materials.toArray(), chat.toArray()] as unknown[][]) {
+      for (const item of list) {
+        if (typeof item !== "object" || item === null || Array.isArray(item)) throw new Error();
+        if (item instanceof Y.AbstractType) throw new Error();
+      }
+    }
+    return doc;
+  } catch {
+    doc.destroy();
+    return null;
+  }
+}
+
 export function createApp(deps: AppDeps): Hono<Env> {
   const { config, db, secret, docs, files, ai, widgets, preview } = deps;
+  const examples = deps.examples ?? EXAMPLES;
   const limits: RateLimits = { ...DEFAULT_RATE_LIMITS, ...deps.rateLimits };
   const unlockLimiter = createRateLimiter(limits.unlock.limit, limits.unlock.windowMs);
   const generateLimiter = createRateLimiter(limits.generate.limit, limits.generate.windowMs);
@@ -221,24 +298,140 @@ export function createApp(deps: AppDeps): Hono<Env> {
         title: def.title || def.starter.title,
         description: def.description || def.starter.description,
       })),
+      examples: examples.map((example) => ({
+        id: example.id,
+        title: example.title,
+        description: example.description,
+      })),
+      demo: config.demo,
+      spaceTtlHours: config.spaceTtlHours,
     };
     return c.json(body);
   });
 
-  app.post("/api/spaces", jsonLimit, async (c) => {
+  function limitCreate(c: Ctx) {
     if (!createLimiter.hit(clientAddress(c, deps.config.trustProxyHops)))
       fail(429, "Too many spaces created, try again later");
-    const body = await readJson(c, createSpaceBody);
+  }
+
+  /** Insert a space row; the response carries a token when it is locked. */
+  async function newSpace(title: string, password?: string): Promise<SpaceInfo> {
     const space: SpaceRow = {
       id: newSpaceId(),
-      title: body.title,
+      title,
       createdAt: Date.now(),
-      passwordHash: body.password === undefined ? null : await hashPassword(body.password),
+      passwordHash: password === undefined ? null : await hashPassword(password),
     };
     db.createSpace(space);
     const info = spaceInfo(space);
     if (info.locked) info.token = signSpaceToken(secret, space.id);
+    return info;
+  }
+
+  app.post("/api/spaces", jsonLimit, async (c) => {
+    limitCreate(c);
+    const body = await readJson(c, createSpaceBody);
+    return c.json(await newSpace(body.title, body.password), 201);
+  });
+
+  app.post("/api/examples/:exampleId", jsonLimit, async (c) => {
+    const example = examples.find((item) => item.id === c.req.param("exampleId"));
+    if (!example) fail(404, "Example not found");
+    const body = await readJson(c, useExampleBody);
+    limitCreate(c);
+    const info = await newSpace(example.title);
+    await docs.transact(info.id, (doc) => {
+      const now = Date.now();
+      for (const [index, tool] of example.tools.entries()) {
+        const record: ToolRecord = {
+          id: newId(),
+          title: tool.title,
+          description: tool.description,
+          kind: "widget",
+          widgetType: tool.widgetType,
+          config: tool.config,
+          html: "",
+          status: "ready",
+          version: 1,
+          order: index + 1,
+          span: tool.span ?? 1,
+          createdBy: body.user.id,
+          createdAt: now + index,
+          updatedAt: now + index,
+        };
+        putTool(doc, record, tool.state);
+      }
+      const materials = (example.materials ?? []).map(
+        (material, index): Material => ({
+          id: newId(),
+          kind: material.kind,
+          ...(material.text !== undefined ? { text: material.text } : {}),
+          ...(material.url !== undefined ? { url: material.url } : {}),
+          ...(material.title !== undefined ? { title: material.title } : {}),
+          authorId: example.author.id,
+          authorName: example.author.name,
+          createdAt: now + index,
+        }),
+      );
+      if (materials.length > 0) materialsArray(doc).push(materials);
+    });
     return c.json(info, 201);
+  });
+
+  app.get("/api/spaces/:id/export", async (c) => {
+    const space = openSpace(c);
+    const { title, update } = await docs.read(space.id, (doc) => {
+      const meta = metaMap(doc).get("title");
+      return {
+        title: typeof meta === "string" && meta.trim() ? meta.trim() : space.title,
+        update: Y.encodeStateAsUpdate(doc),
+      };
+    });
+    const body: SpaceExport = {
+      format: SPACE_EXPORT_FORMAT,
+      version: SPACE_EXPORT_VERSION,
+      title: title.slice(0, LIMITS.titleLength),
+      exportedAt: Date.now(),
+      doc: Buffer.from(update).toString("base64"),
+    };
+    c.header("Content-Disposition", `attachment; filename="${slugify(title)}.sofa.json"`);
+    return c.json(body);
+  });
+
+  const importLimit = bodyLimit({
+    maxSize: IMPORT_BODY_BYTES,
+    onError: (c) => c.json({ error: "The export is too large" }, 413),
+  });
+
+  app.post("/api/import", importLimit, async (c) => {
+    limitCreate(c);
+    const body = await readJson(c, importBody);
+    const doc = decodeSpaceDoc(body.doc);
+    if (!doc) fail(400, "This file is not a Sofa space export");
+    try {
+      const info = await newSpace(body.title, body.password);
+      doc.transact(() => {
+        const meta = metaMap(doc);
+        meta.set("title", info.title);
+        meta.set("createdAt", info.createdAt);
+        meta.set("locked", info.locked);
+        // Uploaded files stay on the old server; keep the names, drop the references.
+        const materials = materialsArray(doc);
+        const items = materials.toArray();
+        for (let index = items.length - 1; index >= 0; index--) {
+          const item = items[index];
+          if (item?.kind !== "file" || item.fileId === undefined) continue;
+          const { fileId: _dropped, ...rest } = item;
+          materials.delete(index, 1);
+          materials.insert(index, [rest]);
+        }
+      });
+      // Written before anyone connects, so the first collab load starts from it.
+      db.saveDoc(info.id, Y.encodeStateAsUpdate(doc));
+      return c.json(info, 201);
+    } finally {
+      doc.destroy();
+    }
   });
 
   app.get("/api/spaces/:id", (c) => c.json(spaceInfo(findSpace(c))));

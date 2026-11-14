@@ -27,6 +27,7 @@ export function testConfig(
     webDir,
     spaceTtlHours,
     trustProxyHops: 0,
+    demo: false,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null },
   };
 }

@@ -36,4 +36,11 @@ describe("loadConfig", () => {
   it("falls back to none when OpenRouter is chosen without a key", () => {
     expect(loadConfig({ SOFA_AI_PROVIDER: "openrouter" }).ai.provider).toBe("none");
   });
+
+  it("reads the demo flag", () => {
+    expect(loadConfig({}).demo).toBe(false);
+    expect(loadConfig({ SOFA_DEMO: "1" }).demo).toBe(true);
+    expect(loadConfig({ SOFA_DEMO: "true" }).demo).toBe(true);
+    expect(loadConfig({ SOFA_DEMO: "0" }).demo).toBe(false);
+  });
 });

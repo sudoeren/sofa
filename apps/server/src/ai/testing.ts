@@ -71,6 +71,7 @@ export function testConfig(ai: Partial<Config["ai"]> = {}): Config {
     webDir: "/tmp/none",
     spaceTtlHours: 0,
     trustProxyHops: 0,
+    demo: false,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null, ...ai },
   };
 }

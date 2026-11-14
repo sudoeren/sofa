@@ -12,6 +12,8 @@ export type Config = {
   spaceTtlHours: number;
   /** reverse proxies in front of the server whose X-Forwarded-For entries are trusted */
   trustProxyHops: number;
+  /** this server is a public demo (SOFA_DEMO=1 or true); reported to the web app */
+  demo: boolean;
   ai: {
     provider: AiProvider;
     model: string;
@@ -44,6 +46,11 @@ function parseProvider(value: string | undefined, env: NodeJS.ProcessEnv): AiPro
   return "none";
 }
 
+function parseFlag(value: string | undefined): boolean {
+  const v = (value ?? "").trim().toLowerCase();
+  return v === "1" || v === "true";
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   let provider = parseProvider(env.SOFA_AI_PROVIDER, env);
   let apiKey: string | null = null;
@@ -66,6 +73,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     publicUrl: env.SOFA_PUBLIC_URL?.replace(/\/+$/, "") || null,
     spaceTtlHours: Math.max(0, Number(env.SOFA_SPACE_TTL_HOURS) || 0),
     trustProxyHops: Math.max(0, Math.floor(Number(env.SOFA_TRUST_PROXY_HOPS) || 0)),
+    demo: parseFlag(env.SOFA_DEMO),
     webDir: path.resolve(env.SOFA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
     ai: {
       provider,
