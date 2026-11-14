@@ -6,7 +6,7 @@ describe("loadConfig", () => {
     const config = loadConfig({ OPENROUTER_API_KEY: "sk-or-v1-12345678" });
     expect(config.ai).toMatchObject({
       provider: "openrouter",
-      model: "anthropic/claude-fable-5.2",
+      model: "anthropic/claude-haiku-5.5",
       apiKey: "sk-or-v1-12345678",
     });
   });

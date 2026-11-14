@@ -236,7 +236,7 @@ describe("provider helpers", () => {
     ).toMatchObject({
       source: "member",
       provider: "openrouter",
-      model: "anthropic/claude-fable-5.2",
+      model: "anthropic/claude-haiku-5.5",
     });
   });
 
@@ -248,7 +248,7 @@ describe("provider helpers", () => {
         JSON.stringify({
           id: "r1",
           created: 1,
-          model: "anthropic/claude-fable-5.2",
+          model: "anthropic/claude-haiku-5.5",
           choices: [
             { index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" },
           ],
@@ -261,7 +261,7 @@ describe("provider helpers", () => {
       const model = createLanguageModel({
         source: "member",
         provider: "openrouter",
-        model: "anthropic/claude-fable-5.2",
+        model: "anthropic/claude-haiku-5.5",
         apiKey: "sk-or-v1-12345678",
         baseUrl: null,
       });

@@ -21,7 +21,7 @@ type Props = {
 const MODEL_HINT: Record<UserAi["provider"], string> = {
   anthropic: "Leave empty for the server default",
   openai: "Leave empty for the server default",
-  openrouter: "For example anthropic/claude-fable-5.2; empty for the default",
+  openrouter: "For example anthropic/claude-haiku-5.5; empty for the default",
 };
 
 const PROVIDER_LABELS: Record<UserAi["provider"], string> = {

@@ -22,7 +22,7 @@ export type ProviderChoice = {
 const MEMBER_DEFAULT_MODELS = {
   anthropic: "claude-fable-5-2",
   openai: "gpt-5",
-  openrouter: "anthropic/claude-fable-5.2",
+  openrouter: "anthropic/claude-haiku-5.5",
 } as const;
 
 export function serverInfo(config: Config): AiInfo | null {

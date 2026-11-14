@@ -59,7 +59,7 @@ Sofra works with four kinds of providers, configured on the server:
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Anthropic                                                            | `ANTHROPIC_API_KEY`, optional `SOFRA_AI_MODEL` (default `claude-fable-5-2`)                               |
 | OpenAI                                                               | `OPENAI_API_KEY`, optional `SOFRA_AI_MODEL` (default `gpt-5`)                                             |
-| OpenRouter | `OPENROUTER_API_KEY`, optional `SOFRA_AI_MODEL` (default `anthropic/claude-fable-5.2`) |
+| OpenRouter | `OPENROUTER_API_KEY`, optional `SOFRA_AI_MODEL` (default `anthropic/claude-haiku-5.5`) |
 | Any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM) | `SOFRA_AI_PROVIDER=openai-compatible`, `SOFRA_AI_BASE_URL`, optional `SOFRA_AI_API_KEY`, `SOFRA_AI_MODEL` |
 
 Members can also bring their own Anthropic, OpenAI or OpenRouter key. It is stored only in their

@@ -19,7 +19,7 @@ export type Config = {
 const DEFAULT_MODELS: Record<Exclude<AiProvider, "none">, string> = {
   anthropic: "claude-fable-5-2",
   openai: "gpt-5",
-  openrouter: "anthropic/claude-fable-5.2",
+  openrouter: "anthropic/claude-haiku-5.5",
   "openai-compatible": "qwen3-coder",
 };
 
