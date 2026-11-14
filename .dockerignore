@@ -1,0 +1,27 @@
+# Dependencies and build output are produced inside the image.
+node_modules
+**/node_modules
+**/dist
+
+# Local state and secrets never go into the build context.
+data
+**/data
+.env
+.env.*
+*.log
+
+# Not needed to build.
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+docs
+*.md
+LICENSE
+test-results
+playwright-report
+.DS_Store
+.vscode
+.idea

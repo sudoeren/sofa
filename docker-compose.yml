@@ -1,0 +1,15 @@
+services:
+  sofra:
+    build: .
+    image: sofra:local
+    ports:
+      - "8787:8787"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - sofra-data:/data
+    restart: unless-stopped
+
+volumes:
+  sofra-data:
