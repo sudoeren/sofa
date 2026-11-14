@@ -5,7 +5,9 @@
   "description": "Open-source, self-hosted shared spaces where a group asks an AI to build the small tools it needs.",
   "license": "MIT",
   "packageManager": "pnpm@10.34.5",
-  "engines": { "node": ">=22.5" },
+  "engines": {
+    "node": ">=22.5"
+  },
   "scripts": {
     "dev": "pnpm -r --parallel --filter @sofra/server --filter @sofra/web dev",
     "build": "pnpm --filter @sofra/web build && pnpm --filter @sofra/server build",
