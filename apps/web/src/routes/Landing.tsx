@@ -1,58 +1,38 @@
 import { LIMITS } from "@sofra/shared";
-import {
-  ArrowRight,
-  Code,
-  ListChecks,
-  Lock,
-  MapPinned,
-  Server,
-  Trophy,
-  Utensils,
-  Wallet,
-} from "lucide-react";
-import { type FormEvent, useId, useState } from "react";
+import { ArrowRight, Check, Copy, Lock } from "lucide-react";
+import { type FormEvent, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrandMark } from "../components/Brand";
 import { Spinner } from "../components/Spinner";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { createSpace } from "../lib/api";
 import { setSpaceToken } from "../lib/storage";
+import { DemoSpace } from "./landing/DemoSpace";
+import { Showcase } from "./landing/Showcase";
 import "../styles/landing.css";
 
 export const REPO_URL = "https://github.com/sudoeren/sofra";
 
-const EXAMPLES = [
+const INSTALL = `git clone ${REPO_URL}
+cd sofra && cp .env.example .env
+docker compose up -d`;
+
+const STEPS = [
   {
-    icon: MapPinned,
-    title: "Trip plan",
-    text: "Days, places and who books what, on one page.",
-    suggestion: "Lisbon in May",
+    title: "Open a space",
+    text: "Give it a name and send the link to your group. No accounts.",
   },
   {
-    icon: Utensils,
-    title: "Dinner poll",
-    text: "Pick the place and the date without forty messages.",
-    suggestion: "Friday dinner",
+    title: "Drop in what you have",
+    text: "Notes, links and files. The AI reads them when it builds something.",
   },
   {
-    icon: Wallet,
-    title: "Splitting costs",
-    text: "Log who paid and see who owes whom.",
-    suggestion: "Cabin weekend",
-  },
-  {
-    icon: Trophy,
-    title: "Tournament bracket",
-    text: "Seed the teams and advance the winners.",
-    suggestion: "Office table tennis cup",
-  },
-  {
-    icon: ListChecks,
-    title: "Chore tracker",
-    text: "Who does what this week, ticked off as it gets done.",
-    suggestion: "Flat chores",
+    title: "Ask for a tool",
+    text: "Everyone uses it at once. Ask again to change it; what people entered stays.",
   },
 ];
+
+const PROVIDERS = ["Anthropic", "OpenAI", "OpenRouter", "Ollama and other local models"];
 
 export function Landing() {
   const navigate = useNavigate();
@@ -61,6 +41,8 @@ export function Landing() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
   const passwordId = useId();
   const errorId = useId();
@@ -70,7 +52,8 @@ export function Landing() {
     if (busy) return;
     const cleanTitle = title.trim();
     if (!cleanTitle) {
-      setError("Give the space a title.");
+      setError("Give the space a name.");
+      titleRef.current?.focus();
       return;
     }
     if (usePassword && password.length < 4) {
@@ -92,177 +75,195 @@ export function Landing() {
     }
   };
 
+  const copyInstall = async () => {
+    try {
+      await navigator.clipboard.writeText(INSTALL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard can be blocked; the text is selectable anyway */
+    }
+  };
+
+  const startForm = (
+    <form className="start" onSubmit={onSubmit} noValidate>
+      <div className="start-row">
+        <label className="sr-only" htmlFor={titleId}>
+          Space name
+        </label>
+        <input
+          ref={titleRef}
+          id={titleId}
+          className="start-input"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Name your space, e.g. Lisbon in May"
+          maxLength={LIMITS.titleLength}
+          autoComplete="off"
+          aria-describedby={error ? errorId : undefined}
+          aria-invalid={error ? true : undefined}
+        />
+        <button type="submit" className="start-btn" disabled={busy}>
+          {busy ? <Spinner size={16} /> : null}
+          <span>Create space</span>
+          {busy ? null : <ArrowRight size={16} aria-hidden="true" />}
+        </button>
+      </div>
+      <div className="start-extra">
+        <label className="start-check">
+          <input
+            type="checkbox"
+            checked={usePassword}
+            onChange={(event) => setUsePassword(event.target.checked)}
+          />
+          <Lock size={13} aria-hidden="true" />
+          <span>Password</span>
+        </label>
+        {usePassword ? (
+          <>
+            <label className="sr-only" htmlFor={passwordId}>
+              Password
+            </label>
+            <input
+              id={passwordId}
+              className="start-password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="At least 4 characters"
+              autoComplete="new-password"
+              maxLength={200}
+            />
+          </>
+        ) : (
+          <span className="start-hint">No account needed. Share the link to invite people.</span>
+        )}
+      </div>
+      {error ? (
+        <p className="start-error" id={errorId} role="alert">
+          {error}
+        </p>
+      ) : null}
+    </form>
+  );
+
   return (
-    <div className="landing">
-      <header className="landing-top">
+    <div className="lp">
+      <header className="lp-nav">
         <a className="brand" href="/" aria-label="Sofra home">
-          <BrandMark />
+          <BrandMark size={24} />
           <span className="brand-name">Sofra</span>
         </a>
-        <nav className="landing-nav" aria-label="Site">
-          <a className="btn btn-ghost" href={REPO_URL} target="_blank" rel="noreferrer">
-            <Code size={16} aria-hidden="true" />
-            <span>Source</span>
+        <nav className="lp-links" aria-label="Site">
+          <a href="#tools">Tools</a>
+          <a href="#self-host">Self-host</a>
+          <a href={REPO_URL} target="_blank" rel="noreferrer">
+            GitHub
           </a>
           <ThemeToggle />
         </nav>
       </header>
 
-      <main className="landing-main">
-        <section className="hero">
-          <div className="hero-copy">
-            <p className="eyebrow">Open source, self-hosted</p>
-            <h1 className="hero-title">One table for everything your group is planning.</h1>
-            <p className="hero-text">
-              Open a shared space, drop in the notes, links and files you already have, and ask an
-              AI to build the small tool you need: a poll, an itinerary, an expense splitter, a
-              bracket, a game. Everyone edits it at the same time, and asking again changes the tool
-              without losing what is in it.
-            </p>
-            <ul className="hero-points">
-              <li>
-                <Server size={16} aria-hidden="true" />
-                <span>Runs on your own server. Your spaces stay there.</span>
-              </li>
-              <li>
-                <Code size={16} aria-hidden="true" />
-                <span>
-                  MIT licensed.{" "}
-                  <a href={REPO_URL} target="_blank" rel="noreferrer">
-                    Read the code on GitHub
-                  </a>
-                  .
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <form className="create-card" onSubmit={onSubmit} noValidate>
-            <h2 className="create-title">Create a space</h2>
-            <p className="create-hint">No account needed. Share the link to invite people.</p>
-
-            <label className="field-label" htmlFor={titleId}>
-              Title
-            </label>
-            <input
-              id={titleId}
-              className="input input-lg"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="Lisbon in May"
-              maxLength={LIMITS.titleLength}
-              autoComplete="off"
-              aria-invalid={error ? true : undefined}
-              aria-describedby={error ? errorId : undefined}
-              required
-            />
-
-            <label className="check-row">
-              <input
-                type="checkbox"
-                checked={usePassword}
-                onChange={(event) => setUsePassword(event.target.checked)}
-              />
-              <Lock size={14} aria-hidden="true" />
-              <span>Protect with a password</span>
-            </label>
-
-            {usePassword ? (
-              <>
-                <label className="field-label" htmlFor={passwordId}>
-                  Password
-                </label>
-                <input
-                  id={passwordId}
-                  className="input"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="At least 4 characters"
-                  minLength={4}
-                  maxLength={200}
-                  autoComplete="new-password"
-                />
-                <p className="field-hint">People will need the link and this password.</p>
-              </>
-            ) : null}
-
-            {error ? (
-              <p id={errorId} className="form-error" role="alert">
-                {error}
-              </p>
-            ) : null}
-
-            <button type="submit" className="btn btn-primary btn-lg create-submit" disabled={busy}>
-              {busy ? <Spinner /> : null}
-              <span>{busy ? "Creating" : "Create space"}</span>
-              {busy ? null : <ArrowRight size={16} aria-hidden="true" />}
-            </button>
-          </form>
+      <main>
+        <section className="lp-hero">
+          <p className="lp-eyebrow">Open source and self-hosted</p>
+          <h1 className="lp-title">
+            Ask for the tool.
+            <br />
+            Your whole group gets it.
+          </h1>
+          <p className="lp-lead">
+            A shared space where anyone can ask an AI for a poll, a trip plan, a cost splitter or a
+            small game, and everyone uses it at the same time.
+          </p>
+          {startForm}
         </section>
 
-        <section className="examples" aria-labelledby="examples-title">
-          <h2 id="examples-title" className="section-title">
-            What people build
-          </h2>
-          <ul className="example-grid">
-            {EXAMPLES.map((example) => (
-              <li key={example.title}>
-                <button
-                  type="button"
-                  className="example-card"
-                  onClick={() => {
-                    setTitle(example.suggestion);
-                    document.getElementById(titleId)?.focus();
-                  }}
-                >
-                  <span className="example-icon">
-                    <example.icon size={18} aria-hidden="true" />
-                  </span>
-                  <span className="example-title">{example.title}</span>
-                  <span className="example-text">{example.text}</span>
-                </button>
+        <section className="lp-demo" aria-label="Preview">
+          <DemoSpace />
+          <p className="lp-caption">
+            A live preview running in your browser. Vote in the poll, add an expense.
+          </p>
+        </section>
+
+        <section className="lp-section" id="how">
+          <h2 className="lp-h2">How it works</h2>
+          <ol className="lp-steps">
+            {STEPS.map((step, index) => (
+              <li key={step.title}>
+                <span className="lp-step-num">{String(index + 1).padStart(2, "0")}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
 
-        <section className="how" aria-labelledby="how-title">
-          <h2 id="how-title" className="section-title">
-            How it works
-          </h2>
-          <ol className="how-list">
-            <li>
-              <span className="how-step">1</span>
-              <div>
-                <h3>Open a space</h3>
-                <p>Give it a title and send the link to your group.</p>
-              </div>
-            </li>
-            <li>
-              <span className="how-step">2</span>
-              <div>
-                <h3>Drop in what you have</h3>
-                <p>Notes, links and files become material the AI can read.</p>
-              </div>
-            </li>
-            <li>
-              <span className="how-step">3</span>
-              <div>
-                <h3>Ask for a tool</h3>
-                <p>
-                  Describe it in a sentence, or start from a ready-made one. No AI key required.
-                </p>
-              </div>
-            </li>
-          </ol>
+        <section className="lp-section" id="tools">
+          <h2 className="lp-h2">Eight built-in tools, and anything else</h2>
+          <p className="lp-sub">
+            Built-in tools work without any AI key. For everything else the AI writes a new tool
+            that runs sandboxed, without network access.
+          </p>
+          <Showcase />
+        </section>
+
+        <section className="lp-section lp-split" id="self-host">
+          <div>
+            <h2 className="lp-h2">Runs on your server</h2>
+            <p className="lp-sub">
+              One container, one SQLite file. Your spaces, files and conversations stay with you.
+              Bring a key from any of these, or none at all:
+            </p>
+            <ul className="lp-list">
+              {PROVIDERS.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+            <p className="lp-sub">
+              Members can also use their own key. It stays in their browser and is never stored on
+              the server.
+            </p>
+          </div>
+          <div className="lp-code">
+            <div className="lp-code-head">
+              <span>Terminal</span>
+              <button type="button" className="lp-copy" onClick={copyInstall}>
+                {copied ? (
+                  <Check size={14} aria-hidden="true" />
+                ) : (
+                  <Copy size={14} aria-hidden="true" />
+                )}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
+            <pre>
+              <code>{INSTALL}</code>
+            </pre>
+          </div>
+        </section>
+
+        <section className="lp-cta">
+          <h2 className="lp-h2">Set the table.</h2>
+          <p className="lp-sub">Start a space now, invite your group in one link.</p>
+          <button
+            type="button"
+            className="start-btn"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              titleRef.current?.focus({ preventScroll: true });
+            }}
+          >
+            <span>Create a space</span>
+            <ArrowRight size={16} aria-hidden="true" />
+          </button>
         </section>
       </main>
 
-      <footer className="landing-foot">
-        <span>Sofra is open source and self-hosted.</span>
+      <footer className="lp-foot">
+        <span>Sofra is MIT licensed.</span>
         <a href={REPO_URL} target="_blank" rel="noreferrer">
-          github.com/sudoeren/sofra
+          Source on GitHub
         </a>
       </footer>
     </div>
