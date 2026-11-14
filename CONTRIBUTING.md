@@ -55,4 +55,5 @@ The release workflow runs the checks, publishes a multi-arch image to
 generated notes. Tags with a suffix such as `v0.2.0-rc.1` become pre-releases and do not
 move `latest`.
 
-Every push to `master` that passes CI also deploys the public demo.
+A stable release (a tag without a suffix) also deploys the public demo once the image is
+published. Pushes to `master` only run the checks.

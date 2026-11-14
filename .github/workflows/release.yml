@@ -64,3 +64,56 @@ jobs:
           prerelease=""
           case "$TAG" in *-*) prerelease="--prerelease" ;; esac
           gh release create "$TAG" --generate-notes --verify-tag $prerelease --title "Sofra $TAG"
+
+  deploy:
+    name: Deploy demo
+    # Stable releases of this repository only; pre-releases (v1.2.0-rc.1) are not deployed.
+    if: github.repository == 'sudoeren/sofra' && !contains(github.ref_name, '-')
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: demo
+      url: https://sofra.erencakar.com
+    concurrency:
+      group: deploy-demo
+      cancel-in-progress: false
+    steps:
+      - name: Trigger the Coolify deployment and wait for it
+        env:
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "${COOLIFY_TOKEN:-}" ]; then
+            echo "COOLIFY_TOKEN is not set; skipping the deployment."
+            exit 0
+          fi
+          api="$COOLIFY_URL/api/v1"
+          auth="Authorization: Bearer $COOLIFY_TOKEN"
+          # Build exactly the released tag, not whatever master points at.
+          curl -fsS -X PATCH "$api/applications/$COOLIFY_APP_UUID" -H "$auth" \
+            -H "Content-Type: application/json" -d "{\"git_branch\":\"$TAG\"}" > /dev/null
+          deployment=$(curl -fsS -X POST "$api/deploy?uuid=$COOLIFY_APP_UUID" -H "$auth" \
+            | jq -r '.deployments[0].deployment_uuid')
+          echo "Deployment $deployment queued"
+          for _ in $(seq 1 120); do
+            status=$(curl -fsS "$api/deployments/$deployment" -H "$auth" | jq -r '.status')
+            case "$status" in
+              finished) echo "Deployed"; break ;;
+              failed|cancelled-by-user) echo "::error::Deployment $status"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          [ "$status" = finished ] || { echo "::error::Deployment did not finish in time"; exit 1; }
+      - name: Check the live site
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 12); do
+            if curl -fsS https://sofra.erencakar.com/api/config > /dev/null; then echo "Live"; exit 0; fi
+            sleep 5
+          done
+          echo "::error::The demo did not answer after deploying"
+          exit 1
