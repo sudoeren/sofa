@@ -45,7 +45,7 @@ jobs:
             org.opencontainers.image.title=Sofra
             org.opencontainers.image.description=Shared spaces where a group asks an AI to build the small tools it needs.
             org.opencontainers.image.licenses=MIT
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
