@@ -1,0 +1,295 @@
+/* the app resets box-sizing globally; repeated here so the widget also holds on its own */
+.bk-root,
+.bk-root * {
+  box-sizing: border-box;
+}
+.bk-root {
+  --bk-gap: 14px;
+  --bk-line: var(--border);
+  min-width: 0;
+}
+.bk-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bk-head-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.bk-title {
+  font-size: 15px;
+  font-weight: 650;
+  margin-right: 2px;
+  overflow-wrap: anywhere;
+}
+.bk-rename {
+  flex: none;
+  padding: 4px 8px;
+  color: var(--muted);
+}
+.bk-rename.is-on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.bk-names {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 4px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.bk-names li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  min-width: 0;
+}
+.bk-seed {
+  flex: none;
+  width: 16px;
+  text-align: right;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* rounds as columns; every column has the same height, so a cell in round n is twice
+   as tall as one in round n-1 and sits centred between the two cells that feed it */
+.bk-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin: 0 -2px;
+  padding: 2px 2px 8px;
+}
+.bk-grid {
+  display: flex;
+  align-items: stretch;
+  min-width: min-content;
+}
+.bk-round {
+  flex: 1 0 164px;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+.bk-champ-col {
+  flex: 1 0 140px;
+}
+.bk-round-name {
+  padding: 0 var(--bk-gap) 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.bk-round:first-child .bk-round-name {
+  padding-left: 0;
+}
+.bk-cells {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.bk-cell {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 5px var(--bk-gap);
+}
+.bk-round:first-child .bk-cell {
+  padding-left: 0;
+}
+.bk-champ-col .bk-cell {
+  padding-right: 0;
+}
+
+/* connectors: each cell draws half of the bracket to its right, the next round a stub */
+.bk-cell::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: var(--bk-gap);
+  border: 0 solid var(--bk-line);
+}
+.bk-cell:nth-child(odd)::after {
+  top: 50%;
+  bottom: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+  border-top-right-radius: 6px;
+}
+.bk-cell:nth-child(even)::after {
+  top: 0;
+  bottom: 50%;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  border-bottom-right-radius: 6px;
+}
+.bk-round.is-final .bk-cell::after {
+  top: 50%;
+  bottom: auto;
+  margin-top: -1px;
+  border-width: 2px 0 0;
+  border-radius: 0;
+}
+.bk-cell.is-bye::after,
+.bk-champ-col .bk-cell::after {
+  display: none;
+}
+.bk-cell.is-fed::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--bk-gap);
+  margin-top: -1px;
+  border-top: 2px solid var(--bk-line);
+}
+
+/* match card */
+.bk-match {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+}
+.bk-match.is-waiting {
+  border-style: dashed;
+}
+.bk-side {
+  display: flex;
+  align-items: stretch;
+  min-height: 30px;
+}
+.bk-side + .bk-side {
+  border-top: 1px solid var(--border);
+}
+.bk-pick {
+  font: inherit;
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 4px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.bk-pick:disabled,
+.bk-tbd {
+  cursor: default;
+}
+.bk-pick:not(:disabled):hover {
+  background: var(--surface-2);
+}
+.bk-pick:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.bk-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bk-tbd .bk-name {
+  color: var(--muted);
+  font-size: 12px;
+}
+.bk-side.is-winner {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.bk-side.is-winner .bk-pick:hover {
+  background: transparent;
+}
+.bk-side.is-winner .bk-name {
+  font-weight: 650;
+}
+.bk-side.is-loser .bk-name {
+  color: var(--muted);
+}
+.bk-score {
+  font: inherit;
+  color: inherit;
+  flex: none;
+  width: 34px;
+  padding: 0 2px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  font-weight: 600;
+}
+.bk-score::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+  opacity: 0.6;
+}
+.bk-score:disabled {
+  opacity: 0.5;
+}
+.bk-score:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  background: var(--surface);
+}
+.bk-side.is-loser .bk-score {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* champion */
+.bk-champ {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+}
+.bk-champ.is-set {
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.bk-champ-name {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.bk-champ.is-set .bk-champ-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.bk-third {
+  max-width: 236px;
+}
+.bk-third .bk-round-name {
+  padding-left: 0;
+}

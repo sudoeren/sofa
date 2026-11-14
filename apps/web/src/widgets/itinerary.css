@@ -1,0 +1,308 @@
+/* the app resets box-sizing globally; repeated here so the widget also holds on its own */
+.it-root,
+.it-root * {
+  box-sizing: border-box;
+}
+.it-root {
+  container-type: inline-size;
+  gap: 18px;
+}
+.it-day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.it-day-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.it-day-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+.it-day-label {
+  font-size: 15px;
+  font-weight: 650;
+}
+.it-day-date,
+.it-day-count {
+  flex: none;
+  white-space: nowrap;
+}
+.it-none {
+  padding: 6px 2px 2px 58px;
+}
+
+/* timeline: time gutter, rail with dots, body */
+.it-stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.it-stop {
+  display: grid;
+  grid-template-columns: 44px 22px minmax(0, 1fr);
+  column-gap: 6px;
+}
+.it-time {
+  padding-top: 9px;
+  text-align: right;
+  color: var(--muted);
+  font-weight: 550;
+}
+.it-rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.it-rail::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--border);
+}
+.it-stop:first-child .it-rail::before {
+  top: 14px;
+}
+.it-stop:last-child .it-rail::before {
+  bottom: auto;
+  height: 14px;
+}
+.it-stop:only-child .it-rail::before {
+  display: none;
+}
+.it-dot {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  margin-top: 8px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--surface);
+  cursor: pointer;
+}
+/* larger hit area than the visible dot */
+.it-dot::after {
+  content: "";
+  position: absolute;
+  inset: -8px -4px;
+}
+.it-dot:hover {
+  border-color: var(--ok);
+}
+.it-dot[aria-pressed="true"] {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+.it-dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.it-body {
+  min-width: 0;
+  padding: 3px 0 9px;
+}
+.it-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 30px;
+}
+.it-title {
+  font: inherit;
+  color: inherit;
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 3px 4px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.it-title:hover {
+  background: var(--surface-2);
+}
+.it-title:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.it-title-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.it-title svg {
+  flex: none;
+  color: var(--muted);
+  opacity: 0;
+}
+.it-title:hover svg,
+.it-title:focus-visible svg,
+.it-title[aria-expanded="true"] svg {
+  opacity: 1;
+}
+.it-stop.is-done .it-title-text {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.it-join.is-on {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.it-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 0 4px 2px;
+}
+.it-place,
+.it-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.it-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.it-link:hover {
+  text-decoration: underline;
+}
+.it-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+.it-going {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+.it-going li {
+  display: inline-flex;
+}
+.it-going li + li {
+  margin-left: -5px;
+}
+.it-going .w-avatar {
+  box-shadow: 0 0 0 1.5px var(--surface);
+}
+.it-going li.w-num {
+  margin-left: 4px;
+}
+.it-note {
+  flex: 1 1 100%;
+  overflow-wrap: anywhere;
+}
+
+/* panels: day options and stop editor */
+.it-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.it-editor {
+  flex-direction: column;
+  align-items: stretch;
+  margin: 6px 0 2px;
+}
+.it-editor-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.it-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 120px;
+  min-width: 0;
+}
+.it-editor > .it-field {
+  flex: none;
+}
+.it-field-time {
+  flex: 0 0 104px;
+}
+.it-boxed {
+  margin: 0;
+  padding: 6px 10px;
+  border-color: var(--border);
+  background: var(--surface);
+}
+.it-warn {
+  color: var(--danger);
+}
+.it-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.it-booked.is-on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.it-danger {
+  color: var(--danger);
+}
+
+/* add a stop */
+.it-add {
+  display: flex;
+  gap: 6px;
+  padding-left: 0;
+}
+.it-add-time {
+  flex: 0 0 96px;
+  width: 96px;
+  padding-left: 6px;
+  padding-right: 4px;
+}
+.it-add-btn {
+  flex: none;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.it-add-day {
+  align-self: flex-start;
+}
+@container (max-width: 330px) {
+  .it-stop {
+    grid-template-columns: 38px 20px minmax(0, 1fr);
+    column-gap: 4px;
+  }
+  .it-add-time {
+    flex-basis: 84px;
+    width: 84px;
+  }
+}

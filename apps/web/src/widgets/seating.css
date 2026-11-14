@@ -1,0 +1,266 @@
+/* the app resets box-sizing globally; repeated here so the widget also holds on its own */
+.st-root,
+.st-root * {
+  box-sizing: border-box;
+}
+.st-root {
+  container-type: inline-size;
+  gap: 10px;
+}
+.st-root.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* status bar: fixed height so selecting a guest does not move the tables */
+.st-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+}
+.st-hint {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-bar-label {
+  flex: none;
+}
+.st-bar-name {
+  display: flex;
+  font-weight: 600;
+}
+.st-danger {
+  color: var(--danger);
+}
+.st-heading {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* pool */
+.st-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.st-pool-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+}
+.st-pool-empty {
+  padding: 2px 0;
+}
+.st-add {
+  display: flex;
+  gap: 6px;
+  max-width: 320px;
+}
+.st-add-btn {
+  flex: none;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* guests */
+.st-guests {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.st-guests > li {
+  min-width: 0;
+  max-width: 100%;
+}
+.st-guest {
+  font: inherit;
+  color: inherit;
+  max-width: 100%;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 10px 2px 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.st-guest:hover {
+  border-color: var(--muted);
+}
+.st-guest:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.st-guest.is-selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.st-guest.is-dragging {
+  opacity: 0.4;
+}
+.st-grip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 24px;
+  color: var(--muted);
+  touch-action: none;
+}
+.st-guest.is-selected .st-grip {
+  color: inherit;
+  opacity: 0.8;
+}
+.st-guest-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-free {
+  width: 24px;
+  height: 24px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+}
+.st-ghost {
+  position: fixed;
+  z-index: 1000;
+  transform: translate(-50%, -130%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow);
+}
+
+/* tables */
+.st-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(224px, 1fr));
+  gap: 10px;
+}
+.st-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.st-root.is-dragging .st-table:not(.is-full),
+.st-root.is-dragging .st-pool {
+  border-color: var(--muted);
+}
+.st-root .st-table.is-over,
+.st-root .st-pool.is-over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.st-root .st-table.is-refused {
+  border-color: var(--danger);
+}
+.st-table-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.st-table-name {
+  display: flex;
+  font-weight: 650;
+  margin-right: 4px;
+}
+.st-step {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.st-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.st-count {
+  flex: none;
+  min-width: 30px;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+.st-count.is-over,
+.st-over-text {
+  color: var(--danger);
+}
+.st-quiet {
+  flex: none;
+  opacity: 0.45;
+}
+.st-table:hover .st-quiet,
+.st-quiet:focus-visible {
+  opacity: 1;
+}
+.st-table .st-guests {
+  flex: 1 1 auto;
+  align-content: flex-start;
+}
+.st-table-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 30px;
+}
+.st-place {
+  padding: 3px 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-add-table {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 72px;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.st-add-table:hover {
+  border-color: var(--muted);
+  color: var(--text);
+  background: var(--surface-2);
+}
+.st-add-table:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
