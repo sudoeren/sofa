@@ -2,7 +2,6 @@
 
 Shared spaces where a group asks an AI to build the small tools it needs, and everyone uses them at the same time. Open source and self-hosted.
 
-<!-- docs/media/demo.gif is added before launch -->
 ![Sofra demo](docs/media/demo.gif)
 
 ## What it is
