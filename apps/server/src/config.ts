@@ -10,6 +10,8 @@ export type Config = {
   webDir: string;
   /** delete spaces untouched for this many hours; 0 keeps them forever */
   spaceTtlHours: number;
+  /** reverse proxies in front of the server whose X-Forwarded-For entries are trusted */
+  trustProxyHops: number;
   ai: {
     provider: AiProvider;
     model: string;
@@ -63,6 +65,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     dataDir: path.resolve(env.SOFRA_DATA_DIR || "./data"),
     publicUrl: env.SOFRA_PUBLIC_URL?.replace(/\/+$/, "") || null,
     spaceTtlHours: Math.max(0, Number(env.SOFRA_SPACE_TTL_HOURS) || 0),
+    trustProxyHops: Math.max(0, Math.floor(Number(env.SOFRA_TRUST_PROXY_HOPS) || 0)),
     webDir: path.resolve(env.SOFRA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
     ai: {
       provider,

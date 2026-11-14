@@ -41,8 +41,9 @@ server {
 }
 ```
 
-Rate limits use the client's socket address. Behind a proxy every request comes from the
-proxy, so those limits apply to everyone together. There is no trusted-proxy setting yet.
+Behind a proxy every request comes from the proxy's address. Set `SOFRA_TRUST_PROXY_HOPS`
+to the number of proxies in front of Sofra (1 for Caddy, nginx or Coolify alone, 2 with
+Cloudflare in front) so rate limits see the real client address.
 
 ## Backups
 

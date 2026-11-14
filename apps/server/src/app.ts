@@ -109,8 +109,19 @@ function fail(status: 400 | 401 | 403 | 404 | 409 | 413 | 429, message: string):
   throw new HTTPException(status, { message });
 }
 
-function clientAddress(c: Ctx): string {
-  return c.env?.incoming?.socket?.remoteAddress ?? "unknown";
+/**
+ * The address rate limits are keyed on. Behind `trustedHops` reverse proxies the socket
+ * belongs to the nearest proxy, so the client is taken from X-Forwarded-For: each trusted
+ * proxy appends the address it saw, and entries further left can be forged by the client.
+ */
+export function clientAddress(c: Ctx, trustedHops = 0): string {
+  const socket = c.env?.incoming?.socket?.remoteAddress ?? "unknown";
+  if (trustedHops <= 0) return socket;
+  const chain = (c.req.header("x-forwarded-for") ?? "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  return chain[chain.length - trustedHops] ?? chain[0] ?? socket;
 }
 
 async function readJson<T extends z.ZodType>(c: Ctx, schema: T): Promise<z.infer<T>> {
@@ -215,7 +226,8 @@ export function createApp(deps: AppDeps): Hono<Env> {
   });
 
   app.post("/api/spaces", jsonLimit, async (c) => {
-    if (!createLimiter.hit(clientAddress(c))) fail(429, "Too many spaces created, try again later");
+    if (!createLimiter.hit(clientAddress(c, deps.config.trustProxyHops)))
+      fail(429, "Too many spaces created, try again later");
     const body = await readJson(c, createSpaceBody);
     const space: SpaceRow = {
       id: newSpaceId(),
@@ -235,7 +247,7 @@ export function createApp(deps: AppDeps): Hono<Env> {
     const space = findSpace(c);
     const body = await readJson(c, unlockBody);
     if (space.passwordHash === null) fail(400, "This space has no password");
-    const key = `${space.id}|${clientAddress(c)}`;
+    const key = `${space.id}|${clientAddress(c, deps.config.trustProxyHops)}`;
     if (!unlockLimiter.hit(key)) fail(429, "Too many attempts, try again later");
     if (!(await verifyPassword(body.password, space.passwordHash))) fail(403, "Wrong password");
     unlockLimiter.reset(key);

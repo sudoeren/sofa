@@ -111,7 +111,6 @@ Checks: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`. See
 Early. Known gaps:
 
 - No accounts: identity is a name kept in the browser.
-- Rate limits use the socket address; behind a reverse proxy all clients share one limit.
 - Single process; no horizontal scaling.
 - Tested on desktop and narrow browser windows, not yet on real phones.
 
