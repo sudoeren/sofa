@@ -129,7 +129,7 @@ export function parseAmountInput(text: string, digits: number): number | null {
   return toMinor(Number(normalized), digits);
 }
 
-export function formatMoney(minor: number, currency: string, locale?: string): string {
+export function formatMoney(minor: number, currency: string, locale = "en"): string {
   const digits = currencyDigits(currency);
   const value = fromMinor(minor, digits);
   try {
@@ -422,7 +422,7 @@ export const expenses: WidgetDef<ExpensesConfig> = {
     title: "Cappadocia weekend costs",
     description: "Add what you paid for; the balances and who pays whom update on their own.",
     config: {
-      currency: "TRY",
+      currency: "EUR",
       people: [
         { id: "ada", name: "Ada" },
         { id: "deniz", name: "Deniz" },
@@ -430,17 +430,17 @@ export const expenses: WidgetDef<ExpensesConfig> = {
         { id: "selin", name: "Selin" },
       ],
       expenses: [
-        { id: "hotel", title: "Cave hotel, two nights", amount: 8400, paidBy: "ada" },
-        { id: "car", title: "Rental car", amount: 3150, paidBy: "deniz" },
+        { id: "hotel", title: "Cave hotel, two nights", amount: 240, paidBy: "ada" },
+        { id: "car", title: "Rental car", amount: 90, paidBy: "deniz" },
         {
           id: "balloon",
           title: "Balloon flight tickets",
-          amount: 9600,
+          amount: 275,
           paidBy: "selin",
           splitBetween: ["ada", "deniz", "selin"],
         },
-        { id: "dinner", title: "Dinner in Goreme", amount: 1860, paidBy: "mert" },
-        { id: "fuel", title: "Fuel", amount: 1245.5, paidBy: "deniz" },
+        { id: "dinner", title: "Dinner in Goreme", amount: 55, paidBy: "mert" },
+        { id: "fuel", title: "Fuel", amount: 35, paidBy: "deniz" },
       ],
     },
   },

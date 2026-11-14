@@ -74,7 +74,7 @@ describe("Expenses", () => {
   it("renders the starter", () => {
     render(<Harness config={def.configSchema.parse(def.starter.config)} />);
     expect(screen.getByText("Cave hotel, two nights")).toBeTruthy();
-    expect(screen.getByText(formatMoney(2425550, "TRY"))).toBeTruthy();
+    expect(screen.getByText(formatMoney(69500, "EUR"))).toBeTruthy();
     expect(settleUp().getAllByRole("listitem").length).toBeGreaterThan(0);
   });
 

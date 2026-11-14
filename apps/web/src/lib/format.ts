@@ -11,7 +11,7 @@ export function relativeTime(timestamp: number, now: number = Date.now()): strin
   if (days < 7) return `${days} days ago`;
   const date = new Date(timestamp);
   const sameYear = date.getFullYear() === new Date(now).getFullYear();
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString("en", {
     month: "short",
     day: "numeric",
     year: sameYear ? undefined : "numeric",

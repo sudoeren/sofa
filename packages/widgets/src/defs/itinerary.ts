@@ -98,7 +98,7 @@ export function cleanDate(value: unknown): string {
 }
 
 /** "Fri, 12 Jun" style text for a YYYY-MM-DD date; "" when the date is not valid. */
-export function formatDayDate(value: string, locale?: string): string {
+export function formatDayDate(value: string, locale = "en"): string {
   const clean = cleanDate(value);
   if (!clean) return "";
   const [y, m, d] = clean.split("-").map(Number);
