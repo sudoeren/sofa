@@ -1,8 +1,9 @@
 import type { MemberInfo, ServerConfig, UserAi } from "@sofa/shared";
-import { Check, Eye, EyeOff, Server } from "lucide-react";
+import { Check, Download, Eye, EyeOff, Server } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { Avatar } from "../components/Avatar";
 import { Dialog } from "../components/Dialog";
+import { Spinner } from "../components/Spinner";
 import {
   cleanName,
   clearAiSettings,
@@ -16,6 +17,10 @@ type Props = {
   config: ServerConfig | null;
   onRename: (name: string) => void;
   onClose: () => void;
+  /** downloads the space as a .sofa.json file */
+  onDownload?: () => void;
+  downloadBusy?: boolean;
+  downloadError?: string;
 };
 
 const MODEL_HINT: Record<UserAi["provider"], string> = {
@@ -36,7 +41,15 @@ const KEY_PLACEHOLDERS: Record<UserAi["provider"], string> = {
   openrouter: "sk-or-...",
 };
 
-export function SettingsDialog({ me, config, onRename, onClose }: Props) {
+export function SettingsDialog({
+  me,
+  config,
+  onRename,
+  onClose,
+  onDownload,
+  downloadBusy,
+  downloadError,
+}: Props) {
   const stored = loadAiSettings();
   const [name, setName] = useState(me.name);
   const [provider, setProvider] = useState<UserAi["provider"]>(stored?.provider ?? "anthropic");
@@ -215,6 +228,27 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
           </button>
         </div>
       </form>
+
+      {onDownload ? (
+        <section className="settings-section">
+          <h3 className="settings-heading">This space</h3>
+          <p className="settings-honest">
+            Download the tools, their data, notes and links as a .sofa.json file. Uploaded files are
+            not included. Import the file on any Sofa server to keep going there.
+          </p>
+          {downloadError ? (
+            <p className="form-error" role="alert">
+              {downloadError}
+            </p>
+          ) : null}
+          <div className="settings-actions settings-actions-start">
+            <button type="button" className="btn" onClick={onDownload} disabled={downloadBusy}>
+              {downloadBusy ? <Spinner /> : <Download size={15} aria-hidden="true" />}
+              <span>Download space</span>
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <p className="settings-notice" role="status" aria-live="polite">
         {notice ? (

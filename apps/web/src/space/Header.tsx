@@ -1,13 +1,13 @@
 import { LIMITS, type MemberInfo } from "@sofa/shared";
 import clsx from "clsx";
-import { Check, Link2, Lock, PanelRight, Plus, Settings } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Lock, PanelRight, Plus, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar } from "../components/Avatar";
 import { Wordmark } from "../components/Brand";
 import { InlineEdit } from "../components/InlineEdit";
 import { ThemeToggle } from "../components/ThemeToggle";
 import type { ConnectionStatus } from "../lib/space";
+import { InvitePopover } from "./InvitePopover";
 
 const MAX_AVATARS = 5;
 
@@ -22,6 +22,8 @@ type Props = {
   onTogglePanel: () => void;
   onOpenSettings: () => void;
   onOpenGallery: () => void;
+  /** the member copied or shared the invite link */
+  onInvited?: () => void;
 };
 
 const STATUS_LABEL: Record<ConnectionStatus, string> = {
@@ -29,29 +31,6 @@ const STATUS_LABEL: Record<ConnectionStatus, string> = {
   connecting: "Connecting",
   disconnected: "Offline",
 };
-
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    // older browsers and non-secure origins (a LAN address over http)
-    try {
-      const area = document.createElement("textarea");
-      area.value = text;
-      area.setAttribute("readonly", "");
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.appendChild(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
 
 export function Header({
   title,
@@ -64,18 +43,8 @@ export function Header({
   onTogglePanel,
   onOpenSettings,
   onOpenGallery,
+  onInvited,
 }: Props) {
-  const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const invite = async () => {
-    const ok = await copyText(window.location.href);
-    setCopied(ok ? "copied" : "failed");
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setCopied("idle"), 2400);
-  };
-
   const shown = members.slice(0, MAX_AVATARS);
   const hidden = members.slice(MAX_AVATARS);
 
@@ -146,32 +115,7 @@ export function Header({
           <span className="hide-narrow">Add tool</span>
         </button>
 
-        <button
-          type="button"
-          className={clsx("btn btn-primary invite", copied === "copied" && "is-done")}
-          onClick={invite}
-          aria-label="Invite: copy the link to this space"
-        >
-          {copied === "copied" ? (
-            <Check size={16} aria-hidden="true" />
-          ) : (
-            <Link2 size={16} aria-hidden="true" />
-          )}
-          <span className="invite-label">
-            {copied === "copied"
-              ? "Link copied"
-              : copied === "failed"
-                ? "Copy the address bar"
-                : "Invite"}
-          </span>
-        </button>
-        <span className="sr-only" role="status" aria-live="polite">
-          {copied === "copied"
-            ? "Link copied to the clipboard"
-            : copied === "failed"
-              ? "Could not copy. Copy the address from the address bar instead."
-              : ""}
-        </span>
+        <InvitePopover title={title} locked={locked} onInvited={onInvited} />
 
         <ThemeToggle />
         <button

@@ -1,6 +1,7 @@
 import type { ServerConfig, SpaceInfo, TemplateInfo } from "@sofa/shared";
 import { CloudOff, Plus, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { DemoNotice } from "../components/DemoNotice";
 import { Dialog } from "../components/Dialog";
 import { Spinner } from "../components/Spinner";
 import { applyTemplate, getConfig } from "../lib/api";
@@ -8,7 +9,9 @@ import { useSpace } from "../lib/space";
 import { loadAiSettings, subscribeAiSettings } from "../lib/storage";
 import { useTheme } from "../lib/theme";
 import { setSpaceTitle } from "../lib/tools";
+import { downloadSpace } from "../lib/transfer";
 import { useChat, useMaterials, useSpaceTitle, useTools } from "../lib/yhooks";
+import { GettingStarted, useOnboarding } from "./GettingStarted";
 import { Header } from "./Header";
 import { PromptBar } from "./PromptBar";
 import { SettingsDialog } from "./SettingsDialog";
@@ -44,6 +47,12 @@ export function SpaceScreen({ info, onRename }: Props) {
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [templateBusy, setTemplateBusy] = useState<string | null>(null);
   const [templateError, setTemplateError] = useState("");
+  const [download, setDownload] = useState<{ busy: boolean; error: string }>({
+    busy: false,
+    error: "",
+  });
+  const onboarding = useOnboarding(spaceId);
+  const { mark } = onboarding;
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   // tool ids that existed when this member last sent a request; the first new one is shown
@@ -65,6 +74,25 @@ export function SpaceScreen({ info, onRename }: Props) {
       });
     return () => controller.abort();
   }, []);
+
+  // someone else is here: the invite step is done whoever sent the link
+  const othersPresent = members.length > 1;
+  useEffect(() => {
+    if (othersPresent) mark("invite");
+  }, [othersPresent, mark]);
+
+  const startDownload = useCallback(async () => {
+    setDownload({ busy: true, error: "" });
+    try {
+      await downloadSpace(spaceId, title);
+      setDownload({ busy: false, error: "" });
+    } catch (cause) {
+      setDownload({
+        busy: false,
+        error: cause instanceof Error ? cause.message : "Could not download the space.",
+      });
+    }
+  }, [spaceId, title]);
 
   const target = useMemo(() => {
     const tool = targetId ? tools.find((item) => item.id === targetId) : undefined;
@@ -147,6 +175,12 @@ export function SpaceScreen({ info, onRename }: Props) {
 
   return (
     <div className="space">
+      <DemoNotice
+        config={config}
+        onDownload={startDownload}
+        downloadBusy={download.busy}
+        downloadError={download.error}
+      />
       <Header
         title={title}
         locked={info.locked}
@@ -158,6 +192,7 @@ export function SpaceScreen({ info, onRename }: Props) {
         onTogglePanel={() => setPanelOpen((open) => !open)}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenGallery={() => setGalleryOpen(true)}
+        onInvited={() => mark("invite")}
       />
 
       {status !== "connected" ? (
@@ -178,6 +213,7 @@ export function SpaceScreen({ info, onRename }: Props) {
       <div className="space-body">
         <main className="space-main">
           <div className="space-scroll" ref={scrollRef}>
+            <GettingStarted state={onboarding.state} onDismiss={onboarding.dismiss} />
             {tools.length === 0 ? (
               <section className="empty" aria-labelledby="empty-title">
                 <span className="empty-mark" aria-hidden="true">
@@ -261,6 +297,7 @@ export function SpaceScreen({ info, onRename }: Props) {
             onOpenGallery={() => setGalleryOpen(true)}
             onSent={() => {
               setPanelTab("conversation");
+              mark(targetId ? "change" : "ask");
               if (!targetId) knownToolsRef.current = new Set(tools.map((tool) => tool.id));
             }}
             inputRef={promptRef}
@@ -318,6 +355,9 @@ export function SpaceScreen({ info, onRename }: Props) {
           me={me}
           config={config}
           onRename={onRename}
+          onDownload={startDownload}
+          downloadBusy={download.busy}
+          downloadError={download.error}
           onClose={() => setSettingsOpen(false)}
         />
       ) : null}

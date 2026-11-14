@@ -1,4 +1,4 @@
-import { colorFor, type MemberInfo, type UserAi } from "@sofa/shared";
+import { colorFor, type MemberInfo, type UserAi, type UserRef } from "@sofa/shared";
 import { nanoid } from "nanoid";
 
 /** Everything the app keeps in this browser. All access is guarded: storage can be blocked. */
@@ -61,6 +61,24 @@ export function saveIdentity(name: string): MemberInfo {
   write(IDENTITY_KEY, JSON.stringify({ id, name: cleaned }));
   return { id, name: cleaned, color: colorFor(id) };
 }
+
+/**
+ * A user reference for requests made before a name was chosen (opening an example from the
+ * landing page). Keeps a stable id in storage so the name chosen later joins it.
+ */
+export function identityRef(): UserRef {
+  const known = loadIdentity();
+  if (known) return { id: known.id, name: known.name };
+  const existing = readJson(IDENTITY_KEY) as { id?: unknown } | null;
+  if (existing && typeof existing.id === "string" && existing.id) {
+    return { id: existing.id, name: GUEST_NAME };
+  }
+  const id = nanoid(16);
+  write(IDENTITY_KEY, JSON.stringify({ id }));
+  return { id, name: GUEST_NAME };
+}
+
+const GUEST_NAME = "Guest";
 
 /* tokens of locked spaces */
 
@@ -141,4 +159,47 @@ export function loadStoredTheme(): ThemePreference | null {
 
 export function saveTheme(theme: ThemePreference): void {
   write(THEME_KEY, theme);
+}
+
+/* first-run checklist, per space */
+
+export type OnboardingSteps = { invite: boolean; ask: boolean; change: boolean };
+export type Onboarding = OnboardingSteps & { dismissed: boolean };
+
+const onboardingKey = (spaceId: string) => `sofa:onboarding:${spaceId}`;
+
+export function loadOnboarding(spaceId: string): Onboarding {
+  const value = readJson(onboardingKey(spaceId)) as Partial<
+    Record<keyof Onboarding, unknown>
+  > | null;
+  return {
+    invite: value?.invite === true,
+    ask: value?.ask === true,
+    change: value?.change === true,
+    dismissed: value?.dismissed === true,
+  };
+}
+
+export function saveOnboarding(spaceId: string, value: Onboarding): void {
+  write(onboardingKey(spaceId), JSON.stringify(value));
+}
+
+/* demo notice, hidden for the rest of the browser session once dismissed */
+
+const DEMO_NOTICE_KEY = "sofa:demo-notice-hidden";
+
+export function isDemoNoticeHidden(): boolean {
+  try {
+    return window.sessionStorage.getItem(DEMO_NOTICE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function hideDemoNotice(): void {
+  try {
+    window.sessionStorage.setItem(DEMO_NOTICE_KEY, "1");
+  } catch {
+    // storage blocked: the notice stays hidden until the page reloads
+  }
 }

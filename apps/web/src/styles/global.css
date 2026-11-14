@@ -656,3 +656,102 @@ textarea.input {
   margin-top: 0;
   padding: 0;
 }
+
+/* demo notice: a quiet strip at the very top on a public demo server */
+.demo-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  padding: 5px 8px 5px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.demo-notice-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 14px;
+  row-gap: 2px;
+  min-width: 0;
+  text-align: center;
+}
+.demo-notice-links {
+  display: inline-flex;
+  gap: 14px;
+}
+.demo-notice-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-weight: 550;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--text) 35%, transparent);
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  border-radius: 3px;
+}
+.demo-notice-link:hover {
+  text-decoration-color: currentColor;
+}
+.demo-notice-link:disabled {
+  color: var(--muted);
+  cursor: progress;
+}
+.demo-notice-error {
+  color: var(--danger);
+}
+.demo-notice-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+}
+.demo-notice-close:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* popover: a small panel anchored to its trigger */
+.popover-root {
+  position: relative;
+  flex: none;
+}
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-pop);
+  animation: rise-in 0.12s ease;
+}
+.popover:focus {
+  outline: none;
+}
+
+/* QR code: modules in currentColor, so it follows the theme */
+.qr {
+  display: block;
+  color: var(--text);
+}

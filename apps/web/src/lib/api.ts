@@ -5,6 +5,7 @@ import type {
   GenerateResponse,
   LinkPreview,
   ServerConfig,
+  SpaceExport,
   SpaceInfo,
   UnlockResponse,
   UserRef,
@@ -140,4 +141,19 @@ export function fileUrl(fileId: string, spaceId: string): string {
   const token = getSpaceToken(spaceId);
   const base = `/api/files/${enc(fileId)}`;
   return token ? `${base}?t=${enc(token)}` : base;
+}
+
+/** Create a new space from one of the server's examples. */
+export function openExample(exampleId: string, user: UserRef): Promise<SpaceInfo> {
+  return request<SpaceInfo>(`/examples/${enc(exampleId)}`, { json: { user } });
+}
+
+/** The whole space as an export file (tools, state, materials, conversation). */
+export function exportSpace(spaceId: string): Promise<SpaceExport> {
+  return request<SpaceExport>(`/spaces/${enc(spaceId)}/export`, { spaceId });
+}
+
+/** Create a new space from an export file. */
+export function importSpace(data: SpaceExport): Promise<SpaceInfo> {
+  return request<SpaceInfo>("/import", { json: data });
 }

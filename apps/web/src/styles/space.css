@@ -1206,3 +1206,147 @@
     opacity: 1;
   }
 }
+
+/* invite popover */
+.invite.is-open {
+  filter: brightness(1.07);
+}
+.invite-title {
+  font-size: 15px;
+  font-weight: 650;
+}
+.invite-text {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.invite-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.invite-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+}
+.invite-share {
+  width: 100%;
+  margin-top: 8px;
+}
+.invite-note {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.invite-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+/* phones join by link or share sheet; the code is for showing a desktop screen to a phone */
+@media (hover: none) and (pointer: coarse) {
+  .invite-qr {
+    display: none;
+  }
+}
+@media (max-width: 720px) {
+  /* anchor to the header instead of the button, so the panel spans the screen below it */
+  .space-header .popover-root {
+    position: static;
+  }
+  .invite-pop {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* getting started checklist, inline at the top of the tool area */
+.onboard {
+  max-width: 1680px;
+  margin: 0 auto 18px;
+  padding: 12px 10px 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: opacity 0.3s ease;
+}
+.space-scroll > .onboard:has(+ .empty) {
+  max-width: 880px;
+  margin-bottom: 0;
+}
+.onboard-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.onboard-title {
+  font-size: 14px;
+  font-weight: 650;
+}
+.onboard-count {
+  color: var(--muted);
+  font-size: 13px;
+}
+.onboard-close {
+  margin-left: auto;
+}
+.onboard-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px 20px;
+  margin-top: 8px;
+  padding: 0;
+  list-style: none;
+}
+.onboard-step {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: start;
+  align-content: start;
+  font-size: 14px;
+  line-height: 20px;
+}
+.onboard-icon {
+  margin-top: 2px;
+  color: var(--muted);
+}
+.onboard-step.is-done .onboard-icon {
+  color: var(--text);
+}
+.onboard-step.is-done .onboard-label {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+.onboard-label {
+  font-weight: 550;
+}
+.onboard-hint {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+@media (max-width: 720px) {
+  .onboard {
+    margin-bottom: 14px;
+  }
+  .onboard-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .onboard-hint {
+    display: none;
+  }
+}
+
+.settings-actions-start {
+  justify-content: flex-start;
+}

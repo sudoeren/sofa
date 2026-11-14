@@ -129,7 +129,10 @@ export const spaceExportSchema = z.object({
   title: z.string().trim().min(1).max(LIMITS.titleLength),
   exportedAt: z.number(),
   /** Y.encodeStateAsUpdate of the space document, base64 */
-  doc: z.string().min(1).max(20 * 1024 * 1024),
+  doc: z
+    .string()
+    .min(1)
+    .max(20 * 1024 * 1024),
 });
 export type SpaceExport = z.infer<typeof spaceExportSchema>;
 export const importBody = spaceExportSchema.extend({

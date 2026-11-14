@@ -1,14 +1,16 @@
-import { LIMITS } from "@sofa/shared";
+import { LIMITS, type ServerConfig } from "@sofa/shared";
 import { ArrowRight, Check, Copy, Lock } from "lucide-react";
-import { type FormEvent, useId, useRef, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wordmark } from "../components/Brand";
+import { DemoNotice } from "../components/DemoNotice";
 import { Spinner } from "../components/Spinner";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { createSpace } from "../lib/api";
+import { createSpace, getConfig } from "../lib/api";
 import { setSpaceToken } from "../lib/storage";
 import { DemoSpace } from "./landing/DemoSpace";
 import { Showcase } from "./landing/Showcase";
+import { Examples, ImportSpace } from "./landing/StartOptions";
 import "../styles/landing.css";
 
 export const REPO_URL = "https://github.com/sudoeren/sofa";
@@ -46,6 +48,17 @@ export function Landing() {
   const titleId = useId();
   const passwordId = useId();
   const errorId = useId();
+  const [config, setConfig] = useState<ServerConfig | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getConfig(controller.signal)
+      .then(setConfig)
+      .catch(() => {
+        // no examples and no demo notice; creating a space still works
+      });
+    return () => controller.abort();
+  }, []);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -149,6 +162,7 @@ export function Landing() {
 
   return (
     <div className="lp">
+      <DemoNotice config={config} />
       <header className="lp-nav">
         <a className="brand" href="/" aria-label="Sofa home">
           <Wordmark />
@@ -175,6 +189,8 @@ export function Landing() {
             small game. It appears for everyone at once, and asking again changes it.
           </p>
           {startForm}
+          <Examples examples={config?.examples ?? []} />
+          <ImportSpace />
         </section>
 
         <section className="lp-demo" aria-label="Preview">
