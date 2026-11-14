@@ -15,12 +15,17 @@ export function tempDir(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "sofra-test-"));
 }
 
-export function testConfig(dataDir: string, webDir = path.join(dataDir, "no-web")): Config {
+export function testConfig(
+  dataDir: string,
+  webDir = path.join(dataDir, "no-web"),
+  spaceTtlHours = 0,
+): Config {
   return {
     port: 0,
     dataDir,
     publicUrl: null,
     webDir,
+    spaceTtlHours,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null },
   };
 }

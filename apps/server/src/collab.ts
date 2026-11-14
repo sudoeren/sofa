@@ -14,6 +14,8 @@ export type Collab = {
   attach(server: HttpServer): void;
   /** Persist every loaded document and close all sockets. */
   close(): Promise<void>;
+  /** true while a space's document is open (connected members or a server write) */
+  isLoaded(spaceId: string): boolean;
 };
 
 export type CollabOptions = {
@@ -171,6 +173,9 @@ export function createCollab(options: CollabOptions): Collab {
 
   return {
     docs,
+    isLoaded(spaceId) {
+      return hocuspocus.documents.has(spaceId) || hocuspocus.loadingDocuments.has(spaceId);
+    },
     attach(server) {
       server.on("upgrade", onUpgrade);
     },

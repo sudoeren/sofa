@@ -18,7 +18,10 @@ async function main() {
   const port = await server.listen();
   const info = server.ai.enabled ? server.ai.info() : null;
   const aiLabel = info ? `${info.provider} (${info.model})` : "templates only";
-  console.log(`[sofra] listening on port ${port}, data dir ${config.dataDir}, AI: ${aiLabel}`);
+  const ttl = config.spaceTtlHours > 0 ? `, spaces expire after ${config.spaceTtlHours} h` : "";
+  console.log(
+    `[sofra] listening on port ${port}, data dir ${config.dataDir}, AI: ${aiLabel}${ttl}`,
+  );
 
   let stopping = false;
   const stop = (signal: string) => {

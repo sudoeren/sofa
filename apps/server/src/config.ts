@@ -8,6 +8,8 @@ export type Config = {
   publicUrl: string | null;
   /** directory with the built web app, served when it exists */
   webDir: string;
+  /** delete spaces untouched for this many hours; 0 keeps them forever */
+  spaceTtlHours: number;
   ai: {
     provider: AiProvider;
     model: string;
@@ -60,6 +62,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port: Number(env.PORT) || 8787,
     dataDir: path.resolve(env.SOFRA_DATA_DIR || "./data"),
     publicUrl: env.SOFRA_PUBLIC_URL?.replace(/\/+$/, "") || null,
+    spaceTtlHours: Math.max(0, Number(env.SOFRA_SPACE_TTL_HOURS) || 0),
     webDir: path.resolve(env.SOFRA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
     ai: {
       provider,

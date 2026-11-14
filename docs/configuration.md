@@ -5,11 +5,12 @@ Sofra reads its settings from environment variables. In development it also load
 
 ## Server
 
-| Variable         | Default                                | Meaning                                                                  |
-| ---------------- | -------------------------------------- | ------------------------------------------------------------------------ |
-| `PORT`           | `8787`                                 | Port for the web app, the API and the collaboration socket.              |
-| `SOFRA_DATA_DIR` | `./data` (`/data` in the Docker image) | Where the SQLite database, the token secret and uploaded files are kept. |
-| `SOFRA_WEB_DIR`  | `apps/web/dist` next to the server     | Built web app to serve. The Docker image sets it.                        |
+| Variable                | Default                                | Meaning                                                                                                                                                            |
+| ----------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PORT`                  | `8787`                                 | Port for the web app, the API and the collaboration socket.                                                                                                        |
+| `SOFRA_DATA_DIR`        | `./data` (`/data` in the Docker image) | Where the SQLite database, the token secret and uploaded files are kept.                                                                                           |
+| `SOFRA_WEB_DIR`         | `apps/web/dist` next to the server     | Built web app to serve. The Docker image sets it.                                                                                                                  |
+| `SOFRA_SPACE_TTL_HOURS` | `0` (never)                            | Delete spaces, with their files, after this many hours without changes. Checked hourly; a space open in someone's browser is kept. Useful for public demo servers. |
 
 ## AI
 

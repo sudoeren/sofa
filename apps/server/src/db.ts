@@ -28,6 +28,10 @@ export type Db = {
   insertFile(file: FileRow): void;
   getFile(id: string): FileRow | null;
   countFiles(spaceId: string): number;
+  /** spaces created and last saved before `before` (ms) */
+  staleSpaces(before: number): string[];
+  /** delete a space with its document and file rows; returns the file paths to remove */
+  deleteSpace(spaceId: string): string[];
   close(): void;
 };
 
@@ -93,6 +97,12 @@ export function openDb(dataDir: string): Db {
     "SELECT id, space_id, name, mime, size, path, created_at FROM files WHERE id = ?",
   );
   const countFiles = db.prepare("SELECT COUNT(*) AS n FROM files WHERE space_id = ?");
+  const selectStale = db.prepare(
+    `SELECT s.id FROM spaces s LEFT JOIN docs d ON d.space_id = s.id
+     WHERE s.created_at < ? AND (d.updated_at IS NULL OR d.updated_at < ?)`,
+  );
+  const selectFilePaths = db.prepare("SELECT path FROM files WHERE space_id = ?");
+  const deleteSpaceRow = db.prepare("DELETE FROM spaces WHERE id = ?");
 
   let closed = false;
 
@@ -144,6 +154,15 @@ export function openDb(dataDir: string): Db {
     countFiles(spaceId) {
       const row = countFiles.get(spaceId) as { n: number } | undefined;
       return Number(row?.n ?? 0);
+    },
+    staleSpaces(before) {
+      return (selectStale.all(before, before) as { id: string }[]).map((row) => row.id);
+    },
+    deleteSpace(spaceId) {
+      const paths = (selectFilePaths.all(spaceId) as { path: string }[]).map((row) => row.path);
+      // docs and files rows go with it (ON DELETE CASCADE)
+      deleteSpaceRow.run(spaceId);
+      return paths;
     },
     close() {
       if (closed) return;

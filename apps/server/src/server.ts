@@ -1,3 +1,4 @@
+import fsp from "node:fs/promises";
 import { createServer as createHttpServer, type Server as HttpServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { getRequestListener } from "@hono/node-server";
@@ -19,6 +20,8 @@ export type ServerParts = {
   rateLimits?: Partial<RateLimits>;
   /** delay before a changed document is written to the database */
   collabDebounceMs?: number;
+  /** how often expired spaces are looked for (default one hour) */
+  sweepIntervalMs?: number;
 };
 
 export type SofraServer = {
@@ -32,6 +35,8 @@ export type SofraServer = {
   listen(port?: number, host?: string): Promise<number>;
   /** Stop accepting connections, write every open document and close the database. */
   close(): Promise<void>;
+  /** delete expired spaces now; returns how many were removed */
+  sweep(): Promise<number>;
 };
 
 /** Wire storage, collab, files, AI and the REST app onto one HTTP server. */
@@ -59,6 +64,29 @@ export function buildServer(config: Config, parts: ServerParts): SofraServer {
   http.headersTimeout = 20_000;
   collab.attach(http);
 
+  // Expired spaces: untouched for longer than the TTL and not open right now.
+  const sweep = async () => {
+    if (config.spaceTtlHours <= 0) return 0;
+    const before = Date.now() - config.spaceTtlHours * 3_600_000;
+    let removed = 0;
+    for (const spaceId of db.staleSpaces(before)) {
+      if (collab.isLoaded(spaceId)) continue;
+      const paths = db.deleteSpace(spaceId);
+      await Promise.all(paths.map((file) => fsp.rm(file, { force: true })));
+      removed++;
+    }
+    if (removed > 0) console.log(`[sofra] removed ${removed} expired space(s)`);
+    return removed;
+  };
+  const runSweep = () => {
+    sweep().catch((error) => console.error("[sofra] cleanup failed:", error));
+  };
+  const sweepTimer =
+    config.spaceTtlHours > 0
+      ? setInterval(runSweep, parts.sweepIntervalMs ?? 3_600_000)
+      : undefined;
+  sweepTimer?.unref();
+
   let closing: Promise<void> | null = null;
 
   return {
@@ -77,7 +105,9 @@ export function buildServer(config: Config, parts: ServerParts): SofraServer {
         });
       });
     },
+    sweep,
     close() {
+      if (sweepTimer) clearInterval(sweepTimer);
       closing ??= (async () => {
         const stopped = new Promise<void>((resolve) => {
           if (http.listening) http.close(() => resolve());

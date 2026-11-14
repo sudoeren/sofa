@@ -69,6 +69,7 @@ export function testConfig(ai: Partial<Config["ai"]> = {}): Config {
     dataDir: "/tmp/none",
     publicUrl: null,
     webDir: "/tmp/none",
+    spaceTtlHours: 0,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null, ...ai },
   };
 }
