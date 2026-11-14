@@ -339,6 +339,9 @@
 
   window.addEventListener("error", function (event) {
     var message = (event && event.message) || "Script error";
+    // Browsers report this when a resize observer callback changes layout again. It is
+    // harmless (the next frame delivers the notifications) and not the tool's fault.
+    if (/ResizeObserver loop/.test(message)) return;
     if (event && event.lineno) message += " (line " + event.lineno + ")";
     report(message);
   });

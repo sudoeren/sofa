@@ -243,6 +243,10 @@ describe("frame SDK", () => {
     frame.connect();
     frame.init();
     frame.fire("error", { message: "x is not defined", lineno: 12 });
+    // the browser's harmless resize observer notice is not shown as a tool error
+    frame.fire("error", {
+      message: "ResizeObserver loop completed with undelivered notifications.",
+    });
     frame.fire("unhandledrejection", { reason: new Error("nope") });
     frame.sofa.state.subscribe(() => {
       throw new Error("render failed");
