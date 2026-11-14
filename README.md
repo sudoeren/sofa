@@ -53,15 +53,16 @@ Put it behind a reverse proxy for anything beyond your own network:
 
 ## AI setup
 
-Sofra works with three kinds of providers, configured on the server:
+Sofra works with four kinds of providers, configured on the server:
 
 | Provider                                                             | Variables                                                                                                 |
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Anthropic                                                            | `ANTHROPIC_API_KEY`, optional `SOFRA_AI_MODEL` (default `claude-fable-5-2`)                               |
 | OpenAI                                                               | `OPENAI_API_KEY`, optional `SOFRA_AI_MODEL` (default `gpt-5`)                                             |
-| Any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM, OpenRouter) | `SOFRA_AI_PROVIDER=openai-compatible`, `SOFRA_AI_BASE_URL`, optional `SOFRA_AI_API_KEY`, `SOFRA_AI_MODEL` |
+| OpenRouter | `OPENROUTER_API_KEY`, optional `SOFRA_AI_MODEL` (default `anthropic/claude-fable-5.2`) |
+| Any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM) | `SOFRA_AI_PROVIDER=openai-compatible`, `SOFRA_AI_BASE_URL`, optional `SOFRA_AI_API_KEY`, `SOFRA_AI_MODEL` |
 
-Members can also bring their own Anthropic or OpenAI key. It is stored only in their
+Members can also bring their own Anthropic, OpenAI or OpenRouter key. It is stored only in their
 browser and sent with each request they make; the server uses it for that request and
 does not store or log it. A member's key takes precedence over the server's.
 

@@ -89,7 +89,9 @@ export function loadAiSettings(): UserAi | null {
     try {
       const parsed = JSON.parse(raw) as { provider?: unknown; apiKey?: unknown; model?: unknown };
       if (
-        (parsed.provider === "anthropic" || parsed.provider === "openai") &&
+        (parsed.provider === "anthropic" ||
+          parsed.provider === "openai" ||
+          parsed.provider === "openrouter") &&
         typeof parsed.apiKey === "string" &&
         parsed.apiKey.length >= 8
       ) {

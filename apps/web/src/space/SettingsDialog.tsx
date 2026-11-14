@@ -21,6 +21,19 @@ type Props = {
 const MODEL_HINT: Record<UserAi["provider"], string> = {
   anthropic: "Leave empty for the server default",
   openai: "Leave empty for the server default",
+  openrouter: "For example anthropic/claude-fable-5.2; empty for the default",
+};
+
+const PROVIDER_LABELS: Record<UserAi["provider"], string> = {
+  anthropic: "Anthropic",
+  openai: "OpenAI",
+  openrouter: "OpenRouter",
+};
+
+const KEY_PLACEHOLDERS: Record<UserAi["provider"], string> = {
+  anthropic: "sk-ant-...",
+  openai: "sk-...",
+  openrouter: "sk-or-...",
 };
 
 export function SettingsDialog({ me, config, onRename, onClose }: Props) {
@@ -116,7 +129,7 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
         <fieldset className="segmented">
           <legend className="field-label">Provider</legend>
           <div className="segmented-options">
-            {(["anthropic", "openai"] as const).map((option) => (
+            {(["anthropic", "openai", "openrouter"] as const).map((option) => (
               <label key={option} className="segmented-option">
                 <input
                   type="radio"
@@ -125,7 +138,7 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
                   checked={provider === option}
                   onChange={() => setProvider(option)}
                 />
-                <span>{option === "anthropic" ? "Anthropic" : "OpenAI"}</span>
+                <span>{PROVIDER_LABELS[option]}</span>
               </label>
             ))}
           </div>
@@ -141,7 +154,7 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
             type={showKey ? "text" : "password"}
             value={apiKey}
             onChange={(event) => setApiKey(event.target.value)}
-            placeholder={provider === "anthropic" ? "sk-ant-..." : "sk-..."}
+            placeholder={KEY_PLACEHOLDERS[provider]}
             autoComplete="off"
             spellCheck={false}
             maxLength={400}

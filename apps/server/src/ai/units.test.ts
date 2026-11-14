@@ -1,5 +1,6 @@
 import type { Material } from "@sofra/shared";
-import { describe, expect, it } from "vitest";
+import { generateText } from "ai";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildRequestMessage,
   type ContextBudget,
@@ -230,6 +231,48 @@ describe("provider helpers", () => {
       baseUrl: null,
     });
     expect(resolveProvider(testConfig(), undefined)).toBeNull();
+    expect(
+      resolveProvider(testConfig(), { provider: "openrouter", apiKey: "sk-or-v1-12345678" }),
+    ).toMatchObject({
+      source: "member",
+      provider: "openrouter",
+      model: "anthropic/claude-fable-5.2",
+    });
+  });
+
+  it("sends OpenRouter requests to its API with the key and attribution headers", async () => {
+    const calls: { url: string; headers: Headers }[] = [];
+    vi.stubGlobal("fetch", async (url: string, init: RequestInit) => {
+      calls.push({ url: String(url), headers: new Headers(init.headers) });
+      return new Response(
+        JSON.stringify({
+          id: "r1",
+          created: 1,
+          model: "anthropic/claude-fable-5.2",
+          choices: [
+            { index: 0, message: { role: "assistant", content: "ok" }, finish_reason: "stop" },
+          ],
+          usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    });
+    try {
+      const model = createLanguageModel({
+        source: "member",
+        provider: "openrouter",
+        model: "anthropic/claude-fable-5.2",
+        apiKey: "sk-or-v1-12345678",
+        baseUrl: null,
+      });
+      const result = await generateText({ model, prompt: "hi" });
+      expect(result.text).toBe("ok");
+      expect(calls[0]?.url).toBe("https://openrouter.ai/api/v1/chat/completions");
+      expect(calls[0]?.headers.get("authorization")).toBe("Bearer sk-or-v1-12345678");
+      expect(calls[0]?.headers.get("x-title")).toBe("Sofra");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("builds a client for each provider without any network call", () => {
@@ -237,6 +280,7 @@ describe("provider helpers", () => {
     const ids = [
       createLanguageModel({ ...base, provider: "anthropic", model: "claude-test" }),
       createLanguageModel({ ...base, provider: "openai", model: "gpt-test" }),
+      createLanguageModel({ ...base, provider: "openrouter", model: "openai/gpt-5" }),
       createLanguageModel({
         ...base,
         provider: "openai-compatible",
@@ -245,7 +289,7 @@ describe("provider helpers", () => {
         baseUrl: "http://localhost:11434/v1",
       }),
     ].map((model) => (typeof model === "string" ? model : model.modelId));
-    expect(ids).toEqual(["claude-test", "gpt-test", "local"]);
+    expect(ids).toEqual(["claude-test", "gpt-test", "openai/gpt-5", "local"]);
     expect(() =>
       createLanguageModel({ ...base, provider: "openai-compatible", model: "local" }),
     ).toThrow("base URL");

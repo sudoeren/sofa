@@ -76,9 +76,9 @@ rewrites it as HTML that reads the widget's documented state keys.
 
 ## AI keys
 
-The host can configure a provider in the environment (Anthropic, OpenAI, or any
-OpenAI-compatible endpoint such as Ollama). A member can also save their own Anthropic or
-OpenAI key in their browser; it is sent in the body of each generate request (`ai`), used
+The host can configure a provider in the environment (Anthropic, OpenAI, OpenRouter, or
+any OpenAI-compatible endpoint such as Ollama). A member can also save their own Anthropic,
+OpenAI or OpenRouter key in their browser; it is sent in the body of each generate request (`ai`), used
 for that request only, never stored or logged. A member key takes precedence. With neither,
 requests are matched against starter templates by keyword.
 

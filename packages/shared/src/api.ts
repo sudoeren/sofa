@@ -69,11 +69,14 @@ export type ServerConfig = {
  * here; custom base URLs can only be set by the host through the environment.
  */
 export const userAiSchema = z.object({
-  provider: z.enum(["anthropic", "openai"]),
+  provider: z.enum(["anthropic", "openai", "openrouter"]),
   apiKey: z.string().min(8).max(400),
   model: z.string().min(1).max(100).optional(),
 });
 export type UserAi = z.infer<typeof userAiSchema>;
+
+/** OpenRouter speaks the OpenAI API at this address; used for server and member keys. */
+export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
 export const generateBody = z.object({
   prompt: z.string().trim().min(1).max(LIMITS.promptLength),

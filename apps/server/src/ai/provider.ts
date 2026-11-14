@@ -1,7 +1,7 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import type { UserAi } from "@sofra/shared";
+import { OPENROUTER_BASE_URL, type UserAi } from "@sofra/shared";
 import type { LanguageModel } from "ai";
 import type { Config } from "../config";
 import type { AiInfo } from "../types";
@@ -12,7 +12,7 @@ import type { AiInfo } from "../types";
  */
 export type ProviderChoice = {
   source: "member" | "server";
-  provider: "anthropic" | "openai" | "openai-compatible";
+  provider: "anthropic" | "openai" | "openrouter" | "openai-compatible";
   model: string;
   apiKey: string | null;
   baseUrl: string | null;
@@ -22,6 +22,7 @@ export type ProviderChoice = {
 const MEMBER_DEFAULT_MODELS = {
   anthropic: "claude-fable-5-2",
   openai: "gpt-5",
+  openrouter: "anthropic/claude-fable-5.2",
 } as const;
 
 export function serverInfo(config: Config): AiInfo | null {
@@ -58,6 +59,15 @@ export function createLanguageModel(choice: ProviderChoice): LanguageModel {
   }
   if (choice.provider === "openai") {
     return createOpenAI({ apiKey: choice.apiKey ?? undefined })(choice.model);
+  }
+  if (choice.provider === "openrouter") {
+    return createOpenAICompatible({
+      name: "openrouter",
+      baseURL: OPENROUTER_BASE_URL,
+      apiKey: choice.apiKey ?? undefined,
+      // Optional attribution headers OpenRouter reads for its app listing.
+      headers: { "HTTP-Referer": "https://github.com/sudoeren/sofra", "X-Title": "Sofra" },
+    })(choice.model);
   }
   if (!choice.baseUrl) throw new Error("The OpenAI-compatible provider has no base URL.");
   return createOpenAICompatible({
