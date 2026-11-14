@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,7 +15,9 @@ concurrency:
 
 jobs:
   check:
+    name: Lint, typecheck, test, build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -29,8 +32,10 @@ jobs:
       - run: pnpm build
 
   docker:
+    name: Docker image
     runs-on: ubuntu-latest
     needs: check
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -40,3 +45,52 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy demo
+    # Only for commits on master in this repository, once every check passed.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'sudoeren/sofra'
+    needs: [check, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: demo
+      url: https://sofra.erencakar.com
+    concurrency:
+      group: deploy-demo
+      cancel-in-progress: false
+    steps:
+      - name: Trigger the Coolify deployment and wait for it
+        env:
+          COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${COOLIFY_TOKEN:-}" ]; then
+            echo "COOLIFY_TOKEN is not set; skipping the deployment."
+            exit 0
+          fi
+          api="$COOLIFY_URL/api/v1"
+          auth="Authorization: Bearer $COOLIFY_TOKEN"
+          deployment=$(curl -fsS -X POST "$api/deploy?uuid=$COOLIFY_APP_UUID" -H "$auth" \
+            | jq -r '.deployments[0].deployment_uuid')
+          echo "Deployment $deployment queued"
+          for _ in $(seq 1 120); do
+            status=$(curl -fsS "$api/deployments/$deployment" -H "$auth" | jq -r '.status')
+            case "$status" in
+              finished) echo "Deployed"; break ;;
+              failed|cancelled-by-user) echo "::error::Deployment $status"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          [ "$status" = finished ] || { echo "::error::Deployment did not finish in time"; exit 1; }
+      - name: Check the live site
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 12); do
+            if curl -fsS https://sofra.erencakar.com/api/config > /dev/null; then echo "Live"; exit 0; fi
+            sleep 5
+          done
+          echo "::error::The demo did not answer after deploying"
+          exit 1

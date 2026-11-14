@@ -36,3 +36,23 @@ A built-in tool is a definition in `packages/widgets/src/defs/<type>.ts` (config
 guide for the model, starter, keywords) and a component in
 `apps/web/src/widgets/<Type>.tsx`, registered in both `index.ts` files. Store one state key
 per independently edited thing, and document every key in the guide.
+
+## Pull requests and releases
+
+Label pull requests so they land in the right section of the release notes:
+`feature`, `fix`, `breaking`, `security`, `documentation`, `dependencies`, or
+`skip-changelog`.
+
+Releases are cut from `master` by pushing a version tag:
+
+```sh
+git tag -a v0.2.0 -m "v0.2.0"
+git push origin v0.2.0
+```
+
+The release workflow runs the checks, publishes a multi-arch image to
+`ghcr.io/sudoeren/sofra` (`0.2.0`, `0.2` and `latest`) and creates the GitHub release with
+generated notes. Tags with a suffix such as `v0.2.0-rc.1` become pre-releases and do not
+move `latest`.
+
+Every push to `master` that passes CI also deploys the public demo.

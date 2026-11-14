@@ -1,0 +1,55 @@
+name: Bug report
+description: Something does not work as it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Create a space
+        2. Ask for ...
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - The public demo (sofra.erencakar.com)
+        - My own server (Docker)
+        - Local development
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.1.0 or a commit hash
+  - type: input
+    id: ai
+    attributes:
+      label: AI provider and model
+      placeholder: OpenRouter, deepseek/deepseek-v4.1-flash
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 145 on Linux, Safari on iPhone
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Server log lines or the browser console. Remove any API keys first.
+      render: text
+  - type: markdown
+    attributes:
+      value: Security problems go by email, not here. See SECURITY.md.
