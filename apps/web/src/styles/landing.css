@@ -2,8 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background:
-    radial-gradient(900px 420px at 85% -10%, var(--accent-soft), transparent 70%), var(--bg);
+  background: var(--bg);
 }
 .landing-top,
 .landing-main,
@@ -85,9 +84,7 @@
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 8px);
   background: var(--surface);
-  box-shadow:
-    var(--shadow),
-    0 30px 60px -30px rgb(120 60 20 / 28%);
+  box-shadow: none;
 }
 .create-title {
   font-size: 22px;
@@ -139,20 +136,13 @@
     border-color 0.14s ease;
 }
 .example-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
   box-shadow: var(--shadow);
 }
 .example-icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-bottom: 6px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--text);
+  margin-bottom: 10px;
 }
 .example-title {
   font-weight: 650;
@@ -174,18 +164,13 @@
   gap: 14px;
 }
 .how-step {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex: none;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
+  min-width: 18px;
+  color: var(--muted);
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  line-height: 1.6;
 }
 .how-list h3 {
   font-size: 16px;

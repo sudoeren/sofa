@@ -1,35 +1,40 @@
-/* Design tokens. Names are a contract: widgets and generated tools use them. */
+/* Design tokens. Names are a contract: widgets and generated tools use them.
+   Monochrome: neutral grays, the strongest color is the text color itself.
+   Red and green are kept only for meaning (errors, money owed and received). */
 :root {
   --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
-  --radius: 10px;
+  --radius: 8px;
   --radius-sm: 6px;
 
-  --bg: #f6f4ef;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f1eee7;
-  --text: #1f1d1a;
-  --muted: #6b665e;
-  --border: #e2ddd3;
-  --accent: #c2410c;
+  --surface-2: #f5f5f5;
+  --text: #0a0a0a;
+  --muted: #737373;
+  --border: #e5e5e5;
+  --accent: #0a0a0a;
   --accent-text: #ffffff;
-  --accent-soft: #fbe9df;
-  --danger: #b91c1c;
-  --ok: #15803d;
-  --shadow: 0 1px 2px rgb(31 29 26 / 6%), 0 4px 16px rgb(31 29 26 / 6%);
+  --accent-soft: #f5f5f5;
+  --danger: #dc2626;
+  --ok: #16a34a;
+  --shadow: none;
+  /* only for things that float above the page: menus, dialogs */
+  --shadow-pop: 0 8px 28px rgb(0 0 0 / 8%), 0 1px 3px rgb(0 0 0 / 6%);
 }
 
 :root[data-theme="dark"] {
-  --bg: #171512;
-  --surface: #211e1a;
-  --surface-2: #2a2621;
-  --text: #f1ede6;
-  --muted: #a39c90;
-  --border: #38332c;
-  --accent: #f97316;
-  --accent-text: #1a1206;
-  --accent-soft: #3a2413;
+  --bg: #0a0a0a;
+  --surface: #0a0a0a;
+  --surface-2: #171717;
+  --text: #fafafa;
+  --muted: #a3a3a3;
+  --border: #262626;
+  --accent: #fafafa;
+  --accent-text: #0a0a0a;
+  --accent-soft: #171717;
   --danger: #f87171;
   --ok: #4ade80;
-  --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 4px 16px rgb(0 0 0 / 30%);
+  --shadow: none;
+  --shadow-pop: 0 8px 28px rgb(0 0 0 / 50%);
 }

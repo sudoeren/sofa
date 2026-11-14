@@ -361,13 +361,7 @@
 }
 .empty-mark {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 13px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--text);
 }
 .empty-title {
   margin-top: 18px;
@@ -434,14 +428,8 @@
 }
 .template-icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--text);
+  margin-bottom: 10px;
 }
 .template-title {
   font-weight: 650;
@@ -835,14 +823,8 @@
 }
 .material-file-icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex: none;
-  width: 36px;
-  height: 36px;
   margin: 12px 0 0 12px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
   color: var(--muted);
 }
 .material-file:has(.material-file-icon) {

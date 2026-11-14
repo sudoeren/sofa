@@ -426,9 +426,7 @@ textarea.input {
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 4px);
   background: var(--surface);
-  box-shadow:
-    var(--shadow),
-    0 24px 64px rgb(0 0 0 / 22%);
+  box-shadow: var(--shadow-pop);
   animation: rise-in 0.18s ease;
 }
 .dialog:focus {
@@ -488,7 +486,7 @@ textarea.input {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-pop);
   animation: rise-in 0.12s ease;
 }
 .menu-list-start {
@@ -606,14 +604,8 @@ textarea.input {
 }
 .gate-icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 16px;
-  border-radius: 12px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--text);
+  margin-bottom: 10px;
 }
 .gate-title {
   font-size: 22px;

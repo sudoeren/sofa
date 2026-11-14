@@ -9,12 +9,11 @@ export function BrandMark({ size = 28 }: { size?: number }) {
       aria-hidden="true"
       focusable="false"
     >
-      <rect width="32" height="32" rx="9" fill="var(--accent)" />
-      <circle cx="16" cy="16" r="6.5" fill="none" stroke="var(--accent-text)" strokeWidth="2.5" />
-      <circle cx="16" cy="5.75" r="2" fill="var(--accent-text)" />
-      <circle cx="16" cy="26.25" r="2" fill="var(--accent-text)" />
-      <circle cx="5.75" cy="16" r="2" fill="var(--accent-text)" />
-      <circle cx="26.25" cy="16" r="2" fill="var(--accent-text)" />
+      <circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" strokeWidth="2.5" />
+      <circle cx="16" cy="3.5" r="2.25" fill="currentColor" />
+      <circle cx="16" cy="28.5" r="2.25" fill="currentColor" />
+      <circle cx="3.5" cy="16" r="2.25" fill="currentColor" />
+      <circle cx="28.5" cy="16" r="2.25" fill="currentColor" />
     </svg>
   );
 }
