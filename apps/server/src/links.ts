@@ -4,7 +4,7 @@ import https from "node:https";
 import net from "node:net";
 import type { Readable } from "node:stream";
 import zlib from "node:zlib";
-import type { LinkPreview } from "@sofra/shared";
+import type { LinkPreview } from "@sofa/shared";
 
 const MAX_REDIRECTS = 3;
 const DEFAULT_TIMEOUT_MS = 5000;

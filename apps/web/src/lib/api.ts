@@ -9,7 +9,7 @@ import type {
   UnlockResponse,
   UserRef,
   UseTemplateResponse,
-} from "@sofra/shared";
+} from "@sofa/shared";
 import { getSpaceToken } from "./storage";
 
 /** An error response from the server, or a failed request (status 0). */

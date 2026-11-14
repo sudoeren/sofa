@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# Sofra needs Node >= 22.5 (node:sqlite). There are no native modules, so the slim image
+# Sofa needs Node >= 22.5 (node:sqlite). There are no native modules, so the slim image
 # is enough for both building and running.
 FROM node:24-slim AS build
 ENV PNPM_HOME=/pnpm \
@@ -28,14 +28,14 @@ RUN pnpm build
 # The server bundle inlines the workspace packages and keeps every other dependency
 # external, so the runtime needs the server's production node_modules and nothing else.
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
-    pnpm --filter @sofra/server deploy --prod --legacy /deploy
+    pnpm --filter @sofa/server deploy --prod --legacy /deploy
 
 
 FROM node:24-slim AS runtime
 ENV NODE_ENV=production \
     PORT=8787 \
-    SOFRA_DATA_DIR=/data \
-    SOFRA_WEB_DIR=/app/apps/web/dist
+    SOFA_DATA_DIR=/data \
+    SOFA_WEB_DIR=/app/apps/web/dist
 WORKDIR /app
 
 COPY --from=build /deploy/node_modules apps/server/node_modules

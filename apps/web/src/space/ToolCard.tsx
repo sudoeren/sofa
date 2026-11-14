@@ -1,4 +1,4 @@
-import { LIMITS, type MemberInfo, type ToolRecord } from "@sofra/shared";
+import { LIMITS, type MemberInfo, type ToolRecord } from "@sofa/shared";
 import clsx from "clsx";
 import {
   ArrowLeft,

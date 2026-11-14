@@ -1,4 +1,4 @@
-import { listTools, toolsMap } from "@sofra/shared";
+import { listTools, toolsMap } from "@sofa/shared";
 import { ArrowUp, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type * as Y from "yjs";
@@ -145,7 +145,7 @@ export function DemoSpace() {
   }, [doc, reduced]);
 
   return (
-    <section className="demo" aria-label="Interactive preview of a Sofra space">
+    <section className="demo" aria-label="Interactive preview of a Sofa space">
       <div className="demo-meta">
         <div className="demo-presence">
           <div className="demo-avatars">

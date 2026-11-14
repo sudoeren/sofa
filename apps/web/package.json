@@ -1,5 +1,5 @@
 {
-  "name": "@sofra/web",
+  "name": "@sofa/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@hocuspocus/provider": "^4.8.0",
-    "@sofra/shared": "workspace:*",
-    "@sofra/widgets": "workspace:*",
+    "@sofa/shared": "workspace:*",
+    "@sofa/widgets": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^1.72.0",
     "nanoid": "^6.0.2",

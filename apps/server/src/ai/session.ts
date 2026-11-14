@@ -15,8 +15,8 @@ import {
   toolStateMap,
   toolsMap,
   type UserRef,
-} from "@sofra/shared";
-import type { WidgetDef } from "@sofra/widgets";
+} from "@sofa/shared";
+import type { WidgetDef } from "@sofa/widgets";
 import { type ToolSet, tool } from "ai";
 import type * as Y from "yjs";
 import { z } from "zod";
@@ -557,7 +557,7 @@ export function buildModelTools(session: GenerationSession, widgets: readonly Wi
     }),
     create_html_tool: tool({
       description:
-        "Create a new tool as one complete HTML document that uses the sofra SDK. For games and anything the widgets cannot do.",
+        "Create a new tool as one complete HTML document that uses the sofa SDK. For games and anything the widgets cannot do.",
       inputSchema: z.object({
         title: titleSchema,
         description: descriptionSchema,

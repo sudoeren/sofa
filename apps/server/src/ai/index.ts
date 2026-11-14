@@ -1,4 +1,4 @@
-import { WIDGET_DEFS } from "@sofra/widgets";
+import { WIDGET_DEFS } from "@sofa/widgets";
 import type { Config } from "../config";
 import type { AiDeps, AiService } from "../types";
 import { createAiServiceWith } from "./service";

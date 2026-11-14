@@ -40,20 +40,20 @@ function parseProvider(value: string | undefined, env: NodeJS.ProcessEnv): AiPro
   if (env.ANTHROPIC_API_KEY) return "anthropic";
   if (env.OPENAI_API_KEY) return "openai";
   if (env.OPENROUTER_API_KEY) return "openrouter";
-  if (env.SOFRA_AI_BASE_URL) return "openai-compatible";
+  if (env.SOFA_AI_BASE_URL) return "openai-compatible";
   return "none";
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  let provider = parseProvider(env.SOFRA_AI_PROVIDER, env);
+  let provider = parseProvider(env.SOFA_AI_PROVIDER, env);
   let apiKey: string | null = null;
   let baseUrl: string | null = null;
   if (provider === "anthropic") apiKey = env.ANTHROPIC_API_KEY || null;
   if (provider === "openai") apiKey = env.OPENAI_API_KEY || null;
   if (provider === "openrouter") apiKey = env.OPENROUTER_API_KEY || null;
   if (provider === "openai-compatible") {
-    apiKey = env.SOFRA_AI_API_KEY || null;
-    baseUrl = env.SOFRA_AI_BASE_URL || null;
+    apiKey = env.SOFA_AI_API_KEY || null;
+    baseUrl = env.SOFA_AI_BASE_URL || null;
     if (!baseUrl) provider = "none";
   }
   // A hosted provider without a key cannot work; fall back to templates only.
@@ -62,14 +62,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 
   return {
     port: Number(env.PORT) || 8787,
-    dataDir: path.resolve(env.SOFRA_DATA_DIR || "./data"),
-    publicUrl: env.SOFRA_PUBLIC_URL?.replace(/\/+$/, "") || null,
-    spaceTtlHours: Math.max(0, Number(env.SOFRA_SPACE_TTL_HOURS) || 0),
-    trustProxyHops: Math.max(0, Math.floor(Number(env.SOFRA_TRUST_PROXY_HOPS) || 0)),
-    webDir: path.resolve(env.SOFRA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
+    dataDir: path.resolve(env.SOFA_DATA_DIR || "./data"),
+    publicUrl: env.SOFA_PUBLIC_URL?.replace(/\/+$/, "") || null,
+    spaceTtlHours: Math.max(0, Number(env.SOFA_SPACE_TTL_HOURS) || 0),
+    trustProxyHops: Math.max(0, Math.floor(Number(env.SOFA_TRUST_PROXY_HOPS) || 0)),
+    webDir: path.resolve(env.SOFA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
     ai: {
       provider,
-      model: env.SOFRA_AI_MODEL || (provider === "none" ? "" : DEFAULT_MODELS[provider]),
+      model: env.SOFA_AI_MODEL || (provider === "none" ? "" : DEFAULT_MODELS[provider]),
       apiKey,
       baseUrl,
     },

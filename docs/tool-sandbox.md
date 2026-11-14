@@ -1,7 +1,7 @@
 # Tool sandbox
 
 HTML tools are written by a language model from requests typed by members of a space.
-Sofra treats that code as untrusted. This page says what the sandbox stops, how, and what
+Sofa treats that code as untrusted. This page says what the sandbox stops, how, and what
 it does not stop.
 
 ## Who is trusted

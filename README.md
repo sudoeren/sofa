@@ -1,10 +1,10 @@
-# Sofra
+# Sofa
 
 Shared spaces where a group asks an AI to build the small tools it needs, and everyone uses them at the same time. Open source and self-hosted.
 
-**Try it: [sofra.erencakar.com](https://sofra.erencakar.com)** (public demo; spaces are deleted after 24 hours without changes)
+**Try it: [sofa.erencakar.com](https://sofa.erencakar.com)** (public demo; spaces are deleted after 24 hours without changes)
 
-![Sofra demo](docs/media/demo.gif)
+![Sofa demo](docs/media/demo.gif)
 
 ## What it is
 
@@ -35,7 +35,7 @@ free-form tool that runs in a sandboxed frame.
 With Docker Compose:
 
 ```sh
-git clone https://github.com/sudoeren/sofra && cd sofra
+git clone https://github.com/sudoeren/sofa && cd sofa
 cp .env.example .env    # optional: add an AI key
 docker compose up -d
 ```
@@ -43,9 +43,9 @@ docker compose up -d
 Or with plain Docker:
 
 ```sh
-docker build -t sofra .
-docker run -d --name sofra -p 8787:8787 -v sofra-data:/data \
-  -e ANTHROPIC_API_KEY=sk-ant-... sofra
+docker build -t sofa .
+docker run -d --name sofa -p 8787:8787 -v sofa-data:/data \
+  -e ANTHROPIC_API_KEY=sk-ant-... sofa
 ```
 
 Then open http://localhost:8787. Leave out the key to run with the built-in tools only.
@@ -54,14 +54,14 @@ Put it behind a reverse proxy for anything beyond your own network:
 
 ## AI setup
 
-Sofra works with four kinds of providers, configured on the server:
+Sofa works with four kinds of providers, configured on the server:
 
-| Provider                                                 | Variables                                                                                                 |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Anthropic                                                | `ANTHROPIC_API_KEY`, optional `SOFRA_AI_MODEL` (default `claude-fable-5-2`)                               |
-| OpenAI                                                   | `OPENAI_API_KEY`, optional `SOFRA_AI_MODEL` (default `gpt-5`)                                             |
-| OpenRouter                                               | `OPENROUTER_API_KEY`, optional `SOFRA_AI_MODEL` (default `anthropic/claude-haiku-5.5`)                    |
-| Any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM) | `SOFRA_AI_PROVIDER=openai-compatible`, `SOFRA_AI_BASE_URL`, optional `SOFRA_AI_API_KEY`, `SOFRA_AI_MODEL` |
+| Provider                                                 | Variables                                                                                             |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Anthropic                                                | `ANTHROPIC_API_KEY`, optional `SOFA_AI_MODEL` (default `claude-fable-5-2`)                            |
+| OpenAI                                                   | `OPENAI_API_KEY`, optional `SOFA_AI_MODEL` (default `gpt-5`)                                          |
+| OpenRouter                                               | `OPENROUTER_API_KEY`, optional `SOFA_AI_MODEL` (default `anthropic/claude-haiku-5.5`)                 |
+| Any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM) | `SOFA_AI_PROVIDER=openai-compatible`, `SOFA_AI_BASE_URL`, optional `SOFA_AI_API_KEY`, `SOFA_AI_MODEL` |
 
 Members can also bring their own Anthropic, OpenAI or OpenRouter key. It is stored only in their
 browser and sent with each request they make; the server uses it for that request and
@@ -91,7 +91,7 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and
 - Spaces, files and AI requests stay on your server, apart from what is sent to the AI
   provider you configure.
 - Generated tools run sandboxed without network access. A hostile tool could still send its
-  own data out by navigating its frame; Sofra detects and resets this, but cannot prevent
+  own data out by navigating its frame; Sofa detects and resets this, but cannot prevent
   the first request. See [docs/tool-sandbox.md](docs/tool-sandbox.md).
 - To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
@@ -118,7 +118,7 @@ Early. Known gaps:
 
 ## Acknowledgements
 
-Inspired by Google Labs' Tabletop experiment. Sofra is an independent project and is not
+Inspired by Google Labs' Tabletop experiment. Sofa is an independent project and is not
 affiliated with Google.
 
 ## License

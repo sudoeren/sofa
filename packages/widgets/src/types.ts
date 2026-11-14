@@ -1,4 +1,4 @@
-import type { ToolState } from "@sofra/shared";
+import type { ToolState } from "@sofa/shared";
 import type { z } from "zod";
 
 /**

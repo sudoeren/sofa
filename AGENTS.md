@@ -1,10 +1,10 @@
-# Working on Sofra
+# Working on Sofa
 
 Read `docs/ARCHITECTURE.md` first; it holds the data model, the REST contract location and
 the tool SDK.
 
 - Package manager: pnpm workspaces. Run commands per package:
-  `nice -n 10 pnpm --filter @sofra/server typecheck` (same for `test`).
+  `nice -n 10 pnpm --filter @sofa/server typecheck` (same for `test`).
 - The machine is a laptop in use. Keep load low: no root-wide runs while others are
   working, vitest with `--maxWorkers=2`, stop any dev server you start.
 - No emoji in code, UI, docs or commit messages.

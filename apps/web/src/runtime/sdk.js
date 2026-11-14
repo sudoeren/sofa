@@ -1,6 +1,6 @@
 /*
- * Sofra frame SDK. Runs inside the sandboxed tool frame as the first script of the
- * document and defines the global `sofra` (API: docs/ARCHITECTURE.md).
+ * Sofa frame SDK. Runs inside the sandboxed tool frame as the first script of the
+ * document and defines the global `sofa` (API: docs/ARCHITECTURE.md).
  *
  * Plain browser JavaScript without dependencies. The host embeds this file as text
  * (srcdoc.ts), so it must stay self-contained and must never contain the character
@@ -16,7 +16,7 @@
 
   var document = window.document;
   var host = window.parent;
-  var NONCE = "__SOFRA_NONCE__";
+  var NONCE = "__SOFA_NONCE__";
   var MAX_KEY_LENGTH = 200;
   var MAX_VALUE_BYTES = 65536;
   var MAX_FRAME_HEIGHT = 4000;
@@ -62,7 +62,7 @@
     if (!text || text === lastError || errorCount >= MAX_ERRORS) return;
     lastError = text;
     errorCount++;
-    send({ type: "sofra:error", message: text });
+    send({ type: "sofa:error", message: text });
   }
 
   function guarded(fn, a) {
@@ -122,11 +122,7 @@
   function checkKey(key, what) {
     if (typeof key === "string" && key.length > 0 && key.length <= MAX_KEY_LENGTH) return true;
     report(
-      "sofra.state." +
-        what +
-        ": the key must be a string of 1 to " +
-        MAX_KEY_LENGTH +
-        " characters",
+      "sofa.state." + what + ": the key must be a string of 1 to " + MAX_KEY_LENGTH + " characters",
     );
     return false;
   }
@@ -178,18 +174,18 @@
           json = undefined;
         }
         if (typeof json !== "string") {
-          report('sofra.state.set("' + key + '"): the value is not JSON');
+          report('sofa.state.set("' + key + '"): the value is not JSON');
           return;
         }
         if (byteLength(json) > MAX_VALUE_BYTES) {
-          report('sofra.state.set("' + key + '"): the value is too large');
+          report('sofa.state.set("' + key + '"): the value is too large');
           return;
         }
         if (state[key] !== undefined && stringify(state[key]) === json) return;
         var copy = parse(json);
         state[key] = copy;
         pending[key] = (pending[key] || 0) + 1;
-        send({ type: "sofra:set", key: key, value: parse(json) });
+        send({ type: "sofa:set", key: key, value: parse(json) });
         notify(key);
       },
       delete: function (key) {
@@ -197,7 +193,7 @@
         if (state[key] === undefined) return;
         delete state[key];
         pending[key] = (pending[key] || 0) + 1;
-        send({ type: "sofra:delete", key: key });
+        send({ type: "sofa:delete", key: key });
         notify(key);
       },
       keys: function (prefix) {
@@ -275,7 +271,7 @@
     var i;
     var list;
     switch (data.type) {
-      case "sofra:init":
+      case "sofa:init":
         if (inited) return;
         replaceState(data.state);
         if (data.me) me = data.me;
@@ -287,7 +283,7 @@
         for (i = 0; i < list.length; i++) guarded(list[i]);
         notify(undefined);
         break;
-      case "sofra:state":
+      case "sofa:state":
         if (typeof data.key !== "string") return;
         // The host answers every local write with exactly one message carrying the value
         // it ended up with, in order. While answers to older local writes are outstanding
@@ -299,39 +295,39 @@
         }
         applyRemote(data.key, data.value);
         break;
-      case "sofra:state-all":
+      case "sofa:state-all":
         replaceState(data.state);
         notify(undefined);
         break;
-      case "sofra:members":
+      case "sofa:members":
         members = data.members || [];
         list = memberCallbacks.slice();
         for (i = 0; i < list.length; i++) guarded(list[i], clone(members));
         break;
-      case "sofra:theme":
+      case "sofa:theme":
         setTheme(data.theme);
         list = themeCallbacks.slice();
         for (i = 0; i < list.length; i++) guarded(list[i], theme);
         break;
-      case "sofra:ping":
-        send({ type: "sofra:pong" });
+      case "sofa:ping":
+        send({ type: "sofa:pong" });
         break;
     }
   }
 
-  // The host answers "sofra:ready" with a private MessagePort. Only messages from the
+  // The host answers "sofa:ready" with a private MessagePort. Only messages from the
   // parent window are considered (sibling tool frames can post to this window too).
   window.addEventListener(
     "message",
     function (event) {
       if (event.source !== host) return;
       var data = event.data;
-      if (!data || data.type !== "sofra:port" || !event.ports || !event.ports[0]) return;
+      if (!data || data.type !== "sofa:port" || !event.ports || !event.ports[0]) return;
       if (event.stopImmediatePropagation) event.stopImmediatePropagation();
       if (port) return;
       port = event.ports[0];
       port.onmessage = onHostMessage;
-      port.postMessage({ type: "sofra:hello", nonce: NONCE });
+      port.postMessage({ type: "sofa:hello", nonce: NONCE });
       var waiting = queue;
       queue = [];
       for (var i = 0; i < waiting.length; i++) port.postMessage(waiting[i]);
@@ -463,9 +459,9 @@
     if (!(height >= 0) || height === lastHeight) return;
     lastHeight = height;
     // The host never makes the frame taller than the limit; scroll inside only then.
-    if (height > MAX_FRAME_HEIGHT) root.setAttribute("data-sofra-scroll", "");
-    else root.removeAttribute("data-sofra-scroll");
-    send({ type: "sofra:resize", height: height });
+    if (height > MAX_FRAME_HEIGHT) root.setAttribute("data-sofa-scroll", "");
+    else root.removeAttribute("data-sofa-scroll");
+    send({ type: "sofa:resize", height: height });
   }
 
   function scheduleMeasure() {
@@ -496,6 +492,6 @@
 
   // --------------------------------------------------------------------- boot
 
-  window.sofra = api;
-  if (host && host.postMessage) host.postMessage({ type: "sofra:ready" }, "*");
+  window.sofa = api;
+  if (host && host.postMessage) host.postMessage({ type: "sofa:ready" }, "*");
 })(window);

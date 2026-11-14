@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { listTools, metaMap, putTool } from "@sofra/shared";
+import { listTools, metaMap, putTool } from "@sofa/shared";
 import { afterEach, describe, expect, it } from "vitest";
 import WebSocket from "ws";
 import {
@@ -63,7 +63,7 @@ describe("collab", () => {
     expect(await unknown.ready).toBe("denied:space-not-found");
     const malformed = join(s.port, "../etc");
     expect(await malformed.ready).toBe("denied:space-not-found");
-    expect(fs.existsSync(path.join(s.dataDir, "sofra.db"))).toBe(true);
+    expect(fs.existsSync(path.join(s.dataDir, "sofa.db"))).toBe(true);
     expect(s.server.db.loadDoc("z".repeat(21))).toBeNull();
   });
 

@@ -1,6 +1,6 @@
 # Self-hosting
 
-Sofra is one Node process. It needs a persistent directory for its data and, if people
+Sofa is one Node process. It needs a persistent directory for its data and, if people
 reach it over the internet, a reverse proxy with TLS that forwards WebSocket upgrades on
 `/collab`.
 
@@ -9,7 +9,7 @@ reach it over the internet, a reverse proxy with TLS that forwards WebSocket upg
 Caddy:
 
 ```
-sofra.example.com {
+sofa.example.com {
     reverse_proxy localhost:8787
 }
 ```
@@ -21,7 +21,7 @@ nginx:
 ```nginx
 server {
     listen 443 ssl;
-    server_name sofra.example.com;
+    server_name sofa.example.com;
     # ssl_certificate ...;
 
     client_max_body_size 11m;
@@ -41,20 +41,20 @@ server {
 }
 ```
 
-Behind a proxy every request comes from the proxy's address. Set `SOFRA_TRUST_PROXY_HOPS`
-to the number of proxies in front of Sofra (1 for Caddy, nginx or Coolify alone, 2 with
+Behind a proxy every request comes from the proxy's address. Set `SOFA_TRUST_PROXY_HOPS`
+to the number of proxies in front of Sofa (1 for Caddy, nginx or Coolify alone, 2 with
 Cloudflare in front) so rate limits see the real client address.
 
 ## Backups
 
 Everything lives in the data directory (`/data` in Docker):
 
-- `sofra.db` (SQLite, WAL mode; back up `sofra.db-wal` too, or stop the server first)
+- `sofa.db` (SQLite, WAL mode; back up `sofa.db-wal` too, or stop the server first)
 - `secret` (signs tokens for password-protected spaces; losing it only means members type
   the password again)
 - `files/` (uploads)
 
-A consistent copy while running: `sqlite3 sofra.db ".backup backup.db"`, plus `files/`.
+A consistent copy while running: `sqlite3 sofa.db ".backup backup.db"`, plus `files/`.
 
 ## Upgrading
 

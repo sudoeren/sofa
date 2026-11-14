@@ -1,4 +1,4 @@
-import { LIMITS, type MemberInfo, type UserAi } from "@sofra/shared";
+import { LIMITS, type MemberInfo, type UserAi } from "@sofa/shared";
 import { ArrowUp, Info, PencilLine, X } from "lucide-react";
 import {
   type FormEvent,

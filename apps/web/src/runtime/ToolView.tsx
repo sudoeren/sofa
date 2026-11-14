@@ -1,5 +1,5 @@
-import type { JsonValue, MemberInfo, Theme, ToolRecord } from "@sofra/shared";
-import { getWidgetDef } from "@sofra/widgets";
+import type { JsonValue, MemberInfo, Theme, ToolRecord } from "@sofa/shared";
+import { getWidgetDef } from "@sofa/widgets";
 import { TriangleAlert } from "lucide-react";
 import { Component, type ComponentType, type ReactNode, useMemo } from "react";
 import type * as Y from "yjs";
@@ -163,7 +163,7 @@ class WidgetBoundary extends Component<BoundaryProps, BoundaryState> {
   }
 
   componentDidCatch(error: unknown): void {
-    console.error("[sofra] widget crashed", error);
+    console.error("[sofa] widget crashed", error);
   }
 
   render() {

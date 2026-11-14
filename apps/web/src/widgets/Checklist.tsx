@@ -1,5 +1,5 @@
-import type { ToolState } from "@sofra/shared";
-import type { ChecklistConfig } from "@sofra/widgets";
+import type { ToolState } from "@sofa/shared";
+import type { ChecklistConfig } from "@sofa/widgets";
 import { Check, Hand, Plus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar, asRecord, entriesWithPrefix, InlineEdit, MemberPick, newKeyId } from "./shared";

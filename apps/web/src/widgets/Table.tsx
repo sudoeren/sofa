@@ -1,5 +1,5 @@
-import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
-import type { TableConfig } from "@sofra/widgets";
+import type { JsonValue, MemberInfo, ToolState } from "@sofa/shared";
+import type { TableConfig } from "@sofa/widgets";
 import { Plus, Trash2, X } from "lucide-react";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Avatar, asRecord, entriesWithPrefix, InlineEdit, MemberPick, newKeyId } from "./shared";

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { LIMITS } from "@sofra/shared";
+import { LIMITS } from "@sofa/shared";
 import { nanoid } from "nanoid";
 import type { Db, FileRow } from "./db";
 import type { FileStore, StoredFile } from "./types";

@@ -1,4 +1,4 @@
-import { colorFor, LIMITS, type Material, materialsArray, newId } from "@sofra/shared";
+import { colorFor, LIMITS, type Material, materialsArray, newId } from "@sofa/shared";
 import clsx from "clsx";
 import {
   ExternalLink,

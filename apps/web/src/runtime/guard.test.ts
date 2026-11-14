@@ -1,4 +1,4 @@
-import { TOOL_LIMITS } from "@sofra/shared";
+import { TOOL_LIMITS } from "@sofa/shared";
 import { describe, expect, it } from "vitest";
 import * as Y from "yjs";
 import {
@@ -15,50 +15,50 @@ import { addTool } from "./testing";
 
 describe("checkFrameMessage", () => {
   it("accepts well formed messages", () => {
-    expect(checkFrameMessage({ type: "sofra:ready" })).toEqual({
+    expect(checkFrameMessage({ type: "sofa:ready" })).toEqual({
       kind: "accept",
-      message: { type: "sofra:ready" },
+      message: { type: "sofa:ready" },
     });
-    expect(
-      checkFrameMessage({ type: "sofra:set", key: "a", value: { n: [1, "x", null] } }),
-    ).toEqual({
-      kind: "accept",
-      message: { type: "sofra:set", key: "a", value: { n: [1, "x", null] } },
-    });
-    expect(checkFrameMessage({ type: "sofra:delete", key: "a" }).kind).toBe("accept");
-    expect(checkFrameMessage({ type: "sofra:error", message: "boom" }).kind).toBe("accept");
+    expect(checkFrameMessage({ type: "sofa:set", key: "a", value: { n: [1, "x", null] } })).toEqual(
+      {
+        kind: "accept",
+        message: { type: "sofa:set", key: "a", value: { n: [1, "x", null] } },
+      },
+    );
+    expect(checkFrameMessage({ type: "sofa:delete", key: "a" }).kind).toBe("accept");
+    expect(checkFrameMessage({ type: "sofa:error", message: "boom" }).kind).toBe("accept");
   });
 
   it("ignores wrong shapes", () => {
     const bad: unknown[] = [
       null,
       undefined,
-      "sofra:ready",
+      "sofa:ready",
       42,
       [],
-      [{ type: "sofra:ready" }],
+      [{ type: "sofa:ready" }],
       {},
       { type: 1 },
-      { type: "sofra:init", state: {} },
-      { type: "sofra:state", key: "a", value: 1 },
+      { type: "sofa:init", state: {} },
+      { type: "sofa:state", key: "a", value: 1 },
       { type: "other:set", key: "a", value: 1 },
-      { type: "sofra:ready", extra: 1 },
-      { type: "sofra:set", key: "a" },
-      { type: "sofra:set", key: "a", value: 1, toolId: "t2" },
-      { type: "sofra:set", key: 1, value: 1 },
-      { type: "sofra:set", key: "", value: 1 },
-      { type: "sofra:set", key: "k".repeat(TOOL_LIMITS.maxKeyLength + 1), value: 1 },
-      { type: "sofra:delete", key: ["a"] },
-      { type: "sofra:delete" },
-      { type: "sofra:resize", height: "100" },
-      { type: "sofra:resize", height: Number.NaN },
-      { type: "sofra:resize", height: -1 },
-      { type: "sofra:error", message: { toString: () => "x" } },
-      { type: "sofra:hello", nonce: "" },
-      { type: "sofra:hello", nonce: 1 },
-      new Map([["type", "sofra:ready"]]),
+      { type: "sofa:ready", extra: 1 },
+      { type: "sofa:set", key: "a" },
+      { type: "sofa:set", key: "a", value: 1, toolId: "t2" },
+      { type: "sofa:set", key: 1, value: 1 },
+      { type: "sofa:set", key: "", value: 1 },
+      { type: "sofa:set", key: "k".repeat(TOOL_LIMITS.maxKeyLength + 1), value: 1 },
+      { type: "sofa:delete", key: ["a"] },
+      { type: "sofa:delete" },
+      { type: "sofa:resize", height: "100" },
+      { type: "sofa:resize", height: Number.NaN },
+      { type: "sofa:resize", height: -1 },
+      { type: "sofa:error", message: { toString: () => "x" } },
+      { type: "sofa:hello", nonce: "" },
+      { type: "sofa:hello", nonce: 1 },
+      new Map([["type", "sofa:ready"]]),
       new (class Ready {
-        type = "sofra:ready";
+        type = "sofa:ready";
       })(),
     ];
     for (const data of bad)
@@ -67,13 +67,13 @@ describe("checkFrameMessage", () => {
 
   it("rejects writes with values that are too large or not JSON, naming the key", () => {
     const big = checkFrameMessage({
-      type: "sofra:set",
+      type: "sofa:set",
       key: "a",
       value: "x".repeat(TOOL_LIMITS.maxValueBytes + 1),
     });
     expect(big).toMatchObject({ kind: "reject", key: "a" });
     // multi-byte text is measured in bytes, not characters
-    expect(checkFrameMessage({ type: "sofra:set", key: "a", value: "ç".repeat(40_000) }).kind).toBe(
+    expect(checkFrameMessage({ type: "sofa:set", key: "a", value: "ç".repeat(40_000) }).kind).toBe(
       "reject",
     );
     for (const value of [
@@ -84,13 +84,13 @@ describe("checkFrameMessage", () => {
       10n,
       Number.POSITIVE_INFINITY,
     ]) {
-      expect(checkFrameMessage({ type: "sofra:set", key: "a", value }).kind).toBe("reject");
+      expect(checkFrameMessage({ type: "sofa:set", key: "a", value }).kind).toBe("reject");
     }
     const cyclic: Record<string, unknown> = {};
     cyclic.self = cyclic;
-    expect(checkFrameMessage({ type: "sofra:set", key: "a", value: cyclic }).kind).toBe("reject");
+    expect(checkFrameMessage({ type: "sofa:set", key: "a", value: cyclic }).kind).toBe("reject");
     expect(
-      checkFrameMessage({ type: "sofra:set", key: "a", value: new Array(1_000_000) }).kind,
+      checkFrameMessage({ type: "sofa:set", key: "a", value: new Array(1_000_000) }).kind,
     ).toBe("reject");
   });
 
@@ -104,7 +104,7 @@ describe("checkFrameMessage", () => {
         },
       },
     };
-    expect(checkFrameMessage({ type: "sofra:set", key: "a", value }).kind).toBe("reject");
+    expect(checkFrameMessage({ type: "sofa:set", key: "a", value }).kind).toBe("reject");
     expect(called).toBe(false);
 
     const source = { list: [1] };
@@ -114,12 +114,12 @@ describe("checkFrameMessage", () => {
   });
 
   it("clamps heights and cleans error text", () => {
-    const tall = checkFrameMessage({ type: "sofra:resize", height: 1e9 });
+    const tall = checkFrameMessage({ type: "sofa:resize", height: 1e9 });
     expect(tall).toEqual({
       kind: "accept",
-      message: { type: "sofra:resize", height: TOOL_LIMITS.maxFrameHeight },
+      message: { type: "sofa:resize", height: TOOL_LIMITS.maxFrameHeight },
     });
-    const short = checkFrameMessage({ type: "sofra:resize", height: 3.2 });
+    const short = checkFrameMessage({ type: "sofa:resize", height: 3.2 });
     expect(short.kind === "accept" && short.message).toMatchObject({
       height: TOOL_LIMITS.minFrameHeight,
     });
@@ -130,17 +130,17 @@ describe("checkFrameMessage", () => {
 
 describe("isReadyFromFrame", () => {
   const frame = {};
-  it("accepts only sofra:ready from the frame's own window", () => {
-    expect(isReadyFromFrame({ source: frame, data: { type: "sofra:ready" } }, frame)).toBe(true);
-    expect(isReadyFromFrame({ source: {}, data: { type: "sofra:ready" } }, frame)).toBe(false);
-    expect(isReadyFromFrame({ source: null, data: { type: "sofra:ready" } }, frame)).toBe(false);
-    expect(isReadyFromFrame({ source: null, data: { type: "sofra:ready" } }, null)).toBe(false);
-    expect(isReadyFromFrame({ source: undefined, data: { type: "sofra:ready" } }, undefined)).toBe(
+  it("accepts only sofa:ready from the frame's own window", () => {
+    expect(isReadyFromFrame({ source: frame, data: { type: "sofa:ready" } }, frame)).toBe(true);
+    expect(isReadyFromFrame({ source: {}, data: { type: "sofa:ready" } }, frame)).toBe(false);
+    expect(isReadyFromFrame({ source: null, data: { type: "sofa:ready" } }, frame)).toBe(false);
+    expect(isReadyFromFrame({ source: null, data: { type: "sofa:ready" } }, null)).toBe(false);
+    expect(isReadyFromFrame({ source: undefined, data: { type: "sofa:ready" } }, undefined)).toBe(
       false,
     );
     // data messages are not accepted on the window at all, even from the right source
     expect(
-      isReadyFromFrame({ source: frame, data: { type: "sofra:set", key: "a", value: 1 } }, frame),
+      isReadyFromFrame({ source: frame, data: { type: "sofa:set", key: "a", value: 1 } }, frame),
     ).toBe(false);
   });
 });

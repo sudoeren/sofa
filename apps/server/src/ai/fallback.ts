@@ -1,4 +1,4 @@
-import type { WidgetDef } from "@sofra/widgets";
+import type { WidgetDef } from "@sofa/widgets";
 
 /** Starter matching for requests that arrive when no AI provider is available. */
 

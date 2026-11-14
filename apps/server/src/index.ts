@@ -1,14 +1,14 @@
 import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { WIDGET_DEFS } from "@sofra/widgets";
+import { WIDGET_DEFS } from "@sofa/widgets";
 import { createAiService } from "./ai/index";
 import { type Config, loadConfig } from "./config";
-import { buildServer, type ServerParts, type SofraServer } from "./server";
+import { buildServer, type ServerParts, type SofaServer } from "./server";
 
-export type { ServerParts, SofraServer } from "./server";
+export type { ServerParts, SofaServer } from "./server";
 
 /** The production wiring; tests pass overrides (a fake AI service, widget list, limits). */
-export function createServer(config: Config, overrides: Partial<ServerParts> = {}): SofraServer {
+export function createServer(config: Config, overrides: Partial<ServerParts> = {}): SofaServer {
   return buildServer(config, { createAi: createAiService, widgets: WIDGET_DEFS, ...overrides });
 }
 
@@ -19,21 +19,19 @@ async function main() {
   const info = server.ai.enabled ? server.ai.info() : null;
   const aiLabel = info ? `${info.provider} (${info.model})` : "templates only";
   const ttl = config.spaceTtlHours > 0 ? `, spaces expire after ${config.spaceTtlHours} h` : "";
-  console.log(
-    `[sofra] listening on port ${port}, data dir ${config.dataDir}, AI: ${aiLabel}${ttl}`,
-  );
+  console.log(`[sofa] listening on port ${port}, data dir ${config.dataDir}, AI: ${aiLabel}${ttl}`);
 
   let stopping = false;
   const stop = (signal: string) => {
     if (stopping) return;
     stopping = true;
-    console.log(`[sofra] ${signal} received, saving documents`);
+    console.log(`[sofa] ${signal} received, saving documents`);
     // If something hangs, exit anyway; documents were written first.
     setTimeout(() => process.exit(1), 10_000).unref();
     server.close().then(
       () => process.exit(0),
       (error) => {
-        console.error("[sofra] shutdown failed:", error instanceof Error ? error.message : error);
+        console.error("[sofa] shutdown failed:", error instanceof Error ? error.message : error);
         process.exit(1);
       },
     );
@@ -54,7 +52,7 @@ function isEntryPoint(): boolean {
 
 if (isEntryPoint()) {
   main().catch((error) => {
-    console.error("[sofra] failed to start:", error instanceof Error ? error.message : error);
+    console.error("[sofa] failed to start:", error instanceof Error ? error.message : error);
     process.exit(1);
   });
 }

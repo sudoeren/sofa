@@ -8,8 +8,8 @@ import {
   type ToolRecord,
   type ToolState,
   toolsMap,
-} from "@sofra/shared";
-import type { WidgetDef } from "@sofra/widgets";
+} from "@sofa/shared";
+import type { WidgetDef } from "@sofa/widgets";
 import { simulateReadableStream } from "ai";
 import { MockLanguageModelV4 } from "ai/test";
 import * as Y from "yjs";
@@ -236,9 +236,9 @@ export const GOOD_HTML = `<!doctype html>
 <style>body { font-family: var(--font); color: var(--text); }</style></head>
 <body><button id="roll" type="button">Roll</button><div id="out"></div>
 <script>
-function render() { document.getElementById("out").textContent = String(sofra.state.get("roll:last") || ""); }
-document.getElementById("roll").onclick = function () { sofra.state.set("roll:last", 1 + Math.floor(Math.random() * 6)); };
-sofra.ready(function () { render(); sofra.state.subscribe(render); });
+function render() { document.getElementById("out").textContent = String(sofa.state.get("roll:last") || ""); }
+document.getElementById("roll").onclick = function () { sofa.state.set("roll:last", 1 + Math.floor(Math.random() * 6)); };
+sofa.ready(function () { render(); sofa.state.subscribe(render); });
 </script></body></html>`;
 
 export const EXTERNAL_SCRIPT_HTML = GOOD_HTML.replace(

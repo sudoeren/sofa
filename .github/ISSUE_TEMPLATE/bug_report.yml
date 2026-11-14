@@ -24,7 +24,7 @@ body:
     attributes:
       label: Where
       options:
-        - The public demo (sofra.erencakar.com)
+        - The public demo (sofa.erencakar.com)
         - My own server (Docker)
         - Local development
     validations:

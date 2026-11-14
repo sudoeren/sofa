@@ -1,4 +1,4 @@
-import type { MemberInfo } from "@sofra/shared";
+import type { MemberInfo } from "@sofa/shared";
 import clsx from "clsx";
 import { initials } from "../lib/format";
 

@@ -1,4 +1,4 @@
-import type { WidgetDef } from "@sofra/widgets";
+import type { WidgetDef } from "@sofa/widgets";
 import { z } from "zod";
 
 /**
@@ -49,8 +49,8 @@ export const EXAMPLE_TOOL_HTML = `<!doctype html>
   var inputEl = document.getElementById("new");
 
   function render() {
-    document.getElementById("title").textContent = sofra.state.get("title") || "Who brings what";
-    var items = sofra.state.entries("item:").map(function (entry) {
+    document.getElementById("title").textContent = sofa.state.get("title") || "Who brings what";
+    var items = sofa.state.entries("item:").map(function (entry) {
       return { id: entry[0].slice(5), name: entry[1].name, order: entry[1].order || 0 };
     }).sort(function (a, b) { return a.order - b.order; });
 
@@ -62,8 +62,8 @@ export const EXAMPLE_TOOL_HTML = `<!doctype html>
       listEl.appendChild(empty);
     }
     items.forEach(function (item) {
-      var claim = sofra.state.get("claim:" + item.id);
-      var mine = claim && claim.id === sofra.me.id;
+      var claim = sofa.state.get("claim:" + item.id);
+      var mine = claim && claim.id === sofa.me.id;
       var row = document.createElement("div");
       row.className = "row";
 
@@ -88,8 +88,8 @@ export const EXAMPLE_TOOL_HTML = `<!doctype html>
       take.className = mine ? "mine" : "";
       take.textContent = mine ? "Give up" : claim ? "Take over" : "I will bring it";
       take.onclick = function () {
-        if (mine) sofra.state.delete("claim:" + item.id);
-        else sofra.state.set("claim:" + item.id, { id: sofra.me.id, name: sofra.me.name, color: sofra.me.color });
+        if (mine) sofa.state.delete("claim:" + item.id);
+        else sofa.state.set("claim:" + item.id, { id: sofa.me.id, name: sofa.me.name, color: sofa.me.color });
       };
 
       var remove = document.createElement("button");
@@ -97,8 +97,8 @@ export const EXAMPLE_TOOL_HTML = `<!doctype html>
       remove.className = "remove";
       remove.textContent = "Remove";
       remove.onclick = function () {
-        sofra.state.delete("item:" + item.id);
-        sofra.state.delete("claim:" + item.id);
+        sofa.state.delete("item:" + item.id);
+        sofa.state.delete("claim:" + item.id);
       };
 
       row.appendChild(name);
@@ -111,16 +111,16 @@ export const EXAMPLE_TOOL_HTML = `<!doctype html>
   function add() {
     var name = inputEl.value.trim();
     if (!name) return;
-    sofra.state.set("item:" + sofra.id(), { name: name, order: Date.now() });
+    sofa.state.set("item:" + sofa.id(), { name: name, order: Date.now() });
     inputEl.value = "";
   }
 
   document.getElementById("add").onclick = add;
   inputEl.onkeydown = function (event) { if (event.key === "Enter") add(); };
 
-  sofra.ready(function () {
+  sofa.ready(function () {
     render();
-    sofra.state.subscribe(render);
+    sofa.state.subscribe(render);
   });
 </script>
 </body>
@@ -170,7 +170,7 @@ function widgetSection(def: WidgetDef): string {
   ].join("\n");
 }
 
-const INTRO = `You are the builder inside Sofra, a shared space where a group of people plans something together. Members drop notes, links and files into the space and ask you for small tools: a poll, an itinerary, an expense splitter, a bracket, a seating chart, a game. Each tool appears as a card that every member sees and edits at the same moment. When a member asks again, you change the existing tool and the data people already entered stays.
+const INTRO = `You are the builder inside Sofa, a shared space where a group of people plans something together. Members drop notes, links and files into the space and ask you for small tools: a poll, an itinerary, an expense splitter, a bracket, a seating chart, a game. Each tool appears as a card that every member sees and edits at the same moment. When a member asks again, you change the existing tool and the data people already entered stays.
 
 You act only through the tools you are given (create_widget, create_html_tool, update_widget, update_html_tool, read_tool) and you end with a short reply to the group.
 
@@ -193,7 +193,7 @@ A tool is either a widget or an HTML tool. Both keep their shared data in the sa
 
 Widget: one of the built-in types listed below, rendered natively by the app from a config object you provide. Widgets are fast, reliable, accessible and already handle real-time editing. Choose a widget whenever one covers what was asked, even if the request is phrased loosely ("where should we eat?" is a poll).
 
-HTML tool: a complete HTML document you write, running in a sandboxed frame with the sofra SDK. Choose HTML for games, for anything interactive or visual that no widget covers, and when a request needs behavior that a widget's config cannot express. Do not force a request into a widget that only half fits; a half-fitting widget is worse than a small custom tool.
+HTML tool: a complete HTML document you write, running in a sandboxed frame with the sofa SDK. Choose HTML for games, for anything interactive or visual that no widget covers, and when a request needs behavior that a widget's config cannot express. Do not force a request into a widget that only half fits; a half-fitting widget is worse than a small custom tool.
 
 title: a short name for the card (2 to 5 words). description: one sentence saying what the tool is for. span: 1 for a normal card, 2 for wide content such as tables, schedules, brackets, boards and most games.`;
 
@@ -213,30 +213,30 @@ const SDK_REFERENCE = `## HTML tools
 
 An HTML tool is one complete HTML document with inline CSS and JavaScript. The app renders it in a sandboxed frame without network access and injects the SDK before your scripts run. The frame grows to the height of its content automatically, so do not create inner scroll areas or fixed full-height layouts; avoid 100vh.
 
-### The sofra SDK (a global object, already loaded)
+### The sofa SDK (a global object, already loaded)
 
-sofra.ready(function () { ... })          runs once the initial data has arrived (at once if it already has)
-sofra.me                                  { id, name, color } of the member looking at the tool
-sofra.members                             [{ id, name, color }, ...] members currently in the space
-sofra.onMembers(function (members) {})    called when the member list changes
-sofra.theme                               "light" or "dark"
-sofra.onTheme(function (theme) {})        called when the theme changes
+sofa.ready(function () { ... })          runs once the initial data has arrived (at once if it already has)
+sofa.me                                  { id, name, color } of the member looking at the tool
+sofa.members                             [{ id, name, color }, ...] members currently in the space
+sofa.onMembers(function (members) {})    called when the member list changes
+sofa.theme                               "light" or "dark"
+sofa.onTheme(function (theme) {})        called when the theme changes
 
-sofra.state.get(key)                      JSON value or undefined
-sofra.state.set(key, value)               shared with everyone, applied locally at once
-sofra.state.delete(key)
-sofra.state.keys(prefix)                  keys, optionally only those starting with prefix
-sofra.state.entries(prefix)               [[key, value], ...]
-sofra.state.all()                         shallow copy of the whole state
-sofra.state.subscribe(function (key) {})  called after any change, local or remote; key may be undefined for bulk changes; returns an unsubscribe function
-sofra.id()                                short unique id
+sofa.state.get(key)                      JSON value or undefined
+sofa.state.set(key, value)               shared with everyone, applied locally at once
+sofa.state.delete(key)
+sofa.state.keys(prefix)                  keys, optionally only those starting with prefix
+sofa.state.entries(prefix)               [[key, value], ...]
+sofa.state.all()                         shallow copy of the whole state
+sofa.state.subscribe(function (key) {})  called after any change, local or remote; key may be undefined for bulk changes; returns an unsubscribe function
+sofa.id()                                short unique id
 
 Values are JSON. A key is at most 200 characters, a value at most 64 KB, a tool at most 5000 keys.
 
 ### Rules for tool HTML
 
-1. Render from state. Write one render() function that rebuilds the view from sofra.state, call it inside sofra.ready, and call it from sofra.state.subscribe. Event handlers only write to state (the write is applied locally at once and triggers the subscription), they do not patch the page themselves. Never keep shared data only in local variables: a member who opens the tool later must see the same thing. Local variables are fine for purely personal view state such as which tab is open or the text in an input being typed.
-2. One key per independently edited thing, prefixed by kind: "vote:<memberId>", "item:<id>", "cell:<row>:<col>", "score:<memberId>", "title". Each key is last-write-wins, so two people editing different keys never overwrite each other. Never store a growing list or a whole board as one array or object under one key; two simultaneous edits would lose one. Use sofra.id() for new entries and sofra.me.id for per-member keys. Store an "order" number or timestamp inside the value when order matters.
+1. Render from state. Write one render() function that rebuilds the view from sofa.state, call it inside sofa.ready, and call it from sofa.state.subscribe. Event handlers only write to state (the write is applied locally at once and triggers the subscription), they do not patch the page themselves. Never keep shared data only in local variables: a member who opens the tool later must see the same thing. Local variables are fine for purely personal view state such as which tab is open or the text in an input being typed.
+2. One key per independently edited thing, prefixed by kind: "vote:<memberId>", "item:<id>", "cell:<row>:<col>", "score:<memberId>", "title". Each key is last-write-wins, so two people editing different keys never overwrite each other. Never store a growing list or a whole board as one array or object under one key; two simultaneous edits would lose one. Use sofa.id() for new entries and sofa.me.id for per-member keys. Store an "order" number or timestamp inside the value when order matters.
 3. Because render() runs on every change, do not destroy what a member is typing: keep inputs outside the re-rendered region, or skip replacing an input that has focus.
 4. No network and nothing external: no fetch, XMLHttpRequest or WebSocket, no script src, no CDN libraries, no web fonts, no remote images or stylesheets. Everything is inline. Draw graphics with CSS, inline SVG or canvas.
 5. Not available in the sandbox, do not use: localStorage, sessionStorage, cookies, alert, confirm, prompt, forms that submit, links that navigate, window.open, iframes. Use buttons with handlers; show confirmations and messages inside the page.

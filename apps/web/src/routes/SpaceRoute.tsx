@@ -1,4 +1,4 @@
-import { isSpaceId, type MemberInfo, type SpaceInfo } from "@sofra/shared";
+import { isSpaceId, type MemberInfo, type SpaceInfo } from "@sofa/shared";
 import { CloudOff, Lock, UserRound } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useState } from "react";
 import { useParams } from "react-router-dom";

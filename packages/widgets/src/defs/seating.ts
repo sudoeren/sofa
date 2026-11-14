@@ -1,4 +1,4 @@
-import type { JsonValue, ToolState } from "@sofra/shared";
+import type { JsonValue, ToolState } from "@sofa/shared";
 import { z } from "zod";
 import type { WidgetDef } from "../types";
 

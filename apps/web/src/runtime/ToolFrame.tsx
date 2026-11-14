@@ -1,4 +1,4 @@
-import { type MemberInfo, type Theme, TOOL_LIMITS } from "@sofra/shared";
+import { type MemberInfo, type Theme, TOOL_LIMITS } from "@sofa/shared";
 import { RotateCw, TriangleAlert, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
@@ -18,7 +18,7 @@ export type ToolFrameProps = {
   theme: Theme;
 };
 
-/** How long a frame may take to say "sofra:ready" before the host reports it. */
+/** How long a frame may take to say "sofa:ready" before the host reports it. */
 export const READY_TIMEOUT_MS = 8_000;
 /** Unexpected navigations or hangs allowed per version before the tool is stopped. */
 export const MAX_STRIKES = 2;

@@ -1,4 +1,4 @@
-import type { Theme } from "@sofra/shared";
+import type { Theme } from "@sofa/shared";
 import tokensCss from "../styles/tokens.css?raw";
 import sdkSource from "./sdk.js?raw";
 
@@ -14,13 +14,13 @@ export const FRAME_CSP =
   "img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none'; " +
   "form-action 'none'; base-uri 'none'; webrtc 'block'";
 
-export const NONCE_PLACEHOLDER = "__SOFRA_NONCE__";
+export const NONCE_PLACEHOLDER = "__SOFA_NONCE__";
 
 const RESET_CSS = `
 *,*::before,*::after{box-sizing:border-box}
 html{color-scheme:light;background:var(--surface);overflow-x:auto;overflow-y:hidden}
 html[data-theme="dark"]{color-scheme:dark}
-html[data-sofra-scroll]{overflow-y:auto}
+html[data-sofa-scroll]{overflow-y:auto}
 body{margin:0;font-family:var(--font);font-size:14px;line-height:1.45;color:var(--text);-webkit-text-size-adjust:100%}
 button,input,select,textarea{font:inherit;color:inherit}
 img,svg,canvas,video{max-width:100%}
@@ -86,7 +86,7 @@ export function buildSrcdoc(html: string, options: SrcdocOptions): string {
     for (const el of Array.from(parsed.querySelectorAll("base, meta[http-equiv]"))) el.remove();
     for (const attr of Array.from(parsed.documentElement.attributes)) {
       const name = attr.name.toLowerCase();
-      if (name === "data-theme" || name === "data-sofra-scroll") continue;
+      if (name === "data-theme" || name === "data-sofa-scroll") continue;
       if (!/^[a-z_][a-z0-9_.:-]*$/.test(name)) continue;
       htmlAttrs += ` ${name}="${escapeAttr(attr.value)}"`;
     }

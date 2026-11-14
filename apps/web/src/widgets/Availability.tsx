@@ -1,5 +1,5 @@
-import type { MemberInfo, ToolState } from "@sofra/shared";
-import type { AvailabilityConfig } from "@sofra/widgets";
+import type { MemberInfo, ToolState } from "@sofa/shared";
+import type { AvailabilityConfig } from "@sofa/widgets";
 import { Check, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { Avatar, asRecord, entriesWithPrefix, InlineEdit, newKeyId } from "./shared";

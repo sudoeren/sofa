@@ -1,4 +1,4 @@
-import { WIDGET_DEFS } from "@sofra/widgets";
+import { WIDGET_DEFS } from "@sofa/widgets";
 import { useMemo, useState } from "react";
 import { useTheme } from "../../lib/theme";
 import { ToolView } from "../../runtime";

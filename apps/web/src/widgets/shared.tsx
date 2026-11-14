@@ -1,4 +1,4 @@
-import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
+import type { JsonValue, MemberInfo, ToolState } from "@sofa/shared";
 import {
   type CSSProperties,
   type KeyboardEvent,

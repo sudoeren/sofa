@@ -42,7 +42,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
           labels: |
-            org.opencontainers.image.title=Sofra
+            org.opencontainers.image.title=Sofa
             org.opencontainers.image.description=Shared spaces where a group asks an AI to build the small tools it needs.
             org.opencontainers.image.licenses=MIT
       - uses: docker/build-push-action@v7
@@ -63,18 +63,18 @@ jobs:
           set -euo pipefail
           prerelease=""
           case "$TAG" in *-*) prerelease="--prerelease" ;; esac
-          gh release create "$TAG" --generate-notes --verify-tag $prerelease --title "Sofra $TAG"
+          gh release create "$TAG" --generate-notes --verify-tag $prerelease --title "Sofa $TAG"
 
   deploy:
     name: Deploy demo
     # Stable releases of this repository only; pre-releases (v1.2.0-rc.1) are not deployed.
-    if: github.repository == 'sudoeren/sofra' && !contains(github.ref_name, '-')
+    if: github.repository == 'sudoeren/sofa' && !contains(github.ref_name, '-')
     needs: release
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
       name: demo
-      url: https://sofra.erencakar.com
+      url: https://sofa.erencakar.com
     concurrency:
       group: deploy-demo
       cancel-in-progress: false
@@ -112,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
           for _ in $(seq 1 12); do
-            if curl -fsS https://sofra.erencakar.com/api/config > /dev/null; then echo "Live"; exit 0; fi
+            if curl -fsS https://sofa.erencakar.com/api/config > /dev/null; then echo "Live"; exit 0; fi
             sleep 5
           done
           echo "::error::The demo did not answer after deploying"

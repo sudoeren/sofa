@@ -2,7 +2,7 @@ import fsp from "node:fs/promises";
 import { createServer as createHttpServer, type Server as HttpServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { getRequestListener } from "@hono/node-server";
-import type { WidgetDef } from "@sofra/widgets";
+import type { WidgetDef } from "@sofa/widgets";
 import { createApp, type RateLimits } from "./app";
 import { type Collab, createCollab } from "./collab";
 import type { Config } from "./config";
@@ -24,7 +24,7 @@ export type ServerParts = {
   sweepIntervalMs?: number;
 };
 
-export type SofraServer = {
+export type SofaServer = {
   config: Config;
   db: Db;
   docs: SpaceDocs;
@@ -40,7 +40,7 @@ export type SofraServer = {
 };
 
 /** Wire storage, collab, files, AI and the REST app onto one HTTP server. */
-export function buildServer(config: Config, parts: ServerParts): SofraServer {
+export function buildServer(config: Config, parts: ServerParts): SofaServer {
   const db = openDb(config.dataDir);
   const secret = loadSecret(config.dataDir);
   const collab: Collab = createCollab({ db, secret, debounceMs: parts.collabDebounceMs });
@@ -75,11 +75,11 @@ export function buildServer(config: Config, parts: ServerParts): SofraServer {
       await Promise.all(paths.map((file) => fsp.rm(file, { force: true })));
       removed++;
     }
-    if (removed > 0) console.log(`[sofra] removed ${removed} expired space(s)`);
+    if (removed > 0) console.log(`[sofa] removed ${removed} expired space(s)`);
     return removed;
   };
   const runSweep = () => {
-    sweep().catch((error) => console.error("[sofra] cleanup failed:", error));
+    sweep().catch((error) => console.error("[sofa] cleanup failed:", error));
   };
   const sweepTimer =
     config.spaceTtlHours > 0

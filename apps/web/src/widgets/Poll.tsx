@@ -1,5 +1,5 @@
-import type { ToolState } from "@sofra/shared";
-import type { PollConfig } from "@sofra/widgets";
+import type { ToolState } from "@sofa/shared";
+import type { PollConfig } from "@sofa/widgets";
 import { Check, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Avatar, asRecord, entriesWithPrefix, InlineEdit, newKeyId } from "./shared";

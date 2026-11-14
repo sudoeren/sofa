@@ -1,5 +1,5 @@
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { COLLAB_PATH, type MemberInfo } from "@sofra/shared";
+import { COLLAB_PATH, type MemberInfo } from "@sofa/shared";
 import {
   createContext,
   type ReactNode,

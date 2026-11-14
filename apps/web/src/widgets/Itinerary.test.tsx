@@ -1,5 +1,5 @@
-import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
-import { getWidgetDef, type ItineraryConfig, type WidgetDef } from "@sofra/widgets";
+import type { JsonValue, MemberInfo, ToolState } from "@sofa/shared";
+import { getWidgetDef, type ItineraryConfig, type WidgetDef } from "@sofa/widgets";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";

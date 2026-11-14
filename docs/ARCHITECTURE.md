@@ -1,6 +1,6 @@
-# Sofra architecture
+# Sofa architecture
 
-Sofra is a self-hosted web app. A group opens a shared space, drops in notes, links and
+Sofa is a self-hosted web app. A group opens a shared space, drops in notes, links and
 files, and asks an AI to build the small tools it needs: a poll, an itinerary, an expense
 splitter, a bracket, a seating chart, a game. Everyone edits the tools at the same time.
 Asking again changes an existing tool without losing its data.
@@ -90,31 +90,31 @@ with a Content-Security-Policy that blocks all network access, and injects the S
 before the tool's own scripts. The frame talks to the host only through `postMessage`
 (`packages/shared/src/protocol.ts`).
 
-The SDK is the global `sofra`:
+The SDK is the global `sofa`:
 
 ```js
-sofra.ready(function () { ... })        // runs once init data has arrived (or at once if it already has)
-sofra.me                                // { id, name, color }
-sofra.members                           // [{ id, name, color }, ...] currently in the space
-sofra.onMembers(function (members) {})  // called when the member list changes
-sofra.theme                             // "light" | "dark"
-sofra.onTheme(function (theme) {})
+sofa.ready(function () { ... })        // runs once init data has arrived (or at once if it already has)
+sofa.me                                // { id, name, color }
+sofa.members                           // [{ id, name, color }, ...] currently in the space
+sofa.onMembers(function (members) {})  // called when the member list changes
+sofa.theme                             // "light" | "dark"
+sofa.onTheme(function (theme) {})
 
-sofra.state.get(key)                    // JSON value or undefined
-sofra.state.set(key, value)             // shared with everyone, applied locally at once
-sofra.state.delete(key)
-sofra.state.keys(prefix)                // keys, optionally only those starting with prefix
-sofra.state.entries(prefix)             // [[key, value], ...]
-sofra.state.all()                       // shallow copy of the whole state
-sofra.state.subscribe(function (key) {})// called after any change, local or remote; key may be undefined for bulk changes
+sofa.state.get(key)                    // JSON value or undefined
+sofa.state.set(key, value)             // shared with everyone, applied locally at once
+sofa.state.delete(key)
+sofa.state.keys(prefix)                // keys, optionally only those starting with prefix
+sofa.state.entries(prefix)             // [[key, value], ...]
+sofa.state.all()                       // shallow copy of the whole state
+sofa.state.subscribe(function (key) {})// called after any change, local or remote; key may be undefined for bulk changes
                                         // returns an unsubscribe function
-sofra.id()                              // short unique id
+sofa.id()                              // short unique id
 ```
 
 Rules for tool HTML (templates and AI output follow them):
 
-- Render from state on every change: one `render()` called in `sofra.ready` and in
-  `sofra.state.subscribe`. Never keep shared data only in local variables.
+- Render from state on every change: one `render()` called in `sofa.ready` and in
+  `sofa.state.subscribe`. Never keep shared data only in local variables.
 - One key per independently edited thing, prefixed by kind.
 - No network, no external scripts, fonts, images or styles. No `localStorage`, cookies,
   `alert`, `confirm`, `prompt`, forms that submit or links that navigate.

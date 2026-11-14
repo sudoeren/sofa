@@ -24,8 +24,8 @@ import {
   type UseTemplateResponse,
   unlockBody,
   useTemplateBody,
-} from "@sofra/shared";
-import type { WidgetDef } from "@sofra/widgets";
+} from "@sofa/shared";
+import type { WidgetDef } from "@sofa/widgets";
 import { type Context, Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { HTTPException } from "hono/http-exception";
@@ -164,7 +164,7 @@ export function createApp(deps: AppDeps): Hono<Env> {
       return c.json({ error: error.message || "Request failed" }, error.status);
     if (error instanceof FileError) return c.json({ error: error.message }, error.status);
     console.error(
-      "[sofra] request failed:",
+      "[sofa] request failed:",
       error instanceof Error ? error.message : "unknown error",
     );
     return c.json({ error: "Internal server error" }, 500);

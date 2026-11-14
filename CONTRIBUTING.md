@@ -51,7 +51,7 @@ git push origin v0.2.0
 ```
 
 The release workflow runs the checks, publishes a multi-arch image to
-`ghcr.io/sudoeren/sofra` (`0.2.0`, `0.2` and `latest`) and creates the GitHub release with
+`ghcr.io/sudoeren/sofa` (`0.2.0`, `0.2` and `latest`) and creates the GitHub release with
 generated notes. Tags with a suffix such as `v0.2.0-rc.1` become pre-releases and do not
 move `latest`.
 

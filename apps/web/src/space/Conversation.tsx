@@ -1,4 +1,4 @@
-import { type ChatMessage, colorFor, type ToolRecord } from "@sofra/shared";
+import { type ChatMessage, colorFor, type ToolRecord } from "@sofa/shared";
 import clsx from "clsx";
 import { ArrowUpRight, MessagesSquare, Sparkles, TriangleAlert } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
@@ -65,7 +65,7 @@ function Message({
   const assistant = message.role === "assistant";
   const pending = message.status === "pending";
   const failed = message.status === "error";
-  const name = assistant ? "Sofra" : message.authorName || "Someone";
+  const name = assistant ? "Sofa" : message.authorName || "Someone";
 
   return (
     <li className={clsx("msg", assistant ? "msg-assistant" : "msg-user", failed && "msg-error")}>

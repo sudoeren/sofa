@@ -1,5 +1,5 @@
 {
-  "name": "sofra",
+  "name": "sofa",
   "private": true,
   "version": "0.1.0",
   "description": "Open-source, self-hosted shared spaces where a group asks an AI to build the small tools it needs.",
@@ -9,8 +9,8 @@
     "node": ">=22.5"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @sofra/server --filter @sofra/web dev",
-    "build": "pnpm --filter @sofra/web build && pnpm --filter @sofra/server build",
+    "dev": "pnpm -r --parallel --filter @sofa/server --filter @sofa/web dev",
+    "build": "pnpm --filter @sofa/web build && pnpm --filter @sofa/server build",
     "start": "node apps/server/dist/index.js",
     "typecheck": "pnpm -r --workspace-concurrency=1 typecheck",
     "test": "pnpm -r --workspace-concurrency=1 test",

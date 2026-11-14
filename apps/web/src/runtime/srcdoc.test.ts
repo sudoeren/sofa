@@ -1,4 +1,4 @@
-import { TOOL_LIMITS } from "@sofra/shared";
+import { TOOL_LIMITS } from "@sofa/shared";
 import { describe, expect, it } from "vitest";
 import tokensCss from "../styles/tokens.css?raw";
 import sdkSource from "./sdk.js?raw";
@@ -19,7 +19,7 @@ function expectHardened(srcdoc: string): Document {
   expect(srcdoc.startsWith('<!doctype html><html data-theme="')).toBe(true);
 
   const scripts = Array.from(doc.querySelectorAll("script"));
-  expect(scripts[0]?.textContent).toContain("window.sofra = api");
+  expect(scripts[0]?.textContent).toContain("window.sofa = api");
   expect(scripts[0]?.parentElement).toBe(doc.head);
   // exactly one CSP, no base, no refresh
   expect(doc.querySelectorAll("meta[http-equiv]").length).toBe(1);
@@ -48,7 +48,7 @@ describe("buildSrcdoc", () => {
   it("wraps a plain document: CSP first, tokens, SDK, then the tool", () => {
     const srcdoc = buildSrcdoc(
       '<!doctype html><html lang="tr"><head><title>Poll</title><style>p{color:red}</style></head>' +
-        '<body class="x"><p id="p">hi</p><script>sofra.ready(function(){})</script></body></html>',
+        '<body class="x"><p id="p">hi</p><script>sofa.ready(function(){})</script></body></html>',
       { theme: "dark", nonce: "abc123" },
     );
     const doc = expectHardened(srcdoc);
@@ -64,8 +64,8 @@ describe("buildSrcdoc", () => {
     const scripts = Array.from(doc.querySelectorAll("script"));
     expect(scripts).toHaveLength(2);
     expect(scripts[0]?.textContent).toContain('"abc123"');
-    expect(scripts[0]?.textContent).not.toContain("__SOFRA_NONCE__");
-    expect(scripts[1]?.textContent).toContain("sofra.ready");
+    expect(scripts[0]?.textContent).not.toContain("__SOFA_NONCE__");
+    expect(scripts[1]?.textContent).toContain("sofa.ready");
   });
 
   it("uses the text of tokens.css rather than a copy", () => {
@@ -135,7 +135,7 @@ describe("buildSrcdoc", () => {
       const doc = parse(srcdoc);
       const first = doc.head.firstElementChild;
       expect(first?.getAttribute("content"), input).toBe(FRAME_CSP);
-      expect(doc.querySelector("script")?.textContent, input).toContain("window.sofra = api");
+      expect(doc.querySelector("script")?.textContent, input).toContain("window.sofa = api");
       // nothing but the fixed prefix precedes the policy in the text itself
       const headAt = srcdoc.indexOf("<head>");
       expect(srcdoc.slice(0, headAt), input).toMatch(
@@ -160,7 +160,7 @@ describe("buildSrcdoc", () => {
     );
     const scripts = Array.from(doc.querySelectorAll("script"));
     // the SDK is intact and still first; the attribute and title text did not become scripts
-    expect(scripts[0]?.textContent).toContain("window.sofra = api");
+    expect(scripts[0]?.textContent).toContain("window.sofa = api");
     expect(scripts[0]?.textContent?.trimEnd().endsWith("})(window);")).toBe(true);
     expect(doc.documentElement.getAttribute("lang")).toBe("</script><script>alert(1)</script>");
     expect(scripts.some((s) => s.textContent === "alert(1)")).toBe(false);

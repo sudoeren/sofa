@@ -1,4 +1,4 @@
-import type { ToolRecord } from "@sofra/shared";
+import type { ToolRecord } from "@sofa/shared";
 import clsx from "clsx";
 import { X } from "lucide-react";
 import { useEffect, useId } from "react";

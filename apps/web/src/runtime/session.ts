@@ -1,4 +1,4 @@
-import type { HostToTool, MemberInfo, Theme } from "@sofra/shared";
+import type { HostToTool, MemberInfo, Theme } from "@sofa/shared";
 import {
   checkFrameMessage,
   clampHeight,
@@ -40,27 +40,27 @@ export type FrameSessionOptions = {
 export const PING_INTERVAL_MS = 5_000;
 export const PING_TIMEOUT_MS = 15_000;
 
-type Internal = HostToTool | { type: "sofra:ping" };
+type Internal = HostToTool | { type: "sofa:ping" };
 
 /**
  * Host side of one loaded tool document. One session per iframe element; a reload makes
  * a new element and a new session.
  *
  * Handshake:
- *   1. The SDK posts "sofra:ready" to the parent window. Accepted only when event.source
+ *   1. The SDK posts "sofa:ready" to the parent window. Accepted only when event.source
  *      is this frame's window, and only once per session.
- *   2. The host answers with an empty "sofra:port" message that transfers one end of a
+ *   2. The host answers with an empty "sofa:port" message that transfers one end of a
  *      new MessageChannel. Target origin is "*" (a sandboxed srcdoc frame has an opaque
  *      origin, nothing else can be named), so this message carries no data.
- *   3. The SDK sends "sofra:hello" with the nonce that was written into its source.
- *      Only then does the host send "sofra:init", on the port.
+ *   3. The SDK sends "sofa:hello" with the nonce that was written into its source.
+ *      Only then does the host send "sofa:init", on the port.
  *
  * After that every message in both directions uses the port. A document that replaces
  * the tool in the same frame (the tool navigated itself) keeps the same contentWindow,
  * so a source check alone would accept it; it has neither the port nor the nonce, so it
  * receives nothing and can write nothing.
  *
- * Writes: every "sofra:set"/"sofra:delete" is answered with exactly one "sofra:state"
+ * Writes: every "sofa:set"/"sofa:delete" is answered with exactly one "sofa:state"
  * for that key carrying the value the document ended up with, whether the write was
  * applied or rejected. Changes that did not come from this frame are forwarded per key.
  * The SDK relies on this one-answer-per-write rule to converge without flicker.
@@ -97,7 +97,7 @@ export class FrameSession {
     const channel = this.options.createChannel?.() ?? (new MessageChannel() as ChannelLike);
     this.port = channel.port1;
     channel.port1.onmessage = this.onPortMessage;
-    frame.postMessage({ type: "sofra:port" }, "*", [channel.port2 as unknown as Transferable]);
+    frame.postMessage({ type: "sofa:port" }, "*", [channel.port2 as unknown as Transferable]);
   }
 
   /**
@@ -111,11 +111,11 @@ export class FrameSession {
   }
 
   pushMembers(): void {
-    this.send({ type: "sofra:members", members: this.options.context().members.map(publicMember) });
+    this.send({ type: "sofa:members", members: this.options.context().members.map(publicMember) });
   }
 
   pushTheme(): void {
-    this.send({ type: "sofra:theme", theme: this.options.context().theme });
+    this.send({ type: "sofa:theme", theme: this.options.context().theme });
   }
 
   dispose(): void {
@@ -153,7 +153,7 @@ export class FrameSession {
     if (!this.established) {
       if (
         verdict.kind !== "accept" ||
-        verdict.message.type !== "sofra:hello" ||
+        verdict.message.type !== "sofa:hello" ||
         verdict.message.nonce !== this.options.nonce
       ) {
         return;
@@ -161,7 +161,7 @@ export class FrameSession {
       this.established = true;
       const context = this.options.context();
       this.send({
-        type: "sofra:init",
+        type: "sofa:init",
         toolId: this.options.store.toolId,
         state: this.options.store.getState(),
         me: publicMember(context.me),
@@ -180,29 +180,29 @@ export class FrameSession {
 
     if (verdict.kind === "reject") {
       this.options.onError?.(`Could not save "${verdict.key.slice(0, 60)}": ${verdict.reason}`);
-      this.send({ type: "sofra:state", key: verdict.key, value: store.peek(verdict.key) });
+      this.send({ type: "sofa:state", key: verdict.key, value: store.peek(verdict.key) });
       return;
     }
 
     const message = verdict.message;
     switch (message.type) {
-      case "sofra:set":
-      case "sofra:delete": {
+      case "sofa:set":
+      case "sofa:delete": {
         const result = !this.budget.take()
           ? ({ ok: false, reason: "too many changes at once" } as const)
-          : message.type === "sofra:set"
+          : message.type === "sofa:set"
             ? store.write(message.key, message.value, this)
             : store.remove(message.key, this);
         if (!result.ok) {
           this.options.onError?.(`Could not save "${message.key.slice(0, 60)}": ${result.reason}`);
         }
-        this.send({ type: "sofra:state", key: message.key, value: store.peek(message.key) });
+        this.send({ type: "sofa:state", key: message.key, value: store.peek(message.key) });
         break;
       }
-      case "sofra:resize":
+      case "sofa:resize":
         this.options.onHeight?.(clampHeight(message.height));
         break;
-      case "sofra:error":
+      case "sofa:error":
         if (message.message) this.options.onError?.(message.message);
         break;
       default:
@@ -214,11 +214,11 @@ export class FrameSession {
     if (!this.established || change.origin === this) return;
     const store = this.options.store;
     if (change.keys === null) {
-      this.send({ type: "sofra:state-all", state: store.getState() });
+      this.send({ type: "sofa:state-all", state: store.getState() });
       return;
     }
     for (const key of change.keys) {
-      this.send({ type: "sofra:state", key, value: store.peek(key) });
+      this.send({ type: "sofa:state", key, value: store.peek(key) });
     }
   };
 
@@ -234,6 +234,6 @@ export class FrameSession {
       this.lose("unresponsive");
       return;
     }
-    this.send({ type: "sofra:ping" });
+    this.send({ type: "sofa:ping" });
   };
 }

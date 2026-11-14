@@ -24,7 +24,7 @@ async function start(ttlHours: number) {
 function age(dataDir: string, spaceId: string, hours: number) {
   // backdate through a second connection to the same database file
   const { DatabaseSync } = require("node:sqlite") as typeof import("node:sqlite");
-  const db = new DatabaseSync(path.join(dataDir, "sofra.db"));
+  const db = new DatabaseSync(path.join(dataDir, "sofa.db"));
   const at = Date.now() - hours * 3_600_000;
   db.prepare("UPDATE spaces SET created_at = ? WHERE id = ?").run(at, spaceId);
   db.prepare("UPDATE docs SET updated_at = ? WHERE space_id = ?").run(at, spaceId);

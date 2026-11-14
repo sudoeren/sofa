@@ -1,4 +1,4 @@
-import type { TemplateInfo } from "@sofra/shared";
+import type { TemplateInfo } from "@sofa/shared";
 import {
   Armchair,
   CalendarCheck,

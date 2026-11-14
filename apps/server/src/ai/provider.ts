@@ -1,7 +1,7 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { OPENROUTER_BASE_URL, type UserAi } from "@sofra/shared";
+import { OPENROUTER_BASE_URL, type UserAi } from "@sofa/shared";
 import type { LanguageModel } from "ai";
 import type { Config } from "../config";
 import type { AiInfo } from "../types";
@@ -66,7 +66,7 @@ export function createLanguageModel(choice: ProviderChoice): LanguageModel {
       baseURL: OPENROUTER_BASE_URL,
       apiKey: choice.apiKey ?? undefined,
       // Optional attribution headers OpenRouter reads for its app listing.
-      headers: { "HTTP-Referer": "https://github.com/sudoeren/sofra", "X-Title": "Sofra" },
+      headers: { "HTTP-Referer": "https://github.com/sudoeren/sofa", "X-Title": "Sofa" },
     })(choice.model);
   }
   if (!choice.baseUrl) throw new Error("The OpenAI-compatible provider has no base URL.");

@@ -1,4 +1,4 @@
-import { putTool, type ToolRecord, type ToolState } from "@sofra/shared";
+import { putTool, type ToolRecord, type ToolState } from "@sofa/shared";
 import * as Y from "yjs";
 
 /** Test helpers for the runtime. Not exported from index.ts. */

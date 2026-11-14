@@ -1,4 +1,4 @@
-import { LIMITS, type MemberInfo } from "@sofra/shared";
+import { LIMITS, type MemberInfo } from "@sofa/shared";
 import clsx from "clsx";
 import { Check, Link2, Lock, PanelRight, Plus, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -82,7 +82,7 @@ export function Header({
   return (
     <header className="space-header">
       <div className="space-header-start">
-        <Link className="brand brand-compact" to="/" aria-label="Sofra home">
+        <Link className="brand brand-compact" to="/" aria-label="Sofa home">
           <Wordmark size={18} />
         </Link>
         <div className="space-title-wrap">

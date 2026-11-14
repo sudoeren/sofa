@@ -1,15 +1,15 @@
 services:
-  sofra:
+  sofa:
     build: .
-    image: sofra:local
+    image: sofa:local
     ports:
       - "8787:8787"
     env_file:
       - path: .env
         required: false
     volumes:
-      - sofra-data:/data
+      - sofa-data:/data
     restart: unless-stopped
 
 volumes:
-  sofra-data:
+  sofa-data:

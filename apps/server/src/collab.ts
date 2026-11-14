@@ -1,7 +1,7 @@
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
 import { Hocuspocus } from "@hocuspocus/server";
-import { COLLAB_PATH, isSpaceId, metaMap } from "@sofra/shared";
+import { COLLAB_PATH, isSpaceId, metaMap } from "@sofa/shared";
 import { type RawData, type WebSocket, WebSocketServer } from "ws";
 import * as Y from "yjs";
 import { verifySpaceToken } from "./auth";

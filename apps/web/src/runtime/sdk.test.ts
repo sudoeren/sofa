@@ -32,7 +32,7 @@ function boot(options: { theme?: string; extras?: Record<string, unknown> } = {}
   const connect = (source: unknown = parent) =>
     fire("message", {
       source,
-      data: { type: "sofra:port" },
+      data: { type: "sofa:port" },
       ports: [port],
       stopImmediatePropagation: vi.fn(),
     });
@@ -41,15 +41,15 @@ function boot(options: { theme?: string; extras?: Record<string, unknown> } = {}
     port.postMessage.mock.calls.map((call) => call[0]).filter((m) => m.type === type);
   const init = (state: Record<string, unknown> = {}) =>
     fromHost({
-      type: "sofra:init",
+      type: "sofa:init",
       toolId: "t1",
       state,
       me: { id: "u1", name: "Ada", color: "#111" },
       members: [{ id: "u1", name: "Ada", color: "#111" }],
       theme: "dark",
     });
-  const sofra = win.sofra as any;
-  return { win, doc, parent, port, fire, connect, fromHost, sent, init, sofra };
+  const sofa = win.sofa as any;
+  return { win, doc, parent, port, fire, connect, fromHost, sent, init, sofa };
 }
 
 describe("frame SDK", () => {
@@ -60,11 +60,11 @@ describe("frame SDK", () => {
 
   it("announces itself to the parent and waits for a port", () => {
     expect(frame.parent.postMessage).toHaveBeenCalledTimes(1);
-    expect(frame.parent.postMessage).toHaveBeenCalledWith({ type: "sofra:ready" }, "*");
+    expect(frame.parent.postMessage).toHaveBeenCalledWith({ type: "sofa:ready" }, "*");
     frame.connect();
     expect(frame.port.postMessage.mock.calls[0]?.[0]).toEqual({
-      type: "sofra:hello",
-      nonce: "__SOFRA_NONCE__",
+      type: "sofa:hello",
+      nonce: "__SOFA_NONCE__",
     });
   });
 
@@ -77,61 +77,61 @@ describe("frame SDK", () => {
   });
 
   it("init fills state, me, members and theme and reflects the theme on <html>", () => {
-    expect(frame.sofra.theme).toBe("light");
+    expect(frame.sofa.theme).toBe("light");
     frame.connect();
     frame.init({ title: "Dinner", "vote:u1": 2 });
-    expect(frame.sofra.state.get("title")).toBe("Dinner");
-    expect(frame.sofra.me).toEqual({ id: "u1", name: "Ada", color: "#111" });
-    expect(frame.sofra.members).toHaveLength(1);
-    expect(frame.sofra.theme).toBe("dark");
+    expect(frame.sofa.state.get("title")).toBe("Dinner");
+    expect(frame.sofa.me).toEqual({ id: "u1", name: "Ada", color: "#111" });
+    expect(frame.sofa.members).toHaveLength(1);
+    expect(frame.sofa.theme).toBe("dark");
     expect(frame.doc.documentElement.getAttribute("data-theme")).toBe("dark");
-    expect(frame.sofra.state.keys().sort()).toEqual(["title", "vote:u1"]);
-    expect(frame.sofra.state.keys("vote:")).toEqual(["vote:u1"]);
-    expect(frame.sofra.state.entries("vote:")).toEqual([["vote:u1", 2]]);
-    expect(frame.sofra.state.all()).toEqual({ title: "Dinner", "vote:u1": 2 });
-    expect(frame.sofra.state.get("missing")).toBeUndefined();
+    expect(frame.sofa.state.keys().sort()).toEqual(["title", "vote:u1"]);
+    expect(frame.sofa.state.keys("vote:")).toEqual(["vote:u1"]);
+    expect(frame.sofa.state.entries("vote:")).toEqual([["vote:u1", 2]]);
+    expect(frame.sofa.state.all()).toEqual({ title: "Dinner", "vote:u1": 2 });
+    expect(frame.sofa.state.get("missing")).toBeUndefined();
   });
 
   it("runs ready callbacks once, whether registered before or after init", () => {
     const early = vi.fn();
-    frame.sofra.ready(early);
+    frame.sofa.ready(early);
     expect(early).not.toHaveBeenCalled();
     frame.connect();
     frame.init({ a: 1 });
     expect(early).toHaveBeenCalledTimes(1);
-    const late = vi.fn(() => expect(frame.sofra.state.get("a")).toBe(1));
-    frame.sofra.ready(late);
+    const late = vi.fn(() => expect(frame.sofa.state.get("a")).toBe(1));
+    frame.sofa.ready(late);
     expect(late).toHaveBeenCalledTimes(1);
     frame.init({ a: 2 }); // a second init is ignored
     expect(early).toHaveBeenCalledTimes(1);
-    expect(frame.sofra.state.get("a")).toBe(1);
+    expect(frame.sofa.state.get("a")).toBe(1);
   });
 
   it("applies local writes at once, notifies subscribers and tells the host", () => {
     frame.connect();
     frame.init();
     const seen: unknown[] = [];
-    const unsubscribe = frame.sofra.state.subscribe((key: string) => {
-      seen.push([key, frame.sofra.state.get(key)]);
+    const unsubscribe = frame.sofa.state.subscribe((key: string) => {
+      seen.push([key, frame.sofa.state.get(key)]);
     });
-    frame.sofra.state.set("item:1", { text: "milk" });
-    expect(frame.sofra.state.get("item:1")).toEqual({ text: "milk" });
+    frame.sofa.state.set("item:1", { text: "milk" });
+    expect(frame.sofa.state.get("item:1")).toEqual({ text: "milk" });
     expect(seen).toEqual([["item:1", { text: "milk" }]]);
-    expect(frame.sent("sofra:set")).toEqual([
-      { type: "sofra:set", key: "item:1", value: { text: "milk" } },
+    expect(frame.sent("sofa:set")).toEqual([
+      { type: "sofa:set", key: "item:1", value: { text: "milk" } },
     ]);
 
-    frame.sofra.state.set("item:1", { text: "milk" }); // unchanged: nothing happens
+    frame.sofa.state.set("item:1", { text: "milk" }); // unchanged: nothing happens
     expect(seen).toHaveLength(1);
-    expect(frame.sent("sofra:set")).toHaveLength(1);
+    expect(frame.sent("sofa:set")).toHaveLength(1);
 
-    frame.sofra.state.delete("item:1");
-    expect(frame.sofra.state.get("item:1")).toBeUndefined();
-    expect(frame.sent("sofra:delete")).toEqual([{ type: "sofra:delete", key: "item:1" }]);
+    frame.sofa.state.delete("item:1");
+    expect(frame.sofa.state.get("item:1")).toBeUndefined();
+    expect(frame.sent("sofa:delete")).toEqual([{ type: "sofa:delete", key: "item:1" }]);
     expect(seen).toHaveLength(2);
 
     unsubscribe();
-    frame.sofra.state.set("x", 1);
+    frame.sofa.state.set("x", 1);
     expect(seen).toHaveLength(2);
   });
 
@@ -139,87 +139,87 @@ describe("frame SDK", () => {
     frame.connect();
     frame.init({ a: 1 });
     const keys: unknown[] = [];
-    frame.sofra.state.subscribe((key: unknown) => keys.push(key));
-    frame.fromHost({ type: "sofra:state", key: "b", value: [1] });
-    frame.fromHost({ type: "sofra:state", key: "a", value: undefined });
-    frame.fromHost({ type: "sofra:state", key: "b", value: [1] }); // same value: silent
+    frame.sofa.state.subscribe((key: unknown) => keys.push(key));
+    frame.fromHost({ type: "sofa:state", key: "b", value: [1] });
+    frame.fromHost({ type: "sofa:state", key: "a", value: undefined });
+    frame.fromHost({ type: "sofa:state", key: "b", value: [1] }); // same value: silent
     expect(keys).toEqual(["b", "a"]);
-    expect(frame.sofra.state.all()).toEqual({ b: [1] });
-    frame.fromHost({ type: "sofra:state-all", state: { z: 9 } });
+    expect(frame.sofa.state.all()).toEqual({ b: [1] });
+    frame.fromHost({ type: "sofa:state-all", state: { z: 9 } });
     expect(keys).toEqual(["b", "a", undefined]);
-    expect(frame.sofra.state.all()).toEqual({ z: 9 });
+    expect(frame.sofa.state.all()).toEqual({ z: 9 });
   });
 
   it("converges on the host's answer and does not flicker while typing", () => {
     frame.connect();
     frame.init();
     const renders: unknown[] = [];
-    frame.sofra.state.subscribe(() => renders.push(frame.sofra.state.get("t")));
-    frame.sofra.state.set("t", "a");
-    frame.sofra.state.set("t", "ab");
-    frame.sofra.state.set("t", "abc");
+    frame.sofa.state.subscribe(() => renders.push(frame.sofa.state.get("t")));
+    frame.sofa.state.set("t", "a");
+    frame.sofa.state.set("t", "ab");
+    frame.sofa.state.set("t", "abc");
     // answers to the older writes arrive late and must not roll the text back
-    frame.fromHost({ type: "sofra:state", key: "t", value: "a" });
-    frame.fromHost({ type: "sofra:state", key: "t", value: "ab" });
-    frame.fromHost({ type: "sofra:state", key: "t", value: "abc" });
+    frame.fromHost({ type: "sofa:state", key: "t", value: "a" });
+    frame.fromHost({ type: "sofa:state", key: "t", value: "ab" });
+    frame.fromHost({ type: "sofa:state", key: "t", value: "abc" });
     expect(renders).toEqual(["a", "ab", "abc"]);
 
     // a rejected write is answered with the authoritative value
-    frame.sofra.state.set("t", "abcd");
-    frame.fromHost({ type: "sofra:state", key: "t", value: "abc" });
-    expect(frame.sofra.state.get("t")).toBe("abc");
+    frame.sofa.state.set("t", "abcd");
+    frame.fromHost({ type: "sofa:state", key: "t", value: "abc" });
+    expect(frame.sofa.state.get("t")).toBe("abc");
 
     // a remote value in flight, then the answer to the local write: the answer wins
-    frame.sofra.state.set("t", "mine");
-    frame.fromHost({ type: "sofra:state", key: "t", value: "theirs" });
-    frame.fromHost({ type: "sofra:state", key: "t", value: "mine" });
-    expect(frame.sofra.state.get("t")).toBe("mine");
+    frame.sofa.state.set("t", "mine");
+    frame.fromHost({ type: "sofa:state", key: "t", value: "theirs" });
+    frame.fromHost({ type: "sofa:state", key: "t", value: "mine" });
+    expect(frame.sofa.state.get("t")).toBe("mine");
   });
 
   it("clones values in and out", () => {
     frame.connect();
     frame.init({ list: [1, 2] });
-    const out = frame.sofra.state.get("list");
+    const out = frame.sofa.state.get("list");
     out.push(3);
-    expect(frame.sofra.state.get("list")).toEqual([1, 2]);
-    frame.sofra.state.all().list.push(4);
-    frame.sofra.state.entries()[0][1].push(5);
-    expect(frame.sofra.state.get("list")).toEqual([1, 2]);
+    expect(frame.sofa.state.get("list")).toEqual([1, 2]);
+    frame.sofa.state.all().list.push(4);
+    frame.sofa.state.entries()[0][1].push(5);
+    expect(frame.sofa.state.get("list")).toEqual([1, 2]);
 
     const value = { n: 1 };
-    frame.sofra.state.set("obj", value);
+    frame.sofa.state.set("obj", value);
     value.n = 2;
-    expect(frame.sofra.state.get("obj")).toEqual({ n: 1 });
-    expect(frame.sent("sofra:set")[0].value).toEqual({ n: 1 });
+    expect(frame.sofa.state.get("obj")).toEqual({ n: 1 });
+    expect(frame.sent("sofa:set")[0].value).toEqual({ n: 1 });
 
-    frame.sofra.me.name = "Mallory";
-    frame.sofra.members.push({ id: "x" });
-    expect(frame.sofra.me.name).toBe("Ada");
-    expect(frame.sofra.members).toHaveLength(1);
+    frame.sofa.me.name = "Mallory";
+    frame.sofa.members.push({ id: "x" });
+    expect(frame.sofa.me.name).toBe("Ada");
+    expect(frame.sofa.members).toHaveLength(1);
   });
 
   it("refuses invalid writes locally and reports them", () => {
     frame.connect();
     frame.init();
-    frame.sofra.state.set("", 1);
-    frame.sofra.state.set("k".repeat(201), 1);
-    frame.sofra.state.set("fn", () => 1);
-    frame.sofra.state.set("undef", undefined);
-    frame.sofra.state.set("big", "x".repeat(70_000));
+    frame.sofa.state.set("", 1);
+    frame.sofa.state.set("k".repeat(201), 1);
+    frame.sofa.state.set("fn", () => 1);
+    frame.sofa.state.set("undef", undefined);
+    frame.sofa.state.set("big", "x".repeat(70_000));
     const cyclic: Record<string, unknown> = {};
     cyclic.self = cyclic;
-    frame.sofra.state.set("cyclic", cyclic);
-    expect(frame.sofra.state.keys()).toEqual([]);
-    expect(frame.sent("sofra:set")).toEqual([]);
-    expect(frame.sent("sofra:error").length).toBeGreaterThan(0);
+    frame.sofa.state.set("cyclic", cyclic);
+    expect(frame.sofa.state.keys()).toEqual([]);
+    expect(frame.sent("sofa:set")).toEqual([]);
+    expect(frame.sent("sofa:error").length).toBeGreaterThan(0);
   });
 
   it("queues what happens before the port arrives", () => {
-    frame.sofra.state.set("early", 1);
-    expect(frame.sofra.state.get("early")).toBe(1);
+    frame.sofa.state.set("early", 1);
+    expect(frame.sofa.state.get("early")).toBe(1);
     frame.connect();
     const types = frame.port.postMessage.mock.calls.map((call) => call[0].type);
-    expect(types).toEqual(["sofra:hello", "sofra:set"]);
+    expect(types).toEqual(["sofa:hello", "sofa:set"]);
   });
 
   it("forwards members and theme changes", () => {
@@ -227,15 +227,15 @@ describe("frame SDK", () => {
     frame.init();
     const onMembers = vi.fn();
     const onTheme = vi.fn();
-    frame.sofra.onMembers(onMembers);
-    frame.sofra.onTheme(onTheme);
-    frame.fromHost({ type: "sofra:members", members: [{ id: "u2", name: "Bo", color: "#222" }] });
-    frame.fromHost({ type: "sofra:theme", theme: "light" });
+    frame.sofa.onMembers(onMembers);
+    frame.sofa.onTheme(onTheme);
+    frame.fromHost({ type: "sofa:members", members: [{ id: "u2", name: "Bo", color: "#222" }] });
+    frame.fromHost({ type: "sofa:theme", theme: "light" });
     expect(onMembers).toHaveBeenCalledWith([{ id: "u2", name: "Bo", color: "#222" }]);
     expect(onTheme).toHaveBeenCalledWith("light");
-    expect(frame.sofra.theme).toBe("light");
+    expect(frame.sofa.theme).toBe("light");
     expect(frame.doc.documentElement.getAttribute("data-theme")).toBe("light");
-    frame.fromHost({ type: "sofra:theme", theme: "<script>" });
+    frame.fromHost({ type: "sofa:theme", theme: "<script>" });
     expect(frame.doc.documentElement.getAttribute("data-theme")).toBe("light");
   });
 
@@ -244,17 +244,17 @@ describe("frame SDK", () => {
     frame.init();
     frame.fire("error", { message: "x is not defined", lineno: 12 });
     frame.fire("unhandledrejection", { reason: new Error("nope") });
-    frame.sofra.state.subscribe(() => {
+    frame.sofa.state.subscribe(() => {
       throw new Error("render failed");
     });
     const other = vi.fn();
-    frame.sofra.state.subscribe(other);
-    frame.sofra.state.set("a", 1);
+    frame.sofa.state.subscribe(other);
+    frame.sofa.state.set("a", 1);
     expect(other).toHaveBeenCalled(); // one bad subscriber does not stop the others
-    frame.sofra.ready(() => {
+    frame.sofa.ready(() => {
       throw new Error("ready failed");
     });
-    expect(frame.sent("sofra:error").map((m) => m.message)).toEqual([
+    expect(frame.sent("sofa:error").map((m) => m.message)).toEqual([
       "x is not defined (line 12)",
       "nope",
       "render failed",
@@ -266,23 +266,23 @@ describe("frame SDK", () => {
     frame.connect();
     frame.init();
     let n = 0;
-    frame.sofra.state.subscribe(() => frame.sofra.state.set("n", ++n));
-    frame.sofra.state.set("go", 1);
+    frame.sofa.state.subscribe(() => frame.sofa.state.set("n", ++n));
+    frame.sofa.state.set("go", 1);
     expect(n).toBeLessThan(50);
-    expect(frame.sent("sofra:error").some((m) => /loop/.test(m.message))).toBe(true);
+    expect(frame.sent("sofa:error").some((m) => /loop/.test(m.message))).toBe(true);
   });
 
   it("answers pings", () => {
     frame.connect();
     frame.init();
-    frame.fromHost({ type: "sofra:ping" });
-    expect(frame.sent("sofra:pong")).toHaveLength(1);
+    frame.fromHost({ type: "sofa:ping" });
+    expect(frame.sent("sofa:pong")).toHaveLength(1);
   });
 
   it("makes ids", () => {
-    const a = frame.sofra.id();
+    const a = frame.sofa.id();
     expect(a).toMatch(/^[0-9a-z]{12}$/);
-    expect(frame.sofra.id()).not.toBe(a);
+    expect(frame.sofa.id()).not.toBe(a);
   });
 
   it("turns dialogs into no-ops", () => {
@@ -343,16 +343,16 @@ describe("frame SDK", () => {
     sized.doc.documentElement.getBoundingClientRect = () => ({ height }) as DOMRect;
     sized.connect();
     sized.init();
-    expect(sized.sent("sofra:resize").at(-1)).toEqual({ type: "sofra:resize", height: 300 });
-    const count = sized.sent("sofra:resize").length;
-    sized.sofra.state.set("a", 1); // same height: no new message
-    expect(sized.sent("sofra:resize")).toHaveLength(count);
+    expect(sized.sent("sofa:resize").at(-1)).toEqual({ type: "sofa:resize", height: 300 });
+    const count = sized.sent("sofa:resize").length;
+    sized.sofa.state.set("a", 1); // same height: no new message
+    expect(sized.sent("sofa:resize")).toHaveLength(count);
     height = 5000.4;
-    sized.sofra.state.set("a", 2);
-    expect(sized.sent("sofra:resize").at(-1)).toEqual({ type: "sofra:resize", height: 5001 });
-    expect(sized.doc.documentElement.hasAttribute("data-sofra-scroll")).toBe(true);
+    sized.sofa.state.set("a", 2);
+    expect(sized.sent("sofa:resize").at(-1)).toEqual({ type: "sofa:resize", height: 5001 });
+    expect(sized.doc.documentElement.hasAttribute("data-sofa-scroll")).toBe(true);
     height = 200;
-    sized.sofra.state.set("a", 3);
-    expect(sized.doc.documentElement.hasAttribute("data-sofra-scroll")).toBe(false);
+    sized.sofa.state.set("a", 3);
+    expect(sized.doc.documentElement.hasAttribute("data-sofa-scroll")).toBe(false);
   });
 });

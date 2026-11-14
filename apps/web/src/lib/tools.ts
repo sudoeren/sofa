@@ -1,4 +1,4 @@
-import { LIMITS, metaMap, patchTool, toolsMap } from "@sofra/shared";
+import { LIMITS, metaMap, patchTool, toolsMap } from "@sofa/shared";
 import type * as Y from "yjs";
 
 /** Edits the shell makes to tool records and space meta. Each one is a single transaction. */

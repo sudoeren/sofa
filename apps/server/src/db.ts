@@ -48,7 +48,7 @@ type RawFile = {
 
 export function openDb(dataDir: string): Db {
   fs.mkdirSync(dataDir, { recursive: true });
-  const file = path.join(dataDir, "sofra.db");
+  const file = path.join(dataDir, "sofa.db");
   const db = new DatabaseSync(file);
   // Holds password hashes and every document; SQLite gives the WAL files the same mode.
   fs.chmodSync(file, 0o600);

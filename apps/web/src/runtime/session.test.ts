@@ -1,5 +1,5 @@
-import type { JsonValue } from "@sofra/shared";
-import { toolsMap } from "@sofra/shared";
+import type { JsonValue } from "@sofa/shared";
+import { toolsMap } from "@sofa/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type * as Y from "yjs";
 import sdkSource from "./sdk.js?raw";
@@ -88,7 +88,7 @@ function setup(
     new Function("window", sdkSource.split(NONCE_PLACEHOLDER).join(options.sdkNonce ?? "n0nce"))(
       win,
     );
-    return win.sofra as any;
+    return win.sofa as any;
   };
 
   const stateMap = (d: Y.Doc) => toolsMap(d).get("t1")?.get("state") as Y.Map<JsonValue>;
@@ -102,34 +102,34 @@ describe("FrameSession with the real SDK", () => {
 
   it("hands over a port on ready, then sends init only after the right nonce", () => {
     const t = setup();
-    const sofra = t.loadSdk();
+    const sofa = t.loadSdk();
     const ready = vi.fn();
-    sofra.ready(ready);
+    sofa.ready(ready);
     expect(ready).toHaveBeenCalledTimes(1);
     expect(t.events.ready).toHaveBeenCalledTimes(1);
-    expect(sofra.state.all()).toEqual({ title: "Dinner" });
-    expect(sofra.me).toEqual({ id: "u1", name: "Ada", color: "#111" }); // no extra fields
+    expect(sofa.state.all()).toEqual({ title: "Dinner" });
+    expect(sofa.me).toEqual({ id: "u1", name: "Ada", color: "#111" }); // no extra fields
     // the only thing ever posted to the window (target "*") is the empty port message
-    expect(t.toFrame).toEqual([{ type: "sofra:port" }]);
+    expect(t.toFrame).toEqual([{ type: "sofa:port" }]);
     t.session.dispose();
   });
 
   it("sends nothing to a document that does not know the nonce", () => {
     const t = setup({ sdkNonce: "guess" });
-    const sofra = t.loadSdk();
+    const sofa = t.loadSdk();
     const ready = vi.fn();
-    sofra.ready(ready);
+    sofa.ready(ready);
     expect(ready).not.toHaveBeenCalled();
     expect(t.events.ready).not.toHaveBeenCalled();
-    expect(sofra.state.all()).toEqual({});
-    sofra.state.set("x", 1); // goes out on the port, but the session is not established
+    expect(sofa.state.all()).toEqual({});
+    sofa.state.set("x", 1); // goes out on the port, but the session is not established
     expect(t.store.peek("x")).toBeUndefined();
     t.session.dispose();
   });
 
   it("ignores ready from another window and a second ready from the same frame", () => {
     const t = setup();
-    t.session.handleWindowMessage({ source: {}, data: { type: "sofra:ready" } });
+    t.session.handleWindowMessage({ source: {}, data: { type: "sofa:ready" } });
     expect(t.toFrame).toEqual([]);
     t.loadSdk();
     expect(t.toFrame).toHaveLength(1);
@@ -142,20 +142,20 @@ describe("FrameSession with the real SDK", () => {
 
   it("writes from the frame reach other members; remote changes reach the frame per key", () => {
     const t = setup();
-    const sofra = t.loadSdk();
+    const sofa = t.loadSdk();
     const keys: unknown[] = [];
-    sofra.state.subscribe((key: unknown) => keys.push(key));
+    sofa.state.subscribe((key: unknown) => keys.push(key));
 
-    sofra.state.set("vote:u1", 2);
+    sofa.state.set("vote:u1", 2);
     expect(t.stateMap(t.remote).get("vote:u1")).toBe(2);
     expect(keys).toEqual(["vote:u1"]); // the host's answer did not notify a second time
 
     t.stateMap(t.remote).set("vote:u2", 1);
     t.stateMap(t.remote).delete("title");
     expect(keys).toEqual(["vote:u1", "vote:u2", "title"]);
-    expect(sofra.state.all()).toEqual({ "vote:u1": 2, "vote:u2": 1 });
+    expect(sofa.state.all()).toEqual({ "vote:u1": 2, "vote:u2": 1 });
 
-    sofra.state.delete("vote:u1");
+    sofa.state.delete("vote:u1");
     expect(t.stateMap(t.remote).has("vote:u1")).toBe(false);
     t.session.dispose();
   });
@@ -164,9 +164,9 @@ describe("FrameSession with the real SDK", () => {
     const state: Record<string, JsonValue> = {};
     for (let i = 0; i < 5000; i++) state[`k${i}`] = i;
     const t = setup({ state });
-    const sofra = t.loadSdk();
-    sofra.state.set("one-too-many", 1);
-    expect(sofra.state.get("one-too-many")).toBeUndefined();
+    const sofa = t.loadSdk();
+    sofa.state.set("one-too-many", 1);
+    expect(sofa.state.get("one-too-many")).toBeUndefined();
     expect(t.store.peek("one-too-many")).toBeUndefined();
     expect(t.events.error).toHaveBeenCalledWith(expect.stringContaining("too many keys"));
     t.session.dispose();
@@ -180,75 +180,75 @@ describe("FrameSession with the real SDK", () => {
     frameWindow.postMessage = (_data: unknown, _origin: string, transfer?: unknown[]) => {
       port = transfer?.[0] as PortLike;
     };
-    t.session.handleWindowMessage({ source: t.frameWindow, data: { type: "sofra:ready" } });
+    t.session.handleWindowMessage({ source: t.frameWindow, data: { type: "sofa:ready" } });
     const answers: unknown[] = [];
     if (!port) throw new Error("no port");
     port.onmessage = (event) => answers.push(event.data);
 
-    port.postMessage({ type: "sofra:set", key: "a", value: 1 }); // before hello: ignored
+    port.postMessage({ type: "sofa:set", key: "a", value: 1 }); // before hello: ignored
     expect(t.store.peek("a")).toBeUndefined();
-    port.postMessage({ type: "sofra:hello", nonce: "n0nce" });
-    expect(answers.map((m) => (m as { type: string }).type)).toEqual(["sofra:init"]);
+    port.postMessage({ type: "sofa:hello", nonce: "n0nce" });
+    expect(answers.map((m) => (m as { type: string }).type)).toEqual(["sofa:init"]);
 
-    port.postMessage({ type: "sofra:set", key: "a", value: new Map() });
-    port.postMessage({ type: "sofra:set", key: "b", value: "x".repeat(70_000) });
-    port.postMessage({ type: "sofra:set", key: "c", value: 1, toolId: "other" });
-    port.postMessage({ type: "sofra:set", key: 5, value: 1 });
-    port.postMessage({ type: "sofra:state-all", state: {} });
+    port.postMessage({ type: "sofa:set", key: "a", value: new Map() });
+    port.postMessage({ type: "sofa:set", key: "b", value: "x".repeat(70_000) });
+    port.postMessage({ type: "sofa:set", key: "c", value: 1, toolId: "other" });
+    port.postMessage({ type: "sofa:set", key: 5, value: 1 });
+    port.postMessage({ type: "sofa:state-all", state: {} });
     expect(t.store.getState()).toEqual({ title: "Dinner" });
     // the two well formed but invalid writes were answered, the malformed ones were not
     expect(answers.slice(1)).toEqual([
-      { type: "sofra:state", key: "a", value: undefined },
-      { type: "sofra:state", key: "b", value: undefined },
+      { type: "sofa:state", key: "a", value: undefined },
+      { type: "sofa:state", key: "b", value: undefined },
     ]);
 
-    port.postMessage({ type: "sofra:resize", height: 99999 });
+    port.postMessage({ type: "sofa:resize", height: 99999 });
     expect(t.events.height).toHaveBeenLastCalledWith(4000);
-    port.postMessage({ type: "sofra:error", message: "x".repeat(9000) });
+    port.postMessage({ type: "sofa:error", message: "x".repeat(9000) });
     expect((t.events.error.mock.lastCall?.[0] as string).length).toBeLessThanOrEqual(500);
     t.session.dispose();
   });
 
   it("limits how fast a frame can write", () => {
     const t = setup();
-    const sofra = t.loadSdk();
-    for (let i = 0; i < 400; i++) sofra.state.set("n", i);
+    const sofa = t.loadSdk();
+    for (let i = 0; i < 400; i++) sofa.state.set("n", i);
     const stored = t.store.peek("n") as number;
     expect(stored).toBeLessThan(399);
-    expect(sofra.state.get("n")).toBe(stored); // the frame was told what was kept
+    expect(sofa.state.get("n")).toBe(stored); // the frame was told what was kept
     t.session.dispose();
   });
 
   it("forwards members and theme, and a replaced state map as a bulk change", () => {
     const t = setup();
-    const sofra = t.loadSdk();
+    const sofa = t.loadSdk();
     const onMembers = vi.fn();
-    sofra.onMembers(onMembers);
+    sofa.onMembers(onMembers);
     t.context.members = [...t.context.members, { id: "u2", name: "Bo", color: "#222" }];
     t.session.pushMembers();
     expect(onMembers.mock.lastCall?.[0]).toHaveLength(2);
     t.context.theme = "dark";
     t.session.pushTheme();
-    expect(sofra.theme).toBe("dark");
+    expect(sofa.theme).toBe("dark");
 
     const keys: unknown[] = [];
-    sofra.state.subscribe((key: unknown) => keys.push(key));
+    sofa.state.subscribe((key: unknown) => keys.push(key));
     t.remote.transact(() => toolsMap(t.remote).delete("t1"));
     expect(keys).toEqual([undefined]);
-    expect(sofra.state.all()).toEqual({});
+    expect(sofa.state.all()).toEqual({});
     t.session.dispose();
   });
 
   it("reports a second load as a navigation and stops talking", () => {
     const t = setup();
-    const sofra = t.loadSdk();
+    const sofa = t.loadSdk();
     t.session.handleLoad();
     expect(t.events.lost).not.toHaveBeenCalled();
     t.session.handleLoad();
     expect(t.events.lost).toHaveBeenCalledWith("navigated");
     t.stateMap(t.remote).set("later", 1);
-    expect(sofra.state.get("later")).toBeUndefined();
-    sofra.state.set("x", 1);
+    expect(sofa.state.get("later")).toBeUndefined();
+    sofa.state.set("x", 1);
     expect(t.store.peek("x")).toBeUndefined();
   });
 

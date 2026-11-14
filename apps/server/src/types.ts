@@ -1,4 +1,4 @@
-import type { GenerateBody } from "@sofra/shared";
+import type { GenerateBody } from "@sofa/shared";
 import type * as Y from "yjs";
 
 /**

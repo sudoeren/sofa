@@ -1,4 +1,4 @@
-import { materialsArray, putTool, toolsMap } from "@sofra/shared";
+import { materialsArray, putTool, toolsMap } from "@sofa/shared";
 import type { LanguageModel } from "ai";
 import { MockLanguageModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";

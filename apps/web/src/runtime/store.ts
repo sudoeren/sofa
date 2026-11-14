@@ -7,7 +7,7 @@ import {
   type ToolState,
   toolStateMap,
   toolsMap,
-} from "@sofra/shared";
+} from "@sofa/shared";
 import * as Y from "yjs";
 import { checkJsonValue, checkKey } from "./guard";
 
@@ -97,7 +97,7 @@ export class ToolStore {
 
   set = (key: string, value: JsonValue): void => {
     const result = this.write(key, value);
-    if (!result.ok) console.warn(`[sofra] state.set("${String(key)}") rejected: ${result.reason}`);
+    if (!result.ok) console.warn(`[sofa] state.set("${String(key)}") rejected: ${result.reason}`);
   };
 
   del = (key: string): void => {

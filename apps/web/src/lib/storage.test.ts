@@ -1,4 +1,4 @@
-import { colorFor } from "@sofra/shared";
+import { colorFor } from "@sofa/shared";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearAiSettings,
@@ -40,7 +40,7 @@ describe("identity", () => {
 
   it("rejects an empty name and survives corrupt storage", () => {
     expect(() => saveIdentity("   ")).toThrow();
-    window.localStorage.setItem("sofra:identity", "{not json");
+    window.localStorage.setItem("sofa:identity", "{not json");
     expect(loadIdentity()).toBeNull();
   });
 });
@@ -78,7 +78,7 @@ describe("AI settings", () => {
     clearAiSettings();
     expect(listener).toHaveBeenCalledTimes(2);
     expect(loadAiSettings()).toBeNull();
-    expect(window.localStorage.getItem("sofra:ai")).toBeNull();
+    expect(window.localStorage.getItem("sofa:ai")).toBeNull();
     unsubscribe();
     saveAiSettings({ provider: "openai", apiKey: "sk-12345678" });
     expect(listener).toHaveBeenCalledTimes(2);
@@ -86,11 +86,11 @@ describe("AI settings", () => {
 
   it("ignores values that are not valid settings", () => {
     window.localStorage.setItem(
-      "sofra:ai",
+      "sofa:ai",
       JSON.stringify({ provider: "other", apiKey: "sk-12345678" }),
     );
     expect(loadAiSettings()).toBeNull();
-    window.localStorage.setItem("sofra:ai", JSON.stringify({ provider: "openai", apiKey: "x" }));
+    window.localStorage.setItem("sofa:ai", JSON.stringify({ provider: "openai", apiKey: "x" }));
     expect(loadAiSettings()).toBeNull();
   });
 });
@@ -102,7 +102,7 @@ describe("theme", () => {
     expect(loadStoredTheme()).toBe("dark");
     saveTheme("system");
     expect(loadStoredTheme()).toBe("system");
-    window.localStorage.setItem("sofra:theme", "purple");
+    window.localStorage.setItem("sofa:theme", "purple");
     expect(loadStoredTheme()).toBeNull();
   });
 });

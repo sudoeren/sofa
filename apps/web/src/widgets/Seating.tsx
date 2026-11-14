@@ -1,4 +1,4 @@
-import type { SeatingConfig } from "@sofra/widgets";
+import type { SeatingConfig } from "@sofa/widgets";
 import {
   canSeat,
   freeSeats,
@@ -7,7 +7,7 @@ import {
   resolveSeating,
   type SeatingGuest,
   type SeatingTable,
-} from "@sofra/widgets/defs/seating";
+} from "@sofa/widgets/defs/seating";
 import { GripVertical, Minus, Plus, Trash2, X } from "lucide-react";
 import { type FormEvent, type PointerEvent, useMemo, useRef, useState } from "react";
 import { InlineEdit, newKeyId } from "./shared";

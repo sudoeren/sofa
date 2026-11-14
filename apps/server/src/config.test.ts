@@ -22,8 +22,8 @@ describe("loadConfig", () => {
 
   it("honours an explicit provider and model", () => {
     const config = loadConfig({
-      SOFRA_AI_PROVIDER: "openrouter",
-      SOFRA_AI_MODEL: "google/gemini-3.1-pro-preview",
+      SOFA_AI_PROVIDER: "openrouter",
+      SOFA_AI_MODEL: "google/gemini-3.1-pro-preview",
       ANTHROPIC_API_KEY: "a-key",
       OPENROUTER_API_KEY: "sk-or-1",
     });
@@ -34,6 +34,6 @@ describe("loadConfig", () => {
   });
 
   it("falls back to none when OpenRouter is chosen without a key", () => {
-    expect(loadConfig({ SOFRA_AI_PROVIDER: "openrouter" }).ai.provider).toBe("none");
+    expect(loadConfig({ SOFA_AI_PROVIDER: "openrouter" }).ai.provider).toBe("none");
   });
 });

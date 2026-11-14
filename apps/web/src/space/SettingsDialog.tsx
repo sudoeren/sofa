@@ -1,4 +1,4 @@
-import type { MemberInfo, ServerConfig, UserAi } from "@sofra/shared";
+import type { MemberInfo, ServerConfig, UserAi } from "@sofa/shared";
 import { Check, Eye, EyeOff, Server } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { Avatar } from "../components/Avatar";
@@ -191,7 +191,7 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
         />
 
         <p id={honestId} className="settings-honest">
-          The key is kept only in this browser. It is sent with each request to this Sofra server,
+          The key is kept only in this browser. It is sent with each request to this Sofa server,
           which uses it for that request and does not store it.
         </p>
 

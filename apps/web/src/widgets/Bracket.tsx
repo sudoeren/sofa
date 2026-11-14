@@ -1,4 +1,4 @@
-import type { BracketConfig } from "@sofra/widgets";
+import type { BracketConfig } from "@sofa/widgets";
 import {
   type BracketMatch,
   type BracketParticipant,
@@ -6,7 +6,7 @@ import {
   roundName,
   type Side,
   type StoredResult,
-} from "@sofra/widgets/defs/bracket";
+} from "@sofa/widgets/defs/bracket";
 import { Pencil, Trophy } from "lucide-react";
 import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { InlineEdit } from "./shared";

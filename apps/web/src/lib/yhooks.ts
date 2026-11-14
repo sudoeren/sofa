@@ -7,7 +7,7 @@ import {
   metaMap,
   type ToolRecord,
   toolsMap,
-} from "@sofra/shared";
+} from "@sofa/shared";
 import { useMemo, useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 

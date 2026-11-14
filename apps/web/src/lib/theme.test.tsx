@@ -42,6 +42,6 @@ describe("useTheme", () => {
     expect(result.current.theme).toBe("light");
     act(() => system.set(true));
     expect(result.current.theme).toBe("light");
-    expect(window.localStorage.getItem("sofra:theme")).toBe("light");
+    expect(window.localStorage.getItem("sofa:theme")).toBe("light");
   });
 });

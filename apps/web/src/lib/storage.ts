@@ -1,12 +1,12 @@
-import { colorFor, type MemberInfo, type UserAi } from "@sofra/shared";
+import { colorFor, type MemberInfo, type UserAi } from "@sofa/shared";
 import { nanoid } from "nanoid";
 
 /** Everything the app keeps in this browser. All access is guarded: storage can be blocked. */
 
-const IDENTITY_KEY = "sofra:identity";
-const AI_KEY = "sofra:ai";
-const THEME_KEY = "sofra:theme";
-const tokenKey = (spaceId: string) => `sofra:token:${spaceId}`;
+const IDENTITY_KEY = "sofa:identity";
+const AI_KEY = "sofa:ai";
+const THEME_KEY = "sofa:theme";
+const tokenKey = (spaceId: string) => `sofa:token:${spaceId}`;
 
 export const NAME_MAX = 60;
 

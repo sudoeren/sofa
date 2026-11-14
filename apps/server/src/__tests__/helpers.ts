@@ -2,17 +2,17 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { HocuspocusProvider, HocuspocusProviderWebsocket } from "@hocuspocus/provider";
-import type { GenerateBody } from "@sofra/shared";
-import type { WidgetDef } from "@sofra/widgets";
+import type { GenerateBody } from "@sofa/shared";
+import type { WidgetDef } from "@sofa/widgets";
 import WebSocket from "ws";
 import * as Y from "yjs";
 import { z } from "zod";
 import type { Config } from "../config";
-import { buildServer, type ServerParts, type SofraServer } from "../server";
+import { buildServer, type ServerParts, type SofaServer } from "../server";
 import type { AiService } from "../types";
 
 export function tempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "sofra-test-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "sofa-test-"));
 }
 
 export function testConfig(
@@ -62,7 +62,7 @@ export const pollDef: WidgetDef<{ question: string; options: string[] }> = {
 };
 
 export type Running = {
-  server: SofraServer;
+  server: SofaServer;
   base: string;
   port: number;
   ai: FakeAi;

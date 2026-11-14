@@ -1,4 +1,4 @@
-import type { ItineraryConfig } from "@sofra/widgets";
+import type { ItineraryConfig } from "@sofa/widgets";
 import {
   cleanDate,
   cleanTime,
@@ -11,7 +11,7 @@ import {
   type StoredStop,
   safeLink,
   toStoredStop,
-} from "@sofra/widgets/defs/itinerary";
+} from "@sofa/widgets/defs/itinerary";
 import {
   ArrowDown,
   ArrowUp,

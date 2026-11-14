@@ -1,4 +1,4 @@
-import { type JsonValue, patchTool } from "@sofra/shared";
+import { type JsonValue, patchTool } from "@sofa/shared";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as Y from "yjs";
@@ -9,7 +9,7 @@ import { addTool } from "./testing";
 // The real registry and catalog are written by others and may not exist yet; these tests
 // never load them.
 vi.mock("../widgets", () => ({ WIDGETS: {} }));
-vi.mock("@sofra/widgets", () => ({ getWidgetDef: () => undefined }));
+vi.mock("@sofa/widgets", () => ({ getWidgetDef: () => undefined }));
 
 import { FRAME_CSP } from "./srcdoc";
 import { ToolView, type WidgetDefLookup, type WidgetRegistry } from "./ToolView";
@@ -177,7 +177,7 @@ describe("ToolView", () => {
     const srcdoc = frame.getAttribute("srcdoc") ?? "";
     expect(srcdoc).toContain(FRAME_CSP);
     expect(srcdoc).toContain("<p>hello</p>");
-    expect(srcdoc).not.toContain("__SOFRA_NONCE__");
+    expect(srcdoc).not.toContain("__SOFA_NONCE__");
 
     // state and metadata changes leave the element alone
     act(() => {

@@ -1,5 +1,5 @@
 {
-  "name": "@sofra/server",
+  "name": "@sofa/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -21,8 +21,8 @@
     "splitting": false,
     "removeNodeProtocol": false,
     "noExternal": [
-      "@sofra/shared",
-      "@sofra/widgets"
+      "@sofa/shared",
+      "@sofa/widgets"
     ]
   },
   "devDependencies": {
@@ -36,8 +36,8 @@
     "@ai-sdk/openai-compatible": "^3.0.92",
     "@hocuspocus/server": "^4.8.0",
     "@hono/node-server": "^2.1.8",
-    "@sofra/shared": "workspace:*",
-    "@sofra/widgets": "workspace:*",
+    "@sofa/shared": "workspace:*",
+    "@sofa/widgets": "workspace:*",
     "ai": "^7.0.172",
     "hono": "^4.13.18",
     "nanoid": "^6.0.2",

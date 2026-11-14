@@ -8,7 +8,7 @@ export function Gate({ children }: { children: ReactNode }) {
   return (
     <div className="gate">
       <header className="gate-top">
-        <Link className="brand" to="/" aria-label="Sofra home">
+        <Link className="brand" to="/" aria-label="Sofa home">
           <Wordmark />
         </Link>
         <ThemeToggle />

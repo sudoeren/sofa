@@ -1,4 +1,4 @@
-import type { JsonValue, ToolRecord, ToolState } from "@sofra/shared";
+import type { JsonValue, ToolRecord, ToolState } from "@sofa/shared";
 import { useMemo, useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { ToolStore } from "./store";

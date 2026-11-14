@@ -41,10 +41,10 @@ importers:
       '@hono/node-server':
         specifier: ^2.1.8
         version: 2.1.8(hono@4.13.18)
-      '@sofra/shared':
+      '@sofa/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@sofra/widgets':
+      '@sofa/widgets':
         specifier: workspace:*
         version: link:../../packages/widgets
       ai:
@@ -81,10 +81,10 @@ importers:
       '@hocuspocus/provider':
         specifier: ^4.8.0
         version: 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
-      '@sofra/shared':
+      '@sofa/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@sofra/widgets':
+      '@sofa/widgets':
         specifier: workspace:*
         version: link:../../packages/widgets
       clsx:
@@ -155,11 +155,9 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
 
-  packages/templates: {}
-
   packages/widgets:
     dependencies:
-      '@sofra/shared':
+      '@sofa/shared':
         specifier: workspace:*
         version: link:../shared
       zod:

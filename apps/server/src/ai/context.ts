@@ -11,7 +11,7 @@ import {
   type ToolRecord,
   type ToolState,
   toolsMap,
-} from "@sofra/shared";
+} from "@sofa/shared";
 import type * as Y from "yjs";
 import type { FileStore } from "../types";
 

@@ -1,6 +1,6 @@
-import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
-import { type ExpensesConfig, getWidgetDef, type WidgetDef } from "@sofra/widgets";
-import { formatMoney } from "@sofra/widgets/defs/expenses";
+import type { JsonValue, MemberInfo, ToolState } from "@sofa/shared";
+import { type ExpensesConfig, getWidgetDef, type WidgetDef } from "@sofa/widgets";
+import { formatMoney } from "@sofa/widgets/defs/expenses";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";

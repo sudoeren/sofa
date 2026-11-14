@@ -29,7 +29,7 @@ const SOFT: Array<[RegExp, string]> = [
   [/\bsendBeacon\b/, "sendBeacon is blocked in the frame; remove network calls"],
   [
     /\b(?:localStorage|sessionStorage)\b/,
-    "browser storage is not available; keep shared data in sofra.state",
+    "browser storage is not available; keep shared data in sofa.state",
   ],
   [/\bdocument\.cookie\b/, "cookies are not available in the frame"],
   [
@@ -88,8 +88,8 @@ export function validateToolHtml(html: string): HtmlCheck {
   for (const [pattern, message] of SOFT) {
     if (pattern.test(text)) warnings.push(message);
   }
-  if (!/\bsofra\s*\./.test(text)) {
-    warnings.push("the document never uses the sofra SDK, so nothing is shared between members");
+  if (!/\bsofa\s*\./.test(text)) {
+    warnings.push("the document never uses the sofa SDK, so nothing is shared between members");
   }
 
   return { ok: errors.length === 0, errors, warnings };

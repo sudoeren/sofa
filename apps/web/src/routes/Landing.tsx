@@ -1,4 +1,4 @@
-import { LIMITS } from "@sofra/shared";
+import { LIMITS } from "@sofa/shared";
 import { ArrowRight, Check, Copy, Lock } from "lucide-react";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,10 +11,10 @@ import { DemoSpace } from "./landing/DemoSpace";
 import { Showcase } from "./landing/Showcase";
 import "../styles/landing.css";
 
-export const REPO_URL = "https://github.com/sudoeren/sofra";
+export const REPO_URL = "https://github.com/sudoeren/sofa";
 
 const INSTALL = `git clone ${REPO_URL}
-cd sofra && cp .env.example .env
+cd sofa && cp .env.example .env
 docker compose up -d`;
 
 const STEPS = [
@@ -150,7 +150,7 @@ export function Landing() {
   return (
     <div className="lp">
       <header className="lp-nav">
-        <a className="brand" href="/" aria-label="Sofra home">
+        <a className="brand" href="/" aria-label="Sofa home">
           <Wordmark />
         </a>
         <nav className="lp-links" aria-label="Site">
@@ -259,7 +259,7 @@ export function Landing() {
       </main>
 
       <footer className="lp-foot">
-        <span>Sofra is MIT licensed.</span>
+        <span>Sofa is MIT licensed.</span>
         <a href={REPO_URL} target="_blank" rel="noreferrer">
           Source on GitHub
         </a>

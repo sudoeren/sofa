@@ -1,4 +1,4 @@
-import type { ServerConfig, SpaceInfo, TemplateInfo } from "@sofra/shared";
+import type { ServerConfig, SpaceInfo, TemplateInfo } from "@sofa/shared";
 import { CloudOff, Plus, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Dialog } from "../components/Dialog";
@@ -50,9 +50,9 @@ export function SpaceScreen({ info, onRename }: Props) {
   const knownToolsRef = useRef<Set<string> | null>(null);
 
   useEffect(() => {
-    document.title = title ? `${title} · Sofra` : "Sofra";
+    document.title = title ? `${title} · Sofa` : "Sofa";
     return () => {
-      document.title = "Sofra";
+      document.title = "Sofa";
     };
   }, [title]);
 

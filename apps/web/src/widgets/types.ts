@@ -1,4 +1,4 @@
-import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
+import type { JsonValue, MemberInfo, ToolState } from "@sofa/shared";
 
 /**
  * Props of every built-in widget component. `data` is an immutable snapshot of the tool's

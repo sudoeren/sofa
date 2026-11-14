@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { LIMITS, listTools, readToolState, toolsMap } from "@sofra/shared";
+import { LIMITS, listTools, readToolState, toolsMap } from "@sofa/shared";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createSpace, postJson, type Running, startServer, tempDir } from "./helpers";
 

@@ -4,7 +4,7 @@ import {
   type MemberInfo,
   TOOL_LIMITS,
   type ToolToHost,
-} from "@sofra/shared";
+} from "@sofa/shared";
 
 /**
  * Checks shared by both write paths (widgets through useToolState, HTML tools through the
@@ -97,9 +97,9 @@ export function checkKey(key: unknown): key is string {
 export type FrameMessage =
   | ToolToHost
   /** first message on the port: proves the sender is the document the host built */
-  | { type: "sofra:hello"; nonce: string }
+  | { type: "sofa:hello"; nonce: string }
   /** answer to the host's liveness ping */
-  | { type: "sofra:pong" };
+  | { type: "sofa:pong" };
 
 export type FrameVerdict =
   | { kind: "accept"; message: FrameMessage }
@@ -113,13 +113,13 @@ export type FrameVerdict =
 const IGNORE: FrameVerdict = { kind: "ignore" };
 
 const SHAPES: Record<string, readonly string[]> = {
-  "sofra:ready": ["type"],
-  "sofra:set": ["type", "key", "value"],
-  "sofra:delete": ["type", "key"],
-  "sofra:resize": ["type", "height"],
-  "sofra:error": ["type", "message"],
-  "sofra:hello": ["type", "nonce"],
-  "sofra:pong": ["type"],
+  "sofa:ready": ["type"],
+  "sofa:set": ["type", "key", "value"],
+  "sofa:delete": ["type", "key"],
+  "sofa:resize": ["type", "height"],
+  "sofa:error": ["type", "message"],
+  "sofa:hello": ["type", "nonce"],
+  "sofa:pong": ["type"],
 };
 
 /**
@@ -135,38 +135,38 @@ export function checkFrameMessage(data: unknown): FrameVerdict {
   if (typeof type !== "string") return IGNORE;
   const shape = SHAPES[type];
   if (!shape) return IGNORE;
-  if (type !== "sofra:hello" && type !== "sofra:pong" && !isToolToHost(data)) return IGNORE;
+  if (type !== "sofa:hello" && type !== "sofa:pong" && !isToolToHost(data)) return IGNORE;
   const keys = Object.keys(record);
   if (keys.length !== shape.length || !keys.every((key) => shape.includes(key))) return IGNORE;
 
   switch (type) {
-    case "sofra:ready":
+    case "sofa:ready":
       return { kind: "accept", message: { type } };
-    case "sofra:pong":
+    case "sofa:pong":
       return { kind: "accept", message: { type } };
-    case "sofra:hello": {
+    case "sofa:hello": {
       const nonce = record.nonce;
       if (typeof nonce !== "string" || nonce.length === 0 || nonce.length > 128) return IGNORE;
       return { kind: "accept", message: { type, nonce } };
     }
-    case "sofra:set": {
+    case "sofa:set": {
       const key = record.key;
       if (!checkKey(key)) return IGNORE;
       const checked = checkJsonValue(record.value);
       if (!checked.ok) return { kind: "reject", key, reason: checked.reason };
       return { kind: "accept", message: { type, key, value: checked.value } };
     }
-    case "sofra:delete": {
+    case "sofa:delete": {
       const key = record.key;
       if (!checkKey(key)) return IGNORE;
       return { kind: "accept", message: { type, key } };
     }
-    case "sofra:resize": {
+    case "sofa:resize": {
       const height = record.height;
       if (typeof height !== "number" || !Number.isFinite(height) || height < 0) return IGNORE;
       return { kind: "accept", message: { type, height: clampHeight(height) } };
     }
-    case "sofra:error": {
+    case "sofa:error": {
       const message = record.message;
       if (typeof message !== "string") return IGNORE;
       return { kind: "accept", message: { type, message: cleanErrorText(message) } };
@@ -177,7 +177,7 @@ export function checkFrameMessage(data: unknown): FrameVerdict {
 }
 
 /**
- * The only message accepted on the window itself: the first "sofra:ready" of the frame
+ * The only message accepted on the window itself: the first "sofa:ready" of the frame
  * this host created. Everything after it travels on a private MessagePort.
  */
 export function isReadyFromFrame(
@@ -186,7 +186,7 @@ export function isReadyFromFrame(
 ): boolean {
   if (!frameWindow || event.source !== frameWindow) return false;
   const verdict = checkFrameMessage(event.data);
-  return verdict.kind === "accept" && verdict.message.type === "sofra:ready";
+  return verdict.kind === "accept" && verdict.message.type === "sofa:ready";
 }
 
 export function clampHeight(height: number): number {

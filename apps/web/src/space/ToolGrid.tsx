@@ -1,11 +1,11 @@
-import type { MemberInfo, ToolRecord } from "@sofra/shared";
+import type { MemberInfo, ToolRecord } from "@sofa/shared";
 import clsx from "clsx";
 import { type DragEvent, useCallback, useState } from "react";
 import type * as Y from "yjs";
 import { moveToolTo } from "../lib/tools";
 import { ToolCard } from "./ToolCard";
 
-const DRAG_TYPE = "application/x-sofra-tool";
+const DRAG_TYPE = "application/x-sofa-tool";
 
 type Props = {
   doc: Y.Doc;

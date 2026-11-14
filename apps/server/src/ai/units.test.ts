@@ -1,4 +1,4 @@
-import type { Material } from "@sofra/shared";
+import type { Material } from "@sofa/shared";
 import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -136,7 +136,7 @@ describe("context builder", () => {
     expect(stateText.length).toBeLessThanOrEqual(DEFAULT_BUDGET.targetState + 200);
     expect(stateText).toContain("item:000 = ");
     expect(stateText).toContain("more keys not shown (500 in total)");
-    expect(built.text).toContain("sofra.state.get");
+    expect(built.text).toContain("sofa.state.get");
   });
 });
 
@@ -203,7 +203,7 @@ describe("system prompt", () => {
       type: "object",
       properties: { question: { type: "string" }, options: { type: "array", minItems: 2 } },
     });
-    expect(prompt).toContain("sofra.state.subscribe");
+    expect(prompt).toContain("sofa.state.subscribe");
     expect(prompt).toContain("--accent-soft");
     expect(prompt).toContain(EXAMPLE_TOOL_HTML);
     expect(prompt).toContain("no emoji");
@@ -269,7 +269,7 @@ describe("provider helpers", () => {
       expect(result.text).toBe("ok");
       expect(calls[0]?.url).toBe("https://openrouter.ai/api/v1/chat/completions");
       expect(calls[0]?.headers.get("authorization")).toBe("Bearer sk-or-v1-12345678");
-      expect(calls[0]?.headers.get("x-title")).toBe("Sofra");
+      expect(calls[0]?.headers.get("x-title")).toBe("Sofa");
     } finally {
       vi.unstubAllGlobals();
     }

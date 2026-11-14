@@ -8,8 +8,8 @@ import {
   nextToolOrder,
   patchChatMessage,
   putTool,
-} from "@sofra/shared";
-import type { WidgetDef } from "@sofra/widgets";
+} from "@sofa/shared";
+import type { WidgetDef } from "@sofa/widgets";
 import { isStepCount, type LanguageModel, streamText } from "ai";
 import type { Config } from "../config";
 import type { AiDeps, AiService } from "../types";
