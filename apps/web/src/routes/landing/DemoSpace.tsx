@@ -1,12 +1,13 @@
 import { listTools, toolsMap } from "@sofra/shared";
-import { ArrowUp, Link2, RotateCcw } from "lucide-react";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { ArrowUp, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { Avatar } from "../../components/Avatar";
 import { useTheme } from "../../lib/theme";
 import { ToolView } from "../../runtime";
 import {
   addTool,
+  BEFORE_WE_FLY,
   DEMO_ME,
   DEMO_MEMBERS,
   LISBON_EXPENSES,
@@ -29,7 +30,14 @@ function prefersReducedMotion(): boolean {
 
 function seed(doc: Y.Doc, withExpenses: boolean): void {
   addTool(doc, widgetRecord("demo-poll", "poll", { order: 1 }));
-  addTool(doc, widgetRecord("demo-trip", "itinerary", { order: 2 }));
+  addTool(
+    doc,
+    widgetRecord("demo-todo", "checklist", {
+      order: 2,
+      title: "Before we fly",
+      config: BEFORE_WE_FLY,
+    }),
+  );
   if (withExpenses) {
     addTool(
       doc,
@@ -71,9 +79,16 @@ export function DemoSpace() {
     return d;
   }, [run, reduced]);
   const ids = useToolIds(doc);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [typed, setTyped] = useState(reduced ? PROMPT : "");
   const [phase, setPhase] = useState<Phase>(reduced ? "done" : "idle");
   const [present, setPresent] = useState(reduced ? DEMO_MEMBERS : DEMO_MEMBERS.slice(0, 2));
+  // on phones the cards scroll sideways: bring the new tool into view when it arrives
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (phase !== "building" || !grid || grid.scrollWidth <= grid.clientWidth) return;
+    grid.scrollTo({ left: grid.scrollWidth, behavior: "smooth" });
+  }, [phase]);
 
   useEffect(() => {
     if (reduced) return;
@@ -90,6 +105,16 @@ export function DemoSpace() {
     at(900, () => setToolState(doc, "demo-poll", `vote:${ada.id}`, vote(ada, ["meze"])));
     at(1600, () => setPresent(DEMO_MEMBERS.slice(0, 3)));
     at(2200, () => setToolState(doc, "demo-poll", `vote:${deniz.id}`, vote(deniz, ["ramen"])));
+    at(1300, () =>
+      setToolState(doc, "demo-todo", "done:flat", { by: ada.id, name: ada.name, at: Date.now() }),
+    );
+    at(2000, () =>
+      setToolState(doc, "demo-todo", "claim:sintra", {
+        id: deniz.id,
+        name: deniz.name,
+        color: deniz.color,
+      }),
+    );
     at(2600, () => setPhase("typing"));
     for (let i = 1; i <= PROMPT.length; i++) {
       at(2600 + i * 34, () => setTyped(PROMPT.slice(0, i)));
@@ -121,26 +146,8 @@ export function DemoSpace() {
 
   return (
     <section className="demo" aria-label="Interactive preview of a Sofra space">
-      <div className="demo-bar">
-        <span className="demo-url">sofra.your-server.com/s/lisbon</span>
-        <button
-          type="button"
-          className="demo-replay"
-          onClick={() => setRun((n) => n + 1)}
-          aria-label="Replay the preview"
-          title="Replay"
-        >
-          <RotateCcw size={14} aria-hidden="true" />
-        </button>
-      </div>
-      <div className="demo-head">
-        <div>
-          <div className="demo-title">Lisbon, May 15 to 17</div>
-          <div className="demo-live">
-            <span className="demo-live-dot" /> {present.length} here
-          </div>
-        </div>
-        <div className="demo-head-right">
+      <div className="demo-meta">
+        <div className="demo-presence">
           <div className="demo-avatars">
             {present.map((m) => (
               <span key={m.id} className="demo-avatar">
@@ -148,12 +155,17 @@ export function DemoSpace() {
               </span>
             ))}
           </div>
-          <span className="demo-invite">
-            <Link2 size={14} aria-hidden="true" /> Invite
+          <span className="demo-live">
+            <span className="demo-live-dot" />
+            {present.length} people here
           </span>
         </div>
+        <button type="button" className="demo-replay" onClick={() => setRun((n) => n + 1)}>
+          <RotateCcw size={13} aria-hidden="true" />
+          <span>Replay</span>
+        </button>
       </div>
-      <div className="demo-grid">
+      <div className="demo-grid" ref={gridRef}>
         {ids.map((id) => (
           <DemoCard key={id} doc={doc} id={id} theme={theme} />
         ))}

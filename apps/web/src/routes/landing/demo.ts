@@ -94,6 +94,17 @@ export function vote(memberInfo: MemberInfo, choices: string[]): JsonValue {
   return { name: memberInfo.name, color: memberInfo.color, choices, at: Date.now() };
 }
 
+export const BEFORE_WE_FLY = {
+  items: [
+    { id: "flat", text: "Book the apartment in Alfama" },
+    { id: "fado", text: "Reserve the fado dinner" },
+    { id: "sintra", text: "Train tickets to Sintra" },
+    { id: "adapter", text: "Bring a plug adapter" },
+  ],
+  assignable: true,
+  showProgress: true,
+};
+
 export const LISBON_EXPENSES = {
   currency: "EUR",
   people: DEMO_MEMBERS.map((m) => ({ id: m.id, name: m.name })),

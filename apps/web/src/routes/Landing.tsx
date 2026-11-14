@@ -167,8 +167,7 @@ export function Landing() {
         <section className="lp-hero">
           <p className="lp-eyebrow">Open source and self-hosted</p>
           <h1 className="lp-title">
-            Ask for the tool.
-            <br />
+            Ask for the tool. <br />
             Your whole group gets it.
           </h1>
           <p className="lp-lead">
