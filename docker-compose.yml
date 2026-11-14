@@ -1,7 +1,8 @@
 services:
   sofa:
-    build: .
-    image: sofa:local
+    image: ghcr.io/sudoeren/sofa:latest
+    # or build from this checkout instead: comment out image and use
+    # build: .
     ports:
       - "8787:8787"
     env_file:

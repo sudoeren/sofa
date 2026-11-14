@@ -32,23 +32,23 @@ free-form tool that runs in a sandboxed frame.
 
 ## Quick start
 
-With Docker Compose:
+With Docker:
 
 ```sh
-git clone https://github.com/sudoeren/sofa && cd sofa
+docker run -d --name sofa -p 8787:8787 -v sofa-data:/data \
+  -e OPENROUTER_API_KEY=sk-or-... \
+  ghcr.io/sudoeren/sofa:latest
+```
+
+Then open http://localhost:8787. Leave out the key to run with the built-in tools only.
+
+With Docker Compose, from a clone of this repository:
+
+```sh
 cp .env.example .env    # optional: add an AI key
 docker compose up -d
 ```
 
-Or with plain Docker:
-
-```sh
-docker build -t sofa .
-docker run -d --name sofa -p 8787:8787 -v sofa-data:/data \
-  -e ANTHROPIC_API_KEY=sk-ant-... sofa
-```
-
-Then open http://localhost:8787. Leave out the key to run with the built-in tools only.
 Put it behind a reverse proxy for anything beyond your own network:
 [docs/self-hosting.md](docs/self-hosting.md).
 
