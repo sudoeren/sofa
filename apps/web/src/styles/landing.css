@@ -212,6 +212,7 @@
 }
 .demo-replay {
   display: inline-flex;
+  margin-left: auto;
   padding: 4px;
   border: 0;
   border-radius: var(--radius-sm);
@@ -647,6 +648,20 @@
   }
   .start-input {
     height: 42px;
+  }
+  .start-extra {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .showcase-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 0 16px 4px;
+    scrollbar-width: none;
+  }
+  .showcase-tab {
+    flex: none;
   }
   .demo-grid {
     grid-template-columns: minmax(0, 1fr);

@@ -141,9 +141,9 @@ export function Header({
           ) : null}
         </ul>
 
-        <button type="button" className="btn hide-narrow" onClick={onOpenGallery}>
+        <button type="button" className="btn btn-add" onClick={onOpenGallery} aria-label="Add tool">
           <Plus size={16} aria-hidden="true" />
-          <span>Add tool</span>
+          <span className="hide-narrow">Add tool</span>
         </button>
 
         <button

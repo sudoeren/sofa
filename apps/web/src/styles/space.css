@@ -1132,6 +1132,10 @@
   .hide-narrow {
     display: none;
   }
+  .btn-add {
+    width: 36px;
+    padding: 0;
+  }
   .space-header {
     gap: 8px;
     padding: 6px 8px 6px 12px;
