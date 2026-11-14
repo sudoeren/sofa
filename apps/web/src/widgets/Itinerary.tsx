@@ -28,7 +28,7 @@ import {
   type StoredStop,
   safeLink,
   toStoredStop,
-} from "../../../../packages/widgets/src/defs/itinerary";
+} from "@sofra/widgets/defs/itinerary";
 import { Avatar, InlineEdit, newKeyId } from "./shared";
 import type { WidgetProps } from "./types";
 import "./common.css";

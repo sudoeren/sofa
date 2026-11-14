@@ -9,7 +9,7 @@ import {
   resolveSeating,
   type SeatingGuest,
   type SeatingTable,
-} from "../../../../packages/widgets/src/defs/seating";
+} from "@sofra/widgets/defs/seating";
 import { InlineEdit, newKeyId } from "./shared";
 import type { WidgetProps } from "./types";
 import "./common.css";

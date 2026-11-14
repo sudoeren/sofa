@@ -5,9 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
-    "build": "tsup src/index.ts --format esm --target node22 --clean --no-splitting --noExternal @sofra/shared --noExternal @sofra/widgets",
+    "build": "tsup",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --passWithNoTests"
+  },
+  "tsup": {
+    "entry": ["src/index.ts"],
+    "format": ["esm"],
+    "target": "node22",
+    "clean": true,
+    "splitting": false,
+    "removeNodeProtocol": false,
+    "noExternal": ["@sofra/shared", "@sofra/widgets"]
   },
   "devDependencies": {
     "@hocuspocus/provider": "^4.8.0",
