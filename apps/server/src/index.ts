@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { WIDGET_DEFS } from "@sofra/widgets";
 import { createAiService } from "./ai/index";
 import { type Config, loadConfig } from "./config";
-import { type ServerParts, type SofraServer, buildServer } from "./server";
+import { buildServer, type ServerParts, type SofraServer } from "./server";
 
 export type { ServerParts, SofraServer } from "./server";
 

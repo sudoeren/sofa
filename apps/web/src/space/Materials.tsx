@@ -1,6 +1,15 @@
 import { colorFor, LIMITS, type Material, materialsArray, newId } from "@sofra/shared";
 import clsx from "clsx";
-import { ExternalLink, FileText, Link2, Paperclip, StickyNote, Trash2, Upload, X } from "lucide-react";
+import {
+  ExternalLink,
+  FileText,
+  Link2,
+  Paperclip,
+  StickyNote,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import { type DragEvent, type FormEvent, useId, useRef, useState } from "react";
 import { Avatar } from "../components/Avatar";
 import { Spinner } from "../components/Spinner";
@@ -120,6 +129,7 @@ export function Materials() {
   const hasFiles = (event: DragEvent) => event.dataTransfer.types.includes("Files");
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: file drop zone; the File button is the accessible way to upload
     <div
       className={clsx("materials", dragDepth > 0 && "is-dropping")}
       onDragEnter={(event) => {
@@ -206,7 +216,11 @@ export function Materials() {
             autoFocus
           />
           <div className="composer-actions">
-            <button type="button" className="btn btn-sm btn-ghost" onClick={() => setComposer("none")}>
+            <button
+              type="button"
+              className="btn btn-sm btn-ghost"
+              onClick={() => setComposer("none")}
+            >
               Cancel
             </button>
             <button type="submit" className="btn btn-sm btn-primary" disabled={!note.trim()}>
@@ -235,10 +249,18 @@ export function Materials() {
             autoFocus
           />
           <div className="composer-actions">
-            <button type="button" className="btn btn-sm btn-ghost" onClick={() => setComposer("none")}>
+            <button
+              type="button"
+              className="btn btn-sm btn-ghost"
+              onClick={() => setComposer("none")}
+            >
               Cancel
             </button>
-            <button type="submit" className="btn btn-sm btn-primary" disabled={!link.trim() || busy === "link"}>
+            <button
+              type="submit"
+              className="btn btn-sm btn-primary"
+              disabled={!link.trim() || busy === "link"}
+            >
               {busy === "link" ? <Spinner size={14} /> : null}
               <span>Add link</span>
             </button>
@@ -249,7 +271,12 @@ export function Materials() {
       {error ? (
         <p className="panel-error" role="alert">
           <span>{error}</span>
-          <button type="button" className="icon-btn icon-btn-sm" aria-label="Dismiss" onClick={() => setError("")}>
+          <button
+            type="button"
+            className="icon-btn icon-btn-sm"
+            aria-label="Dismiss"
+            onClick={() => setError("")}
+          >
             <X size={14} aria-hidden="true" />
           </button>
         </p>
@@ -273,7 +300,10 @@ export function Materials() {
               <li key={material.id} className={`material material-kind-${material.kind}`}>
                 <MaterialBody material={material} spaceId={spaceId} />
                 <footer className="material-foot">
-                  <Avatar size="sm" member={{ name: material.authorName, color: colorFor(material.authorId) }} />
+                  <Avatar
+                    size="sm"
+                    member={{ name: material.authorName, color: colorFor(material.authorId) }}
+                  />
                   <span className="material-meta">
                     {material.authorName}
                     <span aria-hidden="true"> · </span>
@@ -283,7 +313,11 @@ export function Materials() {
                   </span>
                   {confirmId === material.id ? (
                     <span className="material-confirm">
-                      <button type="button" className="btn btn-xs" onClick={() => setConfirmId(null)}>
+                      <button
+                        type="button"
+                        className="btn btn-xs"
+                        onClick={() => setConfirmId(null)}
+                      >
                         Keep
                       </button>
                       <button
@@ -333,7 +367,9 @@ function MaterialBody({ material, spaceId }: { material: Material; spaceId: stri
           {material.title || hostOf(material.url)}
           <ExternalLink size={12} aria-hidden="true" />
         </span>
-        {material.description ? <span className="material-link-text">{material.description}</span> : null}
+        {material.description ? (
+          <span className="material-link-text">{material.description}</span>
+        ) : null}
         <span className="material-link-host">{hostOf(material.url)}</span>
       </a>
     );

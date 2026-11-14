@@ -27,9 +27,15 @@ const SOFT: Array<[RegExp, string]> = [
   [/\bWebSocket\b/, "WebSocket is blocked in the frame; remove network calls"],
   [/\bEventSource\b/, "EventSource is blocked in the frame; remove network calls"],
   [/\bsendBeacon\b/, "sendBeacon is blocked in the frame; remove network calls"],
-  [/\b(?:localStorage|sessionStorage)\b/, "browser storage is not available; keep shared data in sofra.state"],
+  [
+    /\b(?:localStorage|sessionStorage)\b/,
+    "browser storage is not available; keep shared data in sofra.state",
+  ],
   [/\bdocument\.cookie\b/, "cookies are not available in the frame"],
-  [/(?:^|[^\w.])(?:alert|confirm|prompt)\s*\(/, "alert/confirm/prompt are blocked; show messages inside the page"],
+  [
+    /(?:^|[^\w.])(?:alert|confirm|prompt)\s*\(/,
+    "alert/confirm/prompt are blocked; show messages inside the page",
+  ],
   [/\p{Extended_Pictographic}️?/u, "emoji found; use plain text instead"],
 ];
 
@@ -44,7 +50,12 @@ export function validateToolHtml(html: string): HtmlCheck {
       `The document is ${Math.ceil(bytes / 1024)} KB; the limit is ${MAX_HTML_BYTES / 1024} KB. Make it smaller.`,
     );
   }
-  if (!/<html[\s>]/i.test(text) || !/<\/html\s*>/i.test(text) || !/<body[\s>]/i.test(text) || !/<\/body\s*>/i.test(text)) {
+  if (
+    !/<html[\s>]/i.test(text) ||
+    !/<\/html\s*>/i.test(text) ||
+    !/<body[\s>]/i.test(text) ||
+    !/<\/body\s*>/i.test(text)
+  ) {
     errors.push(
       "The html must be one complete document: <!doctype html>, <html>, <head>, <body> and the closing tags. It looks cut off or partial.",
     );
@@ -58,13 +69,17 @@ export function validateToolHtml(html: string): HtmlCheck {
     );
   }
   if (CSS_URL.test(text)) {
-    errors.push("External URLs in CSS url() are not allowed. Use data: URIs, gradients or inline SVG.");
+    errors.push(
+      "External URLs in CSS url() are not allowed. Use data: URIs, gradients or inline SVG.",
+    );
   }
   if (CSS_IMPORT.test(text)) {
     errors.push("CSS @import is not allowed. Put all styles inline in the document.");
   }
   if (JS_IMPORT.test(text)) {
-    errors.push("Importing JavaScript from a URL is not allowed. Put all code inline in the document.");
+    errors.push(
+      "Importing JavaScript from a URL is not allowed. Put all code inline in the document.",
+    );
   }
   const tag = FORBIDDEN_TAGS.exec(text);
   if (tag) errors.push(`<${tag[1]?.toLowerCase()}> is not allowed inside a tool.`);

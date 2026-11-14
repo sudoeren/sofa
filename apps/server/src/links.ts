@@ -34,13 +34,18 @@ function parseIPv6(input: string): number[] | null {
   }
   const halves = text.split("::");
   if (halves.length > 2) return null;
-  const toGroups = (part: string) => (part === "" ? [] : part.split(":").map((group) => Number.parseInt(group, 16)));
+  const toGroups = (part: string) =>
+    part === "" ? [] : part.split(":").map((group) => Number.parseInt(group, 16));
   const head = toGroups(halves[0] ?? "");
   const rest = halves.length === 2 ? toGroups(halves[1] ?? "") : [];
   const fill = halves.length === 2 ? 8 - head.length - rest.length : 0;
   if (fill < 0) return null;
   const groups = [...head, ...new Array<number>(fill).fill(0), ...rest];
-  if (groups.length !== 8 || groups.some((group) => Number.isNaN(group) || group < 0 || group > 0xffff)) return null;
+  if (
+    groups.length !== 8 ||
+    groups.some((group) => Number.isNaN(group) || group < 0 || group > 0xffff)
+  )
+    return null;
   return groups;
 }
 
@@ -78,7 +83,8 @@ function isPublicIPv6(g: readonly number[]): boolean {
   if (leadingZeros(6)) return false;
   // NAT64 64:ff9b::/96 embeds an IPv4 address; the local-use 64:ff9b:1::/48 is refused.
   if (at(0) === 0x64 && at(1) === 0xff9b) {
-    if (at(2) === 0 && at(3) === 0 && at(4) === 0 && at(5) === 0) return isPublicIPv4(embeddedIPv4(at(6), at(7)));
+    if (at(2) === 0 && at(3) === 0 && at(4) === 0 && at(5) === 0)
+      return isPublicIPv4(embeddedIPv4(at(6), at(7)));
     return false;
   }
   // 6to4 2002:AABB:CCDD::/48 embeds an IPv4 address.
@@ -128,8 +134,17 @@ const NAMED_ENTITIES: Record<string, string> = {
 function decodeEntities(text: string): string {
   return text.replace(/&(#x[0-9a-f]{1,6}|#\d{1,7}|[a-z]{2,8});/gi, (whole, body: string) => {
     if (body.startsWith("#")) {
-      const code = body[1] === "x" || body[1] === "X" ? Number.parseInt(body.slice(2), 16) : Number(body.slice(1));
-      if (!Number.isInteger(code) || code <= 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)) return "";
+      const code =
+        body[1] === "x" || body[1] === "X"
+          ? Number.parseInt(body.slice(2), 16)
+          : Number(body.slice(1));
+      if (
+        !Number.isInteger(code) ||
+        code <= 0 ||
+        code > 0x10ffff ||
+        (code >= 0xd800 && code <= 0xdfff)
+      )
+        return "";
       return String.fromCodePoint(code);
     }
     return NAMED_ENTITIES[body.toLowerCase()] ?? whole;
@@ -196,7 +211,12 @@ function decodeBody(data: Buffer, contentType: string): string {
   return new TextDecoder("utf-8").decode(data);
 }
 
-function requestPage(url: URL, target: Target, signal: AbortSignal, maxBytes: number): Promise<PageResponse> {
+function requestPage(
+  url: URL,
+  target: Target,
+  signal: AbortSignal,
+  maxBytes: number,
+): Promise<PageResponse> {
   return new Promise((resolve, reject) => {
     const transport = url.protocol === "https:" ? https : http;
     const hostname = url.hostname.startsWith("[") ? url.hostname.slice(1, -1) : url.hostname;
@@ -219,7 +239,11 @@ function requestPage(url: URL, target: Target, signal: AbortSignal, maxBytes: nu
         // cannot point the socket somewhere else.
         lookup: (_host, options, callback) => {
           const cb = callback as (error: Error | null, address: unknown, family?: number) => void;
-          if (typeof options === "object" && options !== null && (options as { all?: boolean }).all) {
+          if (
+            typeof options === "object" &&
+            options !== null &&
+            (options as { all?: boolean }).all
+          ) {
             cb(null, [{ address: target.address, family: target.family }]);
           } else {
             cb(null, target.address, target.family);
@@ -228,7 +252,8 @@ function requestPage(url: URL, target: Target, signal: AbortSignal, maxBytes: nu
       },
       (response) => {
         const status = response.statusCode ?? 0;
-        const location = typeof response.headers.location === "string" ? response.headers.location : null;
+        const location =
+          typeof response.headers.location === "string" ? response.headers.location : null;
         const contentType = String(response.headers["content-type"] ?? "");
         const isHtml = /^\s*(text\/html|application\/xhtml\+xml)\b/i.test(contentType);
         if (status < 200 || status >= 300 || !isHtml) {
@@ -237,9 +262,12 @@ function requestPage(url: URL, target: Target, signal: AbortSignal, maxBytes: nu
           return;
         }
 
-        const encoding = String(response.headers["content-encoding"] ?? "identity").trim().toLowerCase();
+        const encoding = String(response.headers["content-encoding"] ?? "identity")
+          .trim()
+          .toLowerCase();
         let stream: Readable = response;
-        if (encoding === "gzip" || encoding === "x-gzip") stream = response.pipe(zlib.createGunzip());
+        if (encoding === "gzip" || encoding === "x-gzip")
+          stream = response.pipe(zlib.createGunzip());
         else if (encoding === "deflate") stream = response.pipe(zlib.createInflate());
         else if (encoding === "br") stream = response.pipe(zlib.createBrotliDecompress());
         else if (encoding !== "identity" && encoding !== "") {
@@ -283,7 +311,8 @@ export function createLinkPreviewer(options: LinkOptions = {}): LinkPreviewer {
   const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
 
   async function resolveTarget(url: URL): Promise<Target> {
-    if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("unsupported protocol");
+    if (url.protocol !== "http:" && url.protocol !== "https:")
+      throw new Error("unsupported protocol");
     if (url.username || url.password) throw new Error("credentials in url");
     const host = url.hostname.startsWith("[") ? url.hostname.slice(1, -1) : url.hostname;
     if (!host) throw new Error("missing host");
@@ -293,11 +322,15 @@ export function createLinkPreviewer(options: LinkOptions = {}): LinkPreviewer {
       : await dns.lookup(host, { all: true, verbatim: true });
     const first = answers[0];
     // Every answer must be acceptable, so a name that mixes public and internal records is refused.
-    if (!first || !answers.every((answer) => isAllowed(answer.address))) throw new Error("address not allowed");
+    if (!first || !answers.every((answer) => isAllowed(answer.address)))
+      throw new Error("address not allowed");
     return { address: first.address, family: first.family === 6 ? 6 : 4 };
   }
 
-  async function load(start: URL, signal: AbortSignal): Promise<{ title: string; description: string }> {
+  async function load(
+    start: URL,
+    signal: AbortSignal,
+  ): Promise<{ title: string; description: string }> {
     let url = start;
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
       const target = await resolveTarget(url);

@@ -5,30 +5,30 @@ import { Readable } from "node:stream";
 import type { HttpBindings } from "@hono/node-server";
 import {
   COLLAB_PATH,
+  createSpaceBody,
   type FileInfo,
   type GenerateResponse,
-  LIMITS,
-  type LinkPreview,
-  type ServerConfig,
-  type SpaceInfo,
-  type ToolRecord,
-  type UnlockResponse,
-  type UseTemplateResponse,
-  createSpaceBody,
   generateBody,
   isSpaceId,
+  LIMITS,
+  type LinkPreview,
   linkBody,
   newId,
   newSpaceId,
   nextToolOrder,
   putTool,
+  type ServerConfig,
+  type SpaceInfo,
+  type ToolRecord,
+  type UnlockResponse,
+  type UseTemplateResponse,
   unlockBody,
   useTemplateBody,
 } from "@sofra/shared";
 import type { WidgetDef } from "@sofra/widgets";
 import { type Context, Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { bodyLimit } from "hono/body-limit";
+import { HTTPException } from "hono/http-exception";
 import type { z } from "zod";
 import {
   bearerToken,
@@ -40,7 +40,7 @@ import {
 } from "./auth";
 import type { Config } from "./config";
 import type { Db, SpaceRow } from "./db";
-import { FileError, type Files, downloadHeaders } from "./files";
+import { downloadHeaders, FileError, type Files } from "./files";
 import type { LinkPreviewer } from "./links";
 import type { AiService, SpaceDocs } from "./types";
 
@@ -130,7 +130,12 @@ async function readJson<T extends z.ZodType>(c: Ctx, schema: T): Promise<z.infer
 }
 
 function spaceInfo(space: SpaceRow): SpaceInfo {
-  return { id: space.id, title: space.title, createdAt: space.createdAt, locked: space.passwordHash !== null };
+  return {
+    id: space.id,
+    title: space.title,
+    createdAt: space.createdAt,
+    locked: space.passwordHash !== null,
+  };
 }
 
 export function createApp(deps: AppDeps): Hono<Env> {
@@ -144,9 +149,13 @@ export function createApp(deps: AppDeps): Hono<Env> {
   const app = new Hono<Env>();
 
   app.onError((error, c) => {
-    if (error instanceof HTTPException) return c.json({ error: error.message || "Request failed" }, error.status);
+    if (error instanceof HTTPException)
+      return c.json({ error: error.message || "Request failed" }, error.status);
     if (error instanceof FileError) return c.json({ error: error.message }, error.status);
-    console.error("[sofra] request failed:", error instanceof Error ? error.message : "unknown error");
+    console.error(
+      "[sofra] request failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
     return c.json({ error: "Internal server error" }, 500);
   });
 
@@ -276,7 +285,8 @@ export function createApp(deps: AppDeps): Hono<Env> {
   app.post("/api/spaces/:id/files", uploadLimit, async (c) => {
     const space = openSpace(c);
     const declared = Number(c.req.header("Content-Length"));
-    if (Number.isFinite(declared) && declared > UPLOAD_BODY_BYTES) fail(413, "The file is too large");
+    if (Number.isFinite(declared) && declared > UPLOAD_BODY_BYTES)
+      fail(413, "The file is too large");
     let form: FormData;
     try {
       form = await c.req.formData();
@@ -312,7 +322,10 @@ export function createApp(deps: AppDeps): Hono<Env> {
     const stat = await fsp.stat(file.path).catch(() => null);
     if (!stat?.isFile()) fail(404, "File not found");
     const body = Readable.toWeb(fs.createReadStream(file.path)) as ReadableStream<Uint8Array>;
-    return new Response(body, { status: 200, headers: downloadHeaders({ ...file, size: stat.size }) });
+    return new Response(body, {
+      status: 200,
+      headers: downloadHeaders({ ...file, size: stat.size }),
+    });
   });
 
   app.post("/api/spaces/:id/links", jsonLimit, async (c) => {
@@ -364,7 +377,11 @@ export function createApp(deps: AppDeps): Hono<Env> {
     const file = path.join(webDir, relative);
     if (relative !== "/" && file.startsWith(webDir + path.sep)) {
       const hashed = relative.startsWith("/assets/");
-      const found = await sendStatic(c, file, hashed ? "public, max-age=31536000, immutable" : "no-cache");
+      const found = await sendStatic(
+        c,
+        file,
+        hashed ? "public, max-age=31536000, immutable" : "no-cache",
+      );
       if (found) return found;
       // A missing asset must not be answered with the app shell.
       if (path.extname(relative) !== "") return c.json({ error: "Not found" }, 404);

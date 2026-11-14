@@ -134,7 +134,9 @@ describe("PromptBar", () => {
     const input = screen.getByLabelText("Ask for a tool") as HTMLTextAreaElement;
     await user.type(input, "a poll{Enter}");
     await waitFor(() => expect(input.disabled).toBe(true));
-    expect((screen.getByRole("button", { name: "Sending" }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Sending" }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
 
     release(new Response(JSON.stringify({ error: "rate limited" }), { status: 429 }));
     const alert = await screen.findByRole("alert");
@@ -158,7 +160,9 @@ describe("PromptBar", () => {
     const user = userEvent.setup();
     const onOpenSettings = vi.fn();
     const onOpenGallery = vi.fn();
-    render(<Harness serverAi={false} onOpenSettings={onOpenSettings} onOpenGallery={onOpenGallery} />);
+    render(
+      <Harness serverAi={false} onOpenSettings={onOpenSettings} onOpenGallery={onOpenGallery} />,
+    );
     expect(screen.getByText(/No AI key is set up/)).toBeTruthy();
     await user.click(screen.getByRole("button", { name: "Settings" }));
     await user.click(screen.getByRole("button", { name: "starter gallery" }));

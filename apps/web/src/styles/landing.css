@@ -3,8 +3,7 @@
   flex-direction: column;
   min-height: 100dvh;
   background:
-    radial-gradient(900px 420px at 85% -10%, var(--accent-soft), transparent 70%),
-    var(--bg);
+    radial-gradient(900px 420px at 85% -10%, var(--accent-soft), transparent 70%), var(--bg);
 }
 .landing-top,
 .landing-main,

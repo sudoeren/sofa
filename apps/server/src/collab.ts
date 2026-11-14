@@ -1,4 +1,4 @@
-import type { IncomingMessage, Server as HttpServer } from "node:http";
+import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
 import { Hocuspocus } from "@hocuspocus/server";
 import { COLLAB_PATH, isSpaceId, metaMap } from "@sofra/shared";
@@ -101,7 +101,9 @@ export function createCollab(options: CollabOptions): Collab {
     const connection = hocuspocus.handleConnection(socket, webRequest);
     socket.on("message", (data) => connection.handleMessage(toBytes(data)));
     socket.on("pong", () => connection.touch());
-    socket.on("close", (code, reason) => connection.handleClose({ code, reason: reason.toString() }));
+    socket.on("close", (code, reason) =>
+      connection.handleClose({ code, reason: reason.toString() }),
+    );
     socket.on("error", () => socket.terminate());
   });
 

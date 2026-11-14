@@ -3,7 +3,13 @@ import { Check, Eye, EyeOff, Server } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { Avatar } from "../components/Avatar";
 import { Dialog } from "../components/Dialog";
-import { clearAiSettings, cleanName, loadAiSettings, NAME_MAX, saveAiSettings } from "../lib/storage";
+import {
+  cleanName,
+  clearAiSettings,
+  loadAiSettings,
+  NAME_MAX,
+  saveAiSettings,
+} from "../lib/storage";
 
 type Props = {
   me: MemberInfo;
@@ -99,7 +105,9 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
               ? "Checking whether this server has its own AI provider."
               : config.aiEnabled
                 ? `This server has its own AI provider${
-                    config.provider ? ` (${config.provider}${config.model ? `, ${config.model}` : ""})` : ""
+                    config.provider
+                      ? ` (${config.provider}${config.model ? `, ${config.model}` : ""})`
+                      : ""
                   }, so a key of your own is optional. If you save one, it is used for your requests instead.`
                 : "This server has no AI provider configured. Without a key, requests are matched to starter tools by keyword."}
           </span>
@@ -147,7 +155,11 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
             aria-pressed={showKey}
             onClick={() => setShowKey((value) => !value)}
           >
-            {showKey ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+            {showKey ? (
+              <EyeOff size={16} aria-hidden="true" />
+            ) : (
+              <Eye size={16} aria-hidden="true" />
+            )}
           </button>
         </div>
 
@@ -177,7 +189,12 @@ export function SettingsDialog({ me, config, onRename, onClose }: Props) {
         ) : null}
 
         <div className="settings-actions">
-          <button type="button" className="btn btn-ghost btn-danger-text" onClick={clearKey} disabled={!hasStored}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-danger-text"
+            onClick={clearKey}
+            disabled={!hasStored}
+          >
             Clear key
           </button>
           <button type="submit" className="btn btn-primary" disabled={!apiKey.trim()}>

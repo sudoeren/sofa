@@ -1,15 +1,15 @@
 import {
   type ChatMessage,
-  type JsonValue,
-  type Material,
-  type ToolRecord,
-  type ToolState,
   chatArray,
+  type JsonValue,
   listTools,
+  type Material,
   materialsArray,
   metaMap,
   readTool,
   readToolState,
+  type ToolRecord,
+  type ToolState,
   toolsMap,
 } from "@sofra/shared";
 import type * as Y from "yjs";
@@ -52,7 +52,11 @@ export type SpaceSnapshot = {
 };
 
 /** Plain copy of what the model needs. Call inside SpaceDocs.read. */
-export function snapshotSpace(doc: Y.Doc, toolId: string | undefined, skipMessageIds: string[] = []): SpaceSnapshot {
+export function snapshotSpace(
+  doc: Y.Doc,
+  toolId: string | undefined,
+  skipMessageIds: string[] = [],
+): SpaceSnapshot {
   const title = metaMap(doc).get("title");
   const tool = toolId ? toolsMap(doc).get(toolId) : undefined;
   return {
@@ -66,7 +70,8 @@ export function snapshotSpace(doc: Y.Doc, toolId: string | undefined, skipMessag
   };
 }
 
-const DATA_TAGS = "space_title|materials|material|existing_tools|recent_chat|target_tool|tool_state|tool_content|request|file_text";
+const DATA_TAGS =
+  "space_title|materials|material|existing_tools|recent_chat|target_tool|tool_state|tool_content|request|file_text";
 const TAG_PATTERN = new RegExp(`<(/?)(${DATA_TAGS})\\b`, "gi");
 
 /** Keep untrusted text from closing or opening the delimiters we wrap it in. */
@@ -169,7 +174,10 @@ function renderChat(chat: ChatMessage[], budget: ContextBudget): string {
     .filter((message) => message.status !== "pending" && message.text.trim())
     .slice(-budget.chatMessages)
     .map((message) => {
-      const who = message.role === "assistant" ? "assistant" : `member ${attr(message.authorName, 60) || "unknown"}`;
+      const who =
+        message.role === "assistant"
+          ? "assistant"
+          : `member ${attr(message.authorName, 60) || "unknown"}`;
       return `[${who}] ${neutralize(oneLine(message.text, budget.chatMessage))}`;
     })
     .join("\n");
@@ -190,7 +198,8 @@ export function renderState(state: ToolState, budget: ContextBudget): string {
     used += line.length + 1;
     shown++;
   }
-  if (shown < keys.length) lines.push(`... ${keys.length - shown} more keys not shown (${keys.length} in total)`);
+  if (shown < keys.length)
+    lines.push(`... ${keys.length - shown} more keys not shown (${keys.length} in total)`);
   return neutralize(lines.join("\n"));
 }
 
@@ -240,7 +249,10 @@ export async function buildRequestMessage(input: {
 
   const materials = await renderMaterials(snapshot.materials, input.files, budget);
   if (materials.text) {
-    const note = materials.omitted > 0 ? `\n(${materials.omitted} more materials did not fit and were left out)` : "";
+    const note =
+      materials.omitted > 0
+        ? `\n(${materials.omitted} more materials did not fit and were left out)`
+        : "";
     sections.push(`<materials>\n${materials.text}${note}\n</materials>`);
   } else {
     sections.push("<materials>(none)</materials>");

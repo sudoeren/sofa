@@ -1,4 +1,4 @@
-import { type MemberInfo, TOOL_LIMITS, type Theme } from "@sofra/shared";
+import { type MemberInfo, type Theme, TOOL_LIMITS } from "@sofra/shared";
 import { RotateCw, TriangleAlert, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
@@ -37,7 +37,16 @@ const ALLOW =
   "bluetooth 'none'; midi 'none'; accelerometer 'none'; gyroscope 'none'; " +
   "magnetometer 'none'; fullscreen 'none'";
 
-export function ToolFrame({ doc, toolId, html, version, title, me, members, theme }: ToolFrameProps) {
+export function ToolFrame({
+  doc,
+  toolId,
+  html,
+  version,
+  title,
+  me,
+  members,
+  theme,
+}: ToolFrameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const sessionRef = useRef<FrameSession | null>(null);
@@ -142,7 +151,12 @@ export function ToolFrame({ doc, toolId, html, version, title, me, members, them
           <TriangleAlert size={14} aria-hidden="true" />
           <span className="rt-strip-text">{problem}</span>
           {!stopped && (
-            <button type="button" className="rt-strip-btn" onClick={restart} aria-label="Reload tool">
+            <button
+              type="button"
+              className="rt-strip-btn"
+              onClick={restart}
+              aria-label="Reload tool"
+            >
               <RotateCw size={14} aria-hidden="true" />
             </button>
           )}

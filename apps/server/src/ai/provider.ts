@@ -20,7 +20,7 @@ export type ProviderChoice = {
 
 /** Defaults for a member key that names no model. */
 const MEMBER_DEFAULT_MODELS = {
-  anthropic: "claude-opus-5-5",
+  anthropic: "claude-fable-5-2",
   openai: "gpt-5",
 } as const;
 
@@ -36,7 +36,8 @@ export function resolveProvider(config: Config, userAi: UserAi | undefined): Pro
     return {
       source: "member",
       provider: userAi.provider,
-      model: userAi.model ?? (sameAsServer ? config.ai.model : MEMBER_DEFAULT_MODELS[userAi.provider]),
+      model:
+        userAi.model ?? (sameAsServer ? config.ai.model : MEMBER_DEFAULT_MODELS[userAi.provider]),
       apiKey: userAi.apiKey,
       baseUrl: null,
     };
@@ -78,7 +79,10 @@ const SECRET_PATTERNS: RegExp[] = [
 ];
 
 /** Remove anything that could be a credential from text that goes to chat or logs. */
-export function redactSecrets(text: string, secrets: Array<string | null | undefined> = []): string {
+export function redactSecrets(
+  text: string,
+  secrets: Array<string | null | undefined> = [],
+): string {
   let out = text;
   for (const secret of secrets) {
     if (!secret) continue;
@@ -98,9 +102,12 @@ export function redactSecrets(text: string, secrets: Array<string | null | undef
 function statusOf(error: unknown): number | undefined {
   let current: unknown = error;
   for (let depth = 0; depth < 4 && current && typeof current === "object"; depth++) {
-    const status = (current as { statusCode?: unknown }).statusCode ?? (current as { status?: unknown }).status;
+    const status =
+      (current as { statusCode?: unknown }).statusCode ?? (current as { status?: unknown }).status;
     if (typeof status === "number") return status;
-    current = (current as { lastError?: unknown; cause?: unknown }).lastError ?? (current as { cause?: unknown }).cause;
+    current =
+      (current as { lastError?: unknown; cause?: unknown }).lastError ??
+      (current as { cause?: unknown }).cause;
   }
   return undefined;
 }

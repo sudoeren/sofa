@@ -1,31 +1,31 @@
 import {
   type ChatMessage,
   type ChatStatus,
+  chatArray,
   type GenerateBody,
   type JsonValue,
-  chatArray,
   newId,
   nextToolOrder,
   patchChatMessage,
   putTool,
 } from "@sofra/shared";
 import type { WidgetDef } from "@sofra/widgets";
-import { type LanguageModel, isStepCount, streamText } from "ai";
+import { isStepCount, type LanguageModel, streamText } from "ai";
 import type { Config } from "../config";
 import type { AiDeps, AiService } from "../types";
-import { type ContextBudget, buildRequestMessage, clip, snapshotSpace } from "./context";
+import { buildRequestMessage, type ContextBudget, clip, snapshotSpace } from "./context";
 import { matchStarter, noAiChangeReply, noStarterReply, starterCreatedReply } from "./fallback";
 import { buildSystemPrompt } from "./prompt";
 import {
-  type ProviderChoice,
   createLanguageModel,
   describeFailure,
   maxOutputTokensFor,
+  type ProviderChoice,
   redactSecrets,
   resolveProvider,
   serverInfo,
 } from "./provider";
-import { GenerationSession, type ToolChange, buildModelTools } from "./session";
+import { buildModelTools, GenerationSession, type ToolChange } from "./session";
 
 export type AiServiceOptions = {
   /** the widget catalog; index.ts passes WIDGET_DEFS */
@@ -62,7 +62,11 @@ function summarize(changes: ToolChange[]): string {
   return changes.map(phrase).join(", ");
 }
 
-export function createAiServiceWith(config: Config, deps: AiDeps, options: AiServiceOptions): AiService {
+export function createAiServiceWith(
+  config: Config,
+  deps: AiDeps,
+  options: AiServiceOptions,
+): AiService {
   const widgets = options.widgets;
   const createModel = options.createModel ?? createLanguageModel;
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -83,7 +87,11 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
     return systemPrompt;
   }
 
-  async function runStarter(spaceId: string, body: GenerateBody, session: GenerationSession): Promise<Outcome> {
+  async function runStarter(
+    spaceId: string,
+    body: GenerateBody,
+    session: GenerationSession,
+  ): Promise<Outcome> {
     if (body.toolId) return { status: "done", text: noAiChangeReply() };
     const match = matchStarter(body.prompt, widgets);
     if (!match) return { status: "done", text: noStarterReply(widgets) };
@@ -124,7 +132,9 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
     skipMessageIds: string[],
     signal: AbortSignal,
   ): Promise<Outcome> {
-    const snapshot = await deps.docs.read(spaceId, (doc) => snapshotSpace(doc, body.toolId, skipMessageIds));
+    const snapshot = await deps.docs.read(spaceId, (doc) =>
+      snapshotSpace(doc, body.toolId, skipMessageIds),
+    );
     if (body.toolId && snapshot.target) await session.markBusy(body.toolId);
 
     const request = await buildRequestMessage({
@@ -186,7 +196,10 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
       };
     }
     if (finishReason === "content-filter") {
-      return { status: "error", text: "The AI provider declined this request. Try wording it differently." };
+      return {
+        status: "error",
+        text: "The AI provider declined this request. Try wording it differently.",
+      };
     }
     if (text) return { status: "done", text };
     if (done) return { status: "done", text: `Done: I ${summarize(session.changes)}.` };
@@ -196,10 +209,18 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
         text: "I could not build a working tool for this request. Try again, or describe it a little differently.",
       };
     }
-    return { status: "error", text: "The AI gave no answer. Try again, or describe what you need differently." };
+    return {
+      status: "error",
+      text: "The AI gave no answer. Try again, or describe what you need differently.",
+    };
   }
 
-  async function runJob(spaceId: string, body: GenerateBody, userMessageId: string, assistantId: string): Promise<void> {
+  async function runJob(
+    spaceId: string,
+    body: GenerateBody,
+    userMessageId: string,
+    assistantId: string,
+  ): Promise<void> {
     const choice = resolveProvider(config, body.ai);
     const secrets = [body.ai?.apiKey];
     const session = new GenerationSession({
@@ -214,7 +235,8 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
           const current = chatArray(doc)
             .toArray()
             .find((message) => message.id === assistantId);
-          if (current?.status === "pending" && current.text !== text) patchChatMessage(doc, assistantId, { text });
+          if (current?.status === "pending" && current.text !== text)
+            patchChatMessage(doc, assistantId, { text });
         });
       },
     });
@@ -227,9 +249,18 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
         outcome = await runStarter(spaceId, body, session);
       } else {
         const aborted = new Promise<never>((_, reject) => {
-          controller.signal.addEventListener("abort", () => reject(controller.signal.reason), { once: true });
+          controller.signal.addEventListener("abort", () => reject(controller.signal.reason), {
+            once: true,
+          });
         });
-        const work = runModel(spaceId, body, choice, session, [userMessageId, assistantId], controller.signal);
+        const work = runModel(
+          spaceId,
+          body,
+          choice,
+          session,
+          [userMessageId, assistantId],
+          controller.signal,
+        );
         // When the timeout wins the race the stream may still fail later; that is expected.
         work.catch(() => {});
         outcome = await Promise.race([work, aborted]);
@@ -237,7 +268,8 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
     } catch (error) {
       const failure = describeFailure(error, choice, [config.ai.apiKey, ...secrets]);
       log(`generation failed in space ${spaceId.slice(0, 6)}: ${failure.log}`, secrets);
-      const kept = session.changes.length > 0 ? ` Before that I ${summarize(session.changes)}.` : "";
+      const kept =
+        session.changes.length > 0 ? ` Before that I ${summarize(session.changes)}.` : "";
       outcome = { status: "error", text: `${failure.chat}${kept}` };
     } finally {
       clearTimeout(timer);
@@ -254,11 +286,16 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
         patchChatMessage(doc, assistantId, patch);
       });
     } catch (error) {
-      log(`could not finish generation in space ${spaceId.slice(0, 6)}: ${describeFailure(error, choice, secrets).log}`, secrets);
+      log(
+        `could not finish generation in space ${spaceId.slice(0, 6)}: ${describeFailure(error, choice, secrets).log}`,
+        secrets,
+      );
       // Second attempt, split up, so one failing half cannot block the other.
       await deps.docs.transact(spaceId, (doc) => session.finishIn(doc)).catch(() => {});
       await deps.docs
-        .transact(spaceId, (doc) => patchChatMessage(doc, assistantId, { text, status: outcome.status }))
+        .transact(spaceId, (doc) =>
+          patchChatMessage(doc, assistantId, { text, status: outcome.status }),
+        )
         .catch(() => {});
     }
   }
@@ -286,7 +323,9 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
       const assistantMessage: ChatMessage = {
         id: assistantId,
         role: "assistant",
-        text: full ? "Too many requests are waiting in this space. Wait for them to finish, then ask again." : "",
+        text: full
+          ? "Too many requests are waiting in this space. Wait for them to finish, then ask again."
+          : "",
         status: full ? "error" : "pending",
         createdAt: time + 1,
       };
@@ -296,7 +335,10 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
           chatArray(doc).push([userMessage, assistantMessage]);
         });
       } catch (error) {
-        log(`could not append chat messages: ${describeFailure(error, null, [body.ai?.apiKey]).log}`, [body.ai?.apiKey]);
+        log(
+          `could not append chat messages: ${describeFailure(error, null, [body.ai?.apiKey]).log}`,
+          [body.ai?.apiKey],
+        );
         return { messageId: assistantId };
       }
       if (full) return { messageId: assistantId };
@@ -306,7 +348,9 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
       queue.tail = queue.tail
         .then(() => runJob(spaceId, body, userMessageId, assistantId))
         .catch((error) => {
-          log(`generation crashed: ${describeFailure(error, null, [body.ai?.apiKey]).log}`, [body.ai?.apiKey]);
+          log(`generation crashed: ${describeFailure(error, null, [body.ai?.apiKey]).log}`, [
+            body.ai?.apiKey,
+          ]);
         })
         .finally(() => {
           queue.size--;
@@ -316,4 +360,3 @@ export function createAiServiceWith(config: Config, deps: AiDeps, options: AiSer
     },
   };
 }
-

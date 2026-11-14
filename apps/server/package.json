@@ -10,13 +10,20 @@
     "test": "vitest run --passWithNoTests"
   },
   "tsup": {
-    "entry": ["src/index.ts"],
-    "format": ["esm"],
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm"
+    ],
     "target": "node22",
     "clean": true,
     "splitting": false,
     "removeNodeProtocol": false,
-    "noExternal": ["@sofra/shared", "@sofra/widgets"]
+    "noExternal": [
+      "@sofra/shared",
+      "@sofra/widgets"
+    ]
   },
   "devDependencies": {
     "@hocuspocus/provider": "^4.8.0",

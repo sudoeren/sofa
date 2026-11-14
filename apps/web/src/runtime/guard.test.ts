@@ -19,7 +19,9 @@ describe("checkFrameMessage", () => {
       kind: "accept",
       message: { type: "sofra:ready" },
     });
-    expect(checkFrameMessage({ type: "sofra:set", key: "a", value: { n: [1, "x", null] } })).toEqual({
+    expect(
+      checkFrameMessage({ type: "sofra:set", key: "a", value: { n: [1, "x", null] } }),
+    ).toEqual({
       kind: "accept",
       message: { type: "sofra:set", key: "a", value: { n: [1, "x", null] } },
     });
@@ -59,7 +61,8 @@ describe("checkFrameMessage", () => {
         type = "sofra:ready";
       })(),
     ];
-    for (const data of bad) expect(checkFrameMessage(data), JSON.stringify(data)).toEqual({ kind: "ignore" });
+    for (const data of bad)
+      expect(checkFrameMessage(data), JSON.stringify(data)).toEqual({ kind: "ignore" });
   });
 
   it("rejects writes with values that are too large or not JSON, naming the key", () => {
@@ -70,10 +73,17 @@ describe("checkFrameMessage", () => {
     });
     expect(big).toMatchObject({ kind: "reject", key: "a" });
     // multi-byte text is measured in bytes, not characters
-    expect(
-      checkFrameMessage({ type: "sofra:set", key: "a", value: "ç".repeat(40_000) }).kind,
-    ).toBe("reject");
-    for (const value of [undefined, () => 1, new Date(), new Map(), 10n, Number.POSITIVE_INFINITY]) {
+    expect(checkFrameMessage({ type: "sofra:set", key: "a", value: "ç".repeat(40_000) }).kind).toBe(
+      "reject",
+    );
+    for (const value of [
+      undefined,
+      () => 1,
+      new Date(),
+      new Map(),
+      10n,
+      Number.POSITIVE_INFINITY,
+    ]) {
       expect(checkFrameMessage({ type: "sofra:set", key: "a", value }).kind).toBe("reject");
     }
     const cyclic: Record<string, unknown> = {};
@@ -125,11 +135,13 @@ describe("isReadyFromFrame", () => {
     expect(isReadyFromFrame({ source: {}, data: { type: "sofra:ready" } }, frame)).toBe(false);
     expect(isReadyFromFrame({ source: null, data: { type: "sofra:ready" } }, frame)).toBe(false);
     expect(isReadyFromFrame({ source: null, data: { type: "sofra:ready" } }, null)).toBe(false);
-    expect(isReadyFromFrame({ source: undefined, data: { type: "sofra:ready" } }, undefined)).toBe(false);
-    // data messages are not accepted on the window at all, even from the right source
-    expect(isReadyFromFrame({ source: frame, data: { type: "sofra:set", key: "a", value: 1 } }, frame)).toBe(
+    expect(isReadyFromFrame({ source: undefined, data: { type: "sofra:ready" } }, undefined)).toBe(
       false,
     );
+    // data messages are not accepted on the window at all, even from the right source
+    expect(
+      isReadyFromFrame({ source: frame, data: { type: "sofra:set", key: "a", value: 1 } }, frame),
+    ).toBe(false);
   });
 });
 
@@ -162,7 +174,12 @@ describe("helpers", () => {
   it("WriteBudget limits bursts and refills over time", () => {
     let now = 0;
     const budget = new WriteBudget(3, 1, () => now);
-    expect([budget.take(), budget.take(), budget.take(), budget.take()]).toEqual([true, true, true, false]);
+    expect([budget.take(), budget.take(), budget.take(), budget.take()]).toEqual([
+      true,
+      true,
+      true,
+      false,
+    ]);
     now = 2000;
     expect([budget.take(), budget.take(), budget.take()]).toEqual([true, true, false]);
   });

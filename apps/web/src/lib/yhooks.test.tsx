@@ -1,4 +1,12 @@
-import { type Material, materialsArray, metaMap, putTool, type ToolRecord, toolStateMap, toolsMap } from "@sofra/shared";
+import {
+  type Material,
+  materialsArray,
+  metaMap,
+  putTool,
+  type ToolRecord,
+  toolStateMap,
+  toolsMap,
+} from "@sofra/shared";
 import { act, render, renderHook, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import * as Y from "yjs";

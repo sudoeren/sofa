@@ -51,7 +51,9 @@ describe("api client", () => {
   });
 
   it("creates a space with a JSON body", async () => {
-    fetchMock.mockResolvedValue(respond(201, { id: SPACE, title: "Trip", createdAt: 1, locked: true, token: "t" }));
+    fetchMock.mockResolvedValue(
+      respond(201, { id: SPACE, title: "Trip", createdAt: 1, locked: true, token: "t" }),
+    );
     const space = await createSpace({ title: "Trip", password: "secret" });
     expect(space.token).toBe("t");
     const { url, init, headers } = lastCall();
@@ -63,7 +65,9 @@ describe("api client", () => {
 
   it("does not send a token when reading or unlocking a space", async () => {
     setSpaceToken(SPACE, "stored");
-    fetchMock.mockResolvedValue(respond(200, { id: SPACE, title: "Trip", createdAt: 1, locked: true }));
+    fetchMock.mockResolvedValue(
+      respond(200, { id: SPACE, title: "Trip", createdAt: 1, locked: true }),
+    );
     await getSpace(SPACE);
     expect(lastCall().headers.Authorization).toBeUndefined();
     fetchMock.mockResolvedValue(respond(200, { token: "fresh" }));
@@ -80,12 +84,16 @@ describe("api client", () => {
     expect(lastCall().headers.Authorization).toBe("Bearer tok-123");
 
     fetchMock.mockImplementation(async () => respond(201, { toolId: "t1" }));
-    await expect(applyTemplate(SPACE, "poll", { id: "u1", name: "Deniz" })).resolves.toEqual({ toolId: "t1" });
+    await expect(applyTemplate(SPACE, "poll", { id: "u1", name: "Deniz" })).resolves.toEqual({
+      toolId: "t1",
+    });
     expect(lastCall().url).toBe(`/api/spaces/${SPACE}/templates/poll`);
     expect(lastCall().headers.Authorization).toBe("Bearer tok-123");
     expect(JSON.parse(String(lastCall().init.body))).toEqual({ user: { id: "u1", name: "Deniz" } });
 
-    fetchMock.mockImplementation(async () => respond(200, { url: "https://a.b/", title: "A", description: "" }));
+    fetchMock.mockImplementation(async () =>
+      respond(200, { url: "https://a.b/", title: "A", description: "" }),
+    );
     await previewLink(SPACE, "https://a.b/");
     expect(lastCall().url).toBe(`/api/spaces/${SPACE}/links`);
     expect(lastCall().headers.Authorization).toBe("Bearer tok-123");
@@ -100,7 +108,13 @@ describe("api client", () => {
   it("uploads a file as multipart without setting the content type itself", async () => {
     setSpaceToken(SPACE, "tok-123");
     fetchMock.mockResolvedValue(
-      respond(201, { fileId: "f1", name: "a.txt", mime: "text/plain", size: 1, url: "/api/files/f1" }),
+      respond(201, {
+        fileId: "f1",
+        name: "a.txt",
+        mime: "text/plain",
+        size: 1,
+        url: "/api/files/f1",
+      }),
     );
     const info = await uploadFile(SPACE, new File(["x"], "a.txt", { type: "text/plain" }));
     expect(info.fileId).toBe("f1");
@@ -114,7 +128,9 @@ describe("api client", () => {
 
   it("turns { error } responses into ApiError with the message and status", async () => {
     fetchMock.mockResolvedValue(respond(429, { error: "Slow down a little." }));
-    const error = await generate(SPACE, { prompt: "x", user: { id: "u", name: "n" } }).catch((e: unknown) => e);
+    const error = await generate(SPACE, { prompt: "x", user: { id: "u", name: "n" } }).catch(
+      (e: unknown) => e,
+    );
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).message).toBe("Slow down a little.");
     expect((error as ApiError).status).toBe(429);

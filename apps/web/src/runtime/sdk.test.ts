@@ -48,7 +48,6 @@ function boot(options: { theme?: string; extras?: Record<string, unknown> } = {}
       members: [{ id: "u1", name: "Ada", color: "#111" }],
       theme: "dark",
     });
-  // biome-ignore lint/suspicious/noExplicitAny: the SDK is untyped browser JS
   const sofra = win.sofra as any;
   return { win, doc, parent, port, fire, connect, fromHost, sent, init, sofra };
 }
@@ -324,7 +323,11 @@ describe("frame SDK", () => {
     Object.defineProperties(win, Object.getOwnPropertyDescriptors(extras));
     // boot() spreads extras, which would call the getter; build this window by hand
     const doc = document.implementation.createHTMLDocument("tool");
-    Object.assign(win, { document: doc, parent: { postMessage: vi.fn() }, addEventListener: vi.fn() });
+    Object.assign(win, {
+      document: doc,
+      parent: { postMessage: vi.fn() },
+      addEventListener: vi.fn(),
+    });
     new Function("window", sdkSource)(win);
     const storage = win.localStorage as Storage;
     storage.setItem("a", "1");

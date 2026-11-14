@@ -10,7 +10,7 @@ import { z } from "zod";
 export const MAX_TOOL_CHANGES = 4;
 
 /** A complete tool that follows every rule; also used by the tests as a known-good document. */
-export const EXAMPLE_TOOL_HTML = String.raw`<!doctype html>
+export const EXAMPLE_TOOL_HTML = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -141,7 +141,10 @@ function sortKeys(value: unknown): unknown {
 /** JSON Schema of a widget config, as compact stable JSON. Never throws. */
 export function describeConfigSchema(def: WidgetDef): string {
   try {
-    const schema = z.toJSONSchema(def.configSchema, { unrepresentable: "any", io: "input" }) as Record<string, unknown>;
+    const schema = z.toJSONSchema(def.configSchema, {
+      unrepresentable: "any",
+      io: "input",
+    }) as Record<string, unknown>;
     delete schema.$schema;
     return JSON.stringify(sortKeys(schema));
   } catch {
@@ -258,7 +261,7 @@ export function buildSystemPrompt(defs: readonly WidgetDef[]): string {
       ? [
           "## Widget catalog",
           "",
-          "For create_widget pass the widget's type id as `type` and a `config` object that matches its JSON Schema exactly. Each guide says when to use the widget, what the config fields mean, and which state keys the widget reads and writes (you need those when you convert a widget to HTML). Entries inside a config often carry ids; give new entries short unique ids such as \"a1\", \"a2\".",
+          'For create_widget pass the widget\'s type id as `type` and a `config` object that matches its JSON Schema exactly. Each guide says when to use the widget, what the config fields mean, and which state keys the widget reads and writes (you need those when you convert a widget to HTML). Entries inside a config often carry ids; give new entries short unique ids such as "a1", "a2".',
           "",
           defs.map(widgetSection).join("\n\n"),
         ].join("\n")

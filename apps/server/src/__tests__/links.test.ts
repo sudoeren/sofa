@@ -2,7 +2,13 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import zlib from "node:zlib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { createRateLimiter, hashPassword, signSpaceToken, verifyPassword, verifySpaceToken } from "../auth";
+import {
+  createRateLimiter,
+  hashPassword,
+  signSpaceToken,
+  verifyPassword,
+  verifySpaceToken,
+} from "../auth";
 import { sanitizeFileName } from "../files";
 import { createLinkPreviewer, isPublicAddress, parseHtmlMeta } from "../links";
 
@@ -108,17 +114,24 @@ describe("parseHtmlMeta", () => {
       <meta name="description" content="plain description">
       <meta content='OG &quot;title&quot; &#8211; x' property="og:title">
       <meta property=og:description content="og   description&#x21;"></head></html>`;
-    expect(parseHtmlMeta(html)).toEqual({ title: 'OG "title" \u2013 x', description: "og description!" });
+    expect(parseHtmlMeta(html)).toEqual({
+      title: 'OG "title" \u2013 x',
+      description: "og description!",
+    });
   });
   it("falls back to title and meta description, and to empty strings", () => {
-    expect(parseHtmlMeta("<title>\n Hello\tworld </title><meta name='Description' content='d'>")).toEqual({
+    expect(
+      parseHtmlMeta("<title>\n Hello\tworld </title><meta name='Description' content='d'>"),
+    ).toEqual({
       title: "Hello world",
       description: "d",
     });
     expect(parseHtmlMeta("<p>nothing</p>")).toEqual({ title: "", description: "" });
   });
   it("caps very long values", () => {
-    expect(parseHtmlMeta(`<title>${"x".repeat(5000)}</title>`).title.length).toBeLessThanOrEqual(300);
+    expect(parseHtmlMeta(`<title>${"x".repeat(5000)}</title>`).title.length).toBeLessThanOrEqual(
+      300,
+    );
   });
 });
 
@@ -187,7 +200,11 @@ describe("link previewer", () => {
   const strict = createLinkPreviewer({ timeoutMs: 1500 });
 
   it("reads title and description", async () => {
-    expect(await local(`${origin}/page`)).toEqual({ url: `${origin}/page`, title: "Local page", description: "About it" });
+    expect(await local(`${origin}/page`)).toEqual({
+      url: `${origin}/page`,
+      title: "Local page",
+      description: "About it",
+    });
     expect((await local(`${origin}/gzip`)).title).toBe("Zipped");
     expect((await local(`${origin}/redirect`)).title).toBe("Local page");
   });
@@ -199,7 +216,11 @@ describe("link previewer", () => {
   });
 
   it("re-validates redirects and limits their number", async () => {
-    expect(await local(`${origin}/to-metadata`)).toEqual({ url: `${origin}/to-metadata`, title: "", description: "" });
+    expect(await local(`${origin}/to-metadata`)).toEqual({
+      url: `${origin}/to-metadata`,
+      title: "",
+      description: "",
+    });
     expect((await local(`${origin}/to-file`)).title).toBe("");
     seen.length = 0;
     expect((await local(`${origin}/loop`)).title).toBe("");
@@ -264,7 +285,12 @@ describe("auth", () => {
 
   it("limits per key and window", async () => {
     const limiter = createRateLimiter(2, 50);
-    expect([limiter.hit("a"), limiter.hit("a"), limiter.hit("a"), limiter.hit("b")]).toEqual([true, true, false, true]);
+    expect([limiter.hit("a"), limiter.hit("a"), limiter.hit("a"), limiter.hit("b")]).toEqual([
+      true,
+      true,
+      false,
+      true,
+    ]);
     await new Promise((resolve) => setTimeout(resolve, 70));
     expect(limiter.hit("a")).toBe(true);
     limiter.hit("a");

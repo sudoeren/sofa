@@ -1,10 +1,10 @@
 import type { JsonValue, MemberInfo, ToolState } from "@sofra/shared";
 import { type ExpensesConfig, getWidgetDef, type WidgetDef } from "@sofra/widgets";
+import { formatMoney } from "@sofra/widgets/defs/expenses";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { formatMoney } from "@sofra/widgets/defs/expenses";
 import { Expenses } from "./Expenses";
 
 const me: MemberInfo = { id: "m1", name: "Mert", color: "#aa3355" };

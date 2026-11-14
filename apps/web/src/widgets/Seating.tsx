@@ -1,6 +1,4 @@
 import type { SeatingConfig } from "@sofra/widgets";
-import { GripVertical, Minus, Plus, Trash2, X } from "lucide-react";
-import { type FormEvent, type PointerEvent, useMemo, useRef, useState } from "react";
 import {
   canSeat,
   freeSeats,
@@ -10,6 +8,8 @@ import {
   type SeatingGuest,
   type SeatingTable,
 } from "@sofra/widgets/defs/seating";
+import { GripVertical, Minus, Plus, Trash2, X } from "lucide-react";
+import { type FormEvent, type PointerEvent, useMemo, useRef, useState } from "react";
 import { InlineEdit, newKeyId } from "./shared";
 import type { WidgetProps } from "./types";
 import "./common.css";

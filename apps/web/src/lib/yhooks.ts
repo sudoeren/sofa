@@ -21,7 +21,10 @@ export function createYStore<T>(
   // biome-ignore lint/suspicious/noExplicitAny: any shared type
   target: Y.AbstractType<any>,
   read: () => T,
-  options: { deep?: boolean; filter?: (events: Y.YEvent<Y.AbstractType<unknown>>[]) => boolean } = {},
+  options: {
+    deep?: boolean;
+    filter?: (events: Y.YEvent<Y.AbstractType<unknown>>[]) => boolean;
+  } = {},
 ): Store<T> {
   let cache: { value: T } | null = null;
   return {
@@ -92,6 +95,9 @@ export function useChat(doc: Y.Doc): ChatMessage[] {
 }
 
 export function useSpaceTitle(doc: Y.Doc): string {
-  const title = useYMapValue<unknown>(useMemo(() => metaMap(doc), [doc]), "title");
+  const title = useYMapValue<unknown>(
+    useMemo(() => metaMap(doc), [doc]),
+    "title",
+  );
   return typeof title === "string" ? title : "";
 }

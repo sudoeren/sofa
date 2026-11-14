@@ -104,6 +104,11 @@
 }
 .member-focus {
   display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: default;
   border-radius: 50%;
 }
 .member .avatar {

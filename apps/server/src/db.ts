@@ -78,7 +78,9 @@ export function openDb(dataDir: string): Db {
   const insertSpace = db.prepare(
     "INSERT INTO spaces (id, title, created_at, password_hash) VALUES (?, ?, ?, ?)",
   );
-  const selectSpace = db.prepare("SELECT id, title, created_at, password_hash FROM spaces WHERE id = ?");
+  const selectSpace = db.prepare(
+    "SELECT id, title, created_at, password_hash FROM spaces WHERE id = ?",
+  );
   const selectDoc = db.prepare("SELECT state FROM docs WHERE space_id = ?");
   const upsertDoc = db.prepare(
     `INSERT INTO docs (space_id, state, updated_at) VALUES (?, ?, ?)
@@ -116,7 +118,15 @@ export function openDb(dataDir: string): Db {
       upsertDoc.run(spaceId, state, Date.now());
     },
     insertFile(file) {
-      insertFile.run(file.id, file.spaceId, file.name, file.mime, file.size, file.path, file.createdAt);
+      insertFile.run(
+        file.id,
+        file.spaceId,
+        file.name,
+        file.mime,
+        file.size,
+        file.path,
+        file.createdAt,
+      );
     },
     getFile(id) {
       const row = selectFile.get(id) as RawFile | undefined;

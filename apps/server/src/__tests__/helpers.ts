@@ -8,7 +8,7 @@ import WebSocket from "ws";
 import * as Y from "yjs";
 import { z } from "zod";
 import type { Config } from "../config";
-import { type ServerParts, type SofraServer, buildServer } from "../server";
+import { buildServer, type ServerParts, type SofraServer } from "../server";
 import type { AiService } from "../types";
 
 export function tempDir(): string {
@@ -55,9 +55,19 @@ export const pollDef: WidgetDef<{ question: string; options: string[] }> = {
   keywords: ["poll"],
 };
 
-export type Running = { server: SofraServer; base: string; port: number; ai: FakeAi; dataDir: string };
+export type Running = {
+  server: SofraServer;
+  base: string;
+  port: number;
+  ai: FakeAi;
+  dataDir: string;
+};
 
-export async function startServer(dataDir = tempDir(), parts: Partial<ServerParts> = {}, webDir?: string): Promise<Running> {
+export async function startServer(
+  dataDir = tempDir(),
+  parts: Partial<ServerParts> = {},
+  webDir?: string,
+): Promise<Running> {
   const ai = fakeAi();
   const server = buildServer(testConfig(dataDir, webDir), {
     createAi: () => ai,
@@ -72,7 +82,10 @@ export async function startServer(dataDir = tempDir(), parts: Partial<ServerPart
 export async function postJson(url: string, body: unknown, token?: string): Promise<Response> {
   return fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
@@ -80,7 +93,13 @@ export async function postJson(url: string, body: unknown, token?: string): Prom
 export async function createSpace(base: string, title = "Trip", password?: string) {
   const res = await postJson(`${base}/api/spaces`, { title, password });
   if (res.status !== 201) throw new Error(`create space failed: ${res.status}`);
-  return (await res.json()) as { id: string; title: string; createdAt: number; locked: boolean; token?: string };
+  return (await res.json()) as {
+    id: string;
+    title: string;
+    createdAt: number;
+    locked: boolean;
+    token?: string;
+  };
 }
 
 export type Client = {

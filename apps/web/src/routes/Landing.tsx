@@ -116,8 +116,8 @@ export function Landing() {
             <p className="hero-text">
               Open a shared space, drop in the notes, links and files you already have, and ask an
               AI to build the small tool you need: a poll, an itinerary, an expense splitter, a
-              bracket, a game. Everyone edits it at the same time, and asking again changes the
-              tool without losing what is in it.
+              bracket, a game. Everyone edits it at the same time, and asking again changes the tool
+              without losing what is in it.
             </p>
             <ul className="hero-points">
               <li>
@@ -250,7 +250,9 @@ export function Landing() {
               <span className="how-step">3</span>
               <div>
                 <h3>Ask for a tool</h3>
-                <p>Describe it in a sentence, or start from a ready-made one. No AI key required.</p>
+                <p>
+                  Describe it in a sentence, or start from a ready-made one. No AI key required.
+                </p>
               </div>
             </li>
           </ol>

@@ -1,11 +1,6 @@
 import {
-  type JsonValue,
-  TOOL_LIMITS,
-  type ToolRecord,
-  type ToolState,
-  type ToolStatus,
-  type UserRef,
   byteLength,
+  type JsonValue,
   listTools,
   newId,
   nextToolOrder,
@@ -13,15 +8,20 @@ import {
   putTool,
   readTool,
   readToolState,
+  TOOL_LIMITS,
+  type ToolRecord,
+  type ToolState,
+  type ToolStatus,
   toolStateMap,
   toolsMap,
+  type UserRef,
 } from "@sofra/shared";
 import type { WidgetDef } from "@sofra/widgets";
 import { type ToolSet, tool } from "ai";
 import type * as Y from "yjs";
 import { z } from "zod";
 import type { SpaceDocs } from "../types";
-import { type ContextBudget, DEFAULT_BUDGET, clip, renderState } from "./context";
+import { type ContextBudget, clip, DEFAULT_BUDGET, renderState } from "./context";
 import { validateToolHtml } from "./html";
 import { MAX_TOOL_CHANGES } from "./prompt";
 
@@ -29,7 +29,11 @@ import { MAX_TOOL_CHANGES } from "./prompt";
 export const MAX_FAILED_CALLS = 4;
 const MAX_INITIAL_KEYS = 300;
 
-export type ToolChange = { toolId: string; title: string; action: "created" | "updated" | "converted" };
+export type ToolChange = {
+  toolId: string;
+  title: string;
+  action: "created" | "updated" | "converted";
+};
 
 export type CallResult =
   | { ok: true; toolId: string; message: string; warnings?: string[] }
@@ -46,7 +50,13 @@ type SessionInit = {
   onProgress?: (text: string) => void | Promise<void>;
 };
 
-type CreateWidgetInput = { type: string; title: string; description?: string; config: unknown; span?: number };
+type CreateWidgetInput = {
+  type: string;
+  title: string;
+  description?: string;
+  config: unknown;
+  span?: number;
+};
 type CreateHtmlInput = {
   title: string;
   description?: string;
@@ -60,7 +70,9 @@ type UpdateHtmlInput = { toolId: string; html: string; title?: string; descripti
 function configIssues(error: z.ZodError): string {
   return error.issues
     .slice(0, 12)
-    .map((issue) => `${issue.path.length > 0 ? issue.path.join(".") : "(config)"}: ${issue.message}`)
+    .map(
+      (issue) => `${issue.path.length > 0 ? issue.path.join(".") : "(config)"}: ${issue.message}`,
+    )
     .join("; ");
 }
 
@@ -73,7 +85,9 @@ function cleanDescription(value: string | undefined): string {
   return (value ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
 }
 
-function checkInitialState(input: Record<string, unknown> | undefined): { state: ToolState } | { error: string } {
+function checkInitialState(
+  input: Record<string, unknown> | undefined,
+): { state: ToolState } | { error: string } {
   if (!input) return { state: {} };
   const entries = Object.entries(input);
   if (entries.length > MAX_INITIAL_KEYS) {
@@ -82,7 +96,9 @@ function checkInitialState(input: Record<string, unknown> | undefined): { state:
   const state: ToolState = {};
   for (const [key, value] of entries) {
     if (!key || key.length > TOOL_LIMITS.maxKeyLength) {
-      return { error: `initialState key "${key.slice(0, 40)}" must be 1 to ${TOOL_LIMITS.maxKeyLength} characters.` };
+      return {
+        error: `initialState key "${key.slice(0, 40)}" must be 1 to ${TOOL_LIMITS.maxKeyLength} characters.`,
+      };
     }
     if (value === undefined) continue;
     let json: JsonValue;
@@ -92,7 +108,9 @@ function checkInitialState(input: Record<string, unknown> | undefined): { state:
       return { error: `initialState value of "${key}" is not JSON.` };
     }
     if (byteLength(json) > TOOL_LIMITS.maxValueBytes) {
-      return { error: `initialState value of "${key}" is too large; split it into one key per item.` };
+      return {
+        error: `initialState value of "${key}" is too large; split it into one key per item.`,
+      };
     }
     state[key] = json;
   }
@@ -209,27 +227,43 @@ export class GenerationSession {
 
   /** The call that owned this placeholder failed; keep the card for the corrected call. */
   private release(placeholderId: string | null): void {
-    if (placeholderId && this.emptyPlaceholders.has(placeholderId) && !this.spare.includes(placeholderId)) {
+    if (
+      placeholderId &&
+      this.emptyPlaceholders.has(placeholderId) &&
+      !this.spare.includes(placeholderId)
+    ) {
       this.spare.push(placeholderId);
     }
   }
 
   private async create(
     toolCallId: string,
-    fields: Pick<ToolRecord, "title" | "description" | "kind" | "widgetType" | "config" | "html" | "span">,
+    fields: Pick<
+      ToolRecord,
+      "title" | "description" | "kind" | "widgetType" | "config" | "html" | "span"
+    >,
     initialState: ToolState,
   ): Promise<CallResult> {
     const placeholderId = await this.beginCreate(toolCallId);
     return this.docs.transact(this.spaceId, (doc): CallResult => {
       if (this.closed) return { ok: false, error: "The request has ended; nothing was changed." };
       if (this.changes.length >= MAX_TOOL_CHANGES) {
-        return { ok: false, error: `At most ${MAX_TOOL_CHANGES} tools can be created or changed per request.` };
+        return {
+          ok: false,
+          error: `At most ${MAX_TOOL_CHANGES} tools can be created or changed per request.`,
+        };
       }
       const time = this.now();
       let id: string;
       if (placeholderId && toolsMap(doc).has(placeholderId)) {
         id = placeholderId;
-        patchTool(doc, id, { ...fields, status: "ready", error: undefined, version: 1, updatedAt: time });
+        patchTool(doc, id, {
+          ...fields,
+          status: "ready",
+          error: undefined,
+          version: 1,
+          updatedAt: time,
+        });
         const map = toolsMap(doc).get(id);
         if (map) {
           const state = toolStateMap(map);
@@ -254,7 +288,11 @@ export class GenerationSession {
       }
       if (placeholderId) this.emptyPlaceholders.delete(placeholderId);
       this.changes.push({ toolId: id, title: fields.title, action: "created" });
-      return { ok: true, toolId: id, message: `Created "${fields.title}". It is live in the space now.` };
+      return {
+        ok: true,
+        toolId: id,
+        message: `Created "${fields.title}". It is live in the space now.`,
+      };
     });
   }
 
@@ -264,12 +302,16 @@ export class GenerationSession {
     if (!def) {
       this.release(placeholderId);
       const types = this.widgets.map((w) => w.type).join(", ") || "(none installed)";
-      return this.fail(`Unknown widget type "${input.type}". Available types: ${types}. Use create_html_tool for anything else.`);
+      return this.fail(
+        `Unknown widget type "${input.type}". Available types: ${types}. Use create_html_tool for anything else.`,
+      );
     }
     const parsed = def.configSchema.safeParse(input.config);
     if (!parsed.success) {
       this.release(placeholderId);
-      return this.fail(`The config does not match the ${def.type} schema. ${configIssues(parsed.error)}. Fix the config and call create_widget again.`);
+      return this.fail(
+        `The config does not match the ${def.type} schema. ${configIssues(parsed.error)}. Fix the config and call create_widget again.`,
+      );
     }
     return this.create(
       toolCallId,
@@ -291,7 +333,9 @@ export class GenerationSession {
     const check = validateToolHtml(input.html);
     if (!check.ok) {
       this.release(placeholderId);
-      return this.fail(`The html was rejected and nothing was saved. ${check.errors.join(" ")} Fix it and call create_html_tool again with the complete document.`);
+      return this.fail(
+        `The html was rejected and nothing was saved. ${check.errors.join(" ")} Fix it and call create_html_tool again with the complete document.`,
+      );
     }
     const initial = checkInitialState(input.initialState);
     if ("error" in initial) {
@@ -311,7 +355,9 @@ export class GenerationSession {
       },
       initial.state,
     );
-    return result.ok && check.warnings.length > 0 ? { ...result, warnings: check.warnings } : result;
+    return result.ok && check.warnings.length > 0
+      ? { ...result, warnings: check.warnings }
+      : result;
   }
 
   private missingTool(doc: Y.Doc, toolId: string): string {
@@ -324,15 +370,21 @@ export class GenerationSession {
 
   private async update(
     toolId: string,
-    build: (record: ToolRecord) => { patch: Partial<ToolRecord>; action: ToolChange["action"] } | { error: string },
+    build: (
+      record: ToolRecord,
+    ) => { patch: Partial<ToolRecord>; action: ToolChange["action"] } | { error: string },
   ): Promise<CallResult> {
     const outcome = await this.docs.transact(this.spaceId, (doc): CallResult => {
       if (this.closed) return { ok: false, error: "The request has ended; nothing was changed." };
       const map = toolsMap(doc).get(toolId);
-      if (!map || this.emptyPlaceholders.has(toolId)) return { ok: false, error: this.missingTool(doc, toolId) };
+      if (!map || this.emptyPlaceholders.has(toolId))
+        return { ok: false, error: this.missingTool(doc, toolId) };
       const already = this.changes.some((change) => change.toolId === toolId);
       if (!already && this.changes.length >= MAX_TOOL_CHANGES) {
-        return { ok: false, error: `At most ${MAX_TOOL_CHANGES} tools can be created or changed per request.` };
+        return {
+          ok: false,
+          error: `At most ${MAX_TOOL_CHANGES} tools can be created or changed per request.`,
+        };
       }
       const record = readTool(map);
       const built = build(record);
@@ -361,22 +413,30 @@ export class GenerationSession {
     void this.progress("Updating a tool...");
     return this.update(input.toolId, (record) => {
       if (record.kind !== "widget") {
-        return { error: `Tool ${record.id} is an HTML tool, not a widget. Use update_html_tool with the complete new document.` };
+        return {
+          error: `Tool ${record.id} is an HTML tool, not a widget. Use update_html_tool with the complete new document.`,
+        };
       }
       const def = this.widget(record.widgetType);
       if (!def) {
-        return { error: `The widget type "${record.widgetType}" of tool ${record.id} is not installed. Use update_html_tool to rebuild it as HTML.` };
+        return {
+          error: `The widget type "${record.widgetType}" of tool ${record.id} is not installed. Use update_html_tool to rebuild it as HTML.`,
+        };
       }
       const parsed = def.configSchema.safeParse(input.config);
       if (!parsed.success) {
-        return { error: `The config does not match the ${def.type} schema. ${configIssues(parsed.error)}. Fix the config and call update_widget again.` };
+        return {
+          error: `The config does not match the ${def.type} schema. ${configIssues(parsed.error)}. Fix the config and call update_widget again.`,
+        };
       }
       return {
         action: "updated",
         patch: {
           config: parsed.data as JsonValue,
           ...(input.title !== undefined ? { title: input.title } : {}),
-          ...(input.description !== undefined ? { description: cleanDescription(input.description) } : {}),
+          ...(input.description !== undefined
+            ? { description: cleanDescription(input.description) }
+            : {}),
         },
       };
     });
@@ -387,7 +447,9 @@ export class GenerationSession {
     void this.progress("Updating a tool...");
     const check = validateToolHtml(input.html);
     if (!check.ok) {
-      return this.fail(`The html was rejected and the tool was left as it was. ${check.errors.join(" ")} Fix it and call update_html_tool again with the complete document.`);
+      return this.fail(
+        `The html was rejected and the tool was left as it was. ${check.errors.join(" ")} Fix it and call update_html_tool again with the complete document.`,
+      );
     }
     const result = await this.update(input.toolId, (record) => ({
       action: record.kind === "widget" ? "converted" : "updated",
@@ -397,16 +459,21 @@ export class GenerationSession {
         widgetType: undefined,
         config: undefined,
         ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: cleanDescription(input.description) } : {}),
+        ...(input.description !== undefined
+          ? { description: cleanDescription(input.description) }
+          : {}),
       },
     }));
-    return result.ok && check.warnings.length > 0 ? { ...result, warnings: check.warnings } : result;
+    return result.ok && check.warnings.length > 0
+      ? { ...result, warnings: check.warnings }
+      : result;
   }
 
   async readToolDetails(toolId: string): Promise<Record<string, unknown>> {
     return this.docs.read(this.spaceId, (doc) => {
       const map = toolsMap(doc).get(toolId);
-      if (!map || this.emptyPlaceholders.has(toolId)) return { ok: false, error: this.missingTool(doc, toolId) };
+      if (!map || this.emptyPlaceholders.has(toolId))
+        return { ok: false, error: this.missingTool(doc, toolId) };
       const record = readTool(map);
       const def = record.kind === "widget" ? this.widget(record.widgetType) : undefined;
       return {
@@ -418,7 +485,11 @@ export class GenerationSession {
         kind: record.kind,
         span: record.span,
         ...(record.kind === "widget"
-          ? { widgetType: record.widgetType, config: record.config ?? {}, widgetInstalled: Boolean(def) }
+          ? {
+              widgetType: record.widgetType,
+              config: record.config ?? {},
+              widgetInstalled: Boolean(def),
+            }
           : { html: clip(record.html ?? "", this.budget.targetContent) }),
         state: renderState(readToolState(map), this.budget),
       };
@@ -448,7 +519,8 @@ export class GenerationSession {
     // Belt and braces: nothing this session changed may stay in "generating".
     for (const change of this.changes) {
       const map = tools.get(change.toolId);
-      if (map && map.get("status") === "generating") patchTool(doc, change.toolId, { status: "ready" });
+      if (map && map.get("status") === "generating")
+        patchTool(doc, change.toolId, { status: "ready" });
     }
   }
 }
@@ -489,12 +561,17 @@ export function buildModelTools(session: GenerationSession, widgets: readonly Wi
       inputSchema: z.object({
         title: titleSchema,
         description: descriptionSchema,
-        html: z.string().min(1).describe("The complete HTML document, from <!doctype html> to </html>."),
+        html: z
+          .string()
+          .min(1)
+          .describe("The complete HTML document, from <!doctype html> to </html>."),
         span: spanSchema,
         initialState: z
           .record(z.string(), z.unknown())
           .optional()
-          .describe("Optional starting state: keys and JSON values exactly as the document's code reads them."),
+          .describe(
+            "Optional starting state: keys and JSON values exactly as the document's code reads them.",
+          ),
       }),
       strict: false,
       onInputStart: async ({ toolCallId }) => {
@@ -519,7 +596,10 @@ export function buildModelTools(session: GenerationSession, widgets: readonly Wi
         "Replace the HTML of an existing tool with a complete new document. On a widget tool this converts it into an HTML tool. The tool's stored state is kept, so the new document must read the keys that already exist.",
       inputSchema: z.object({
         toolId: z.string().min(1).describe("Id of the existing tool."),
-        html: z.string().min(1).describe("The complete new HTML document, from <!doctype html> to </html>."),
+        html: z
+          .string()
+          .min(1)
+          .describe("The complete new HTML document, from <!doctype html> to </html>."),
         title: titleSchema.optional(),
         description: descriptionSchema.optional(),
       }),

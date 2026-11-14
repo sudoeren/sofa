@@ -1,6 +1,14 @@
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { COLLAB_PATH, type MemberInfo } from "@sofra/shared";
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as Y from "yjs";
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";
@@ -144,8 +152,7 @@ export function SpaceProvider({ spaceId, token, me, onAuthFailed, fallback, chil
   }, [connection, me]);
 
   const value = useMemo<SpaceContextValue | null>(
-    () =>
-      connection ? { spaceId, doc: connection.doc, status, synced, me, members } : null,
+    () => (connection ? { spaceId, doc: connection.doc, status, synced, me, members } : null),
     [connection, spaceId, status, synced, me, members],
   );
 

@@ -1,6 +1,14 @@
 import { LIMITS, type MemberInfo, type UserAi } from "@sofra/shared";
 import { ArrowUp, Info, PencilLine, X } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, type RefObject, useEffect, useId, useRef, useState } from "react";
+import {
+  type FormEvent,
+  type KeyboardEvent,
+  type RefObject,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { Spinner } from "../components/Spinner";
 import { ApiError, generate } from "../lib/api";
 
@@ -113,7 +121,12 @@ export function PromptBar({
       {error ? (
         <p id={errorId} className="prompt-error" role="alert">
           <span>{error}</span>
-          <button type="button" className="icon-btn icon-btn-sm" aria-label="Dismiss error" onClick={() => setError("")}>
+          <button
+            type="button"
+            className="icon-btn icon-btn-sm"
+            aria-label="Dismiss error"
+            onClick={() => setError("")}
+          >
             <X size={14} aria-hidden="true" />
           </button>
         </p>

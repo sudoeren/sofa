@@ -28,7 +28,9 @@ export function Dialog({ title, description, onClose, children, size = "sm" }: P
     if (panel) {
       const first =
         panel.querySelector<HTMLElement>("[data-autofocus]") ??
-        panel.querySelector<HTMLElement>(".dialog-body input, .dialog-body textarea, .dialog-body select") ??
+        panel.querySelector<HTMLElement>(
+          ".dialog-body input, .dialog-body textarea, .dialog-body select",
+        ) ??
         panel;
       first.focus();
     }
@@ -70,6 +72,7 @@ export function Dialog({ title, description, onClose, children, size = "sm" }: P
   }, []);
 
   return createPortal(
+    // biome-ignore lint/a11y/noStaticElementInteractions: a click on the backdrop closes; Escape and the close button are the keyboard path
     <div
       className="dialog-backdrop"
       onMouseDown={(event) => {

@@ -1,6 +1,4 @@
 import type { ExpensesConfig } from "@sofra/widgets";
-import { ArrowRight, Check, Plus, Trash2, Undo2, UserPlus, X } from "lucide-react";
-import { type FormEvent, useId, useMemo, useState } from "react";
 import {
   computeBalances,
   type ExpenseEntry,
@@ -13,6 +11,8 @@ import {
   settle,
   sharersOf,
 } from "@sofra/widgets/defs/expenses";
+import { ArrowRight, Check, Plus, Trash2, Undo2, UserPlus, X } from "lucide-react";
+import { type FormEvent, useId, useMemo, useState } from "react";
 import { Avatar, InlineEdit, memberName, newKeyId } from "./shared";
 import type { WidgetProps } from "./types";
 import "./common.css";

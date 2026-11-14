@@ -1,11 +1,16 @@
 import type { Material } from "@sofra/shared";
 import { describe, expect, it } from "vitest";
-import { type ContextBudget, DEFAULT_BUDGET, buildRequestMessage, type SpaceSnapshot } from "./context";
+import {
+  buildRequestMessage,
+  type ContextBudget,
+  DEFAULT_BUDGET,
+  type SpaceSnapshot,
+} from "./context";
 import { matchStarter } from "./fallback";
 import { MAX_HTML_BYTES, validateToolHtml } from "./html";
-import { EXAMPLE_TOOL_HTML, buildSystemPrompt, describeConfigSchema } from "./prompt";
+import { buildSystemPrompt, describeConfigSchema, EXAMPLE_TOOL_HTML } from "./prompt";
 import { createLanguageModel, describeFailure, redactSecrets, resolveProvider } from "./provider";
-import { GOOD_HTML, fakeFiles, testConfig, testWidgets, voteWidget } from "./testing";
+import { fakeFiles, GOOD_HTML, testConfig, testWidgets, voteWidget } from "./testing";
 
 function material(patch: Partial<Material>): Material {
   return { id: "m", kind: "note", authorId: "u1", authorName: "Ada", createdAt: 1, ...patch };
@@ -18,9 +23,29 @@ function snapshot(materials: Material[]): SpaceSnapshot {
 describe("context builder", () => {
   const materials = [
     material({ id: "n1", text: "Flights land on May 3 at 10:40." }),
-    material({ id: "l1", kind: "link", url: "https://example.com/hotel", title: "Hotel Alfama", description: "Rooms from 90 euro" }),
-    material({ id: "f1", kind: "file", fileId: "file-1", fileName: "budget.csv", mime: "text/csv", size: 40 }),
-    material({ id: "f2", kind: "file", fileId: "file-2", fileName: "photo.png", mime: "image/png", size: 99999 }),
+    material({
+      id: "l1",
+      kind: "link",
+      url: "https://example.com/hotel",
+      title: "Hotel Alfama",
+      description: "Rooms from 90 euro",
+    }),
+    material({
+      id: "f1",
+      kind: "file",
+      fileId: "file-1",
+      fileName: "budget.csv",
+      mime: "text/csv",
+      size: 40,
+    }),
+    material({
+      id: "f2",
+      kind: "file",
+      fileId: "file-2",
+      fileName: "photo.png",
+      mime: "image/png",
+      size: 99999,
+    }),
   ];
 
   it("includes notes, links, file names and the text of text files", async () => {
@@ -47,8 +72,12 @@ describe("context builder", () => {
 
   it("stays inside the materials budget and says what was left out", async () => {
     const budget: ContextBudget = { ...DEFAULT_BUDGET, materials: 1500, perMaterial: 600 };
-    const many = Array.from({ length: 30 }, (_, i) => material({ id: `n${i}`, text: `note ${i} ${"x".repeat(2000)}` }));
-    many.push(material({ id: "big", kind: "file", fileId: "big", fileName: "big.txt", mime: "text/plain" }));
+    const many = Array.from({ length: 30 }, (_, i) =>
+      material({ id: `n${i}`, text: `note ${i} ${"x".repeat(2000)}` }),
+    );
+    many.push(
+      material({ id: "big", kind: "file", fileId: "big", fileName: "big.txt", mime: "text/plain" }),
+    );
     const files = fakeFiles({ big: "y".repeat(50_000) });
     const built = await buildRequestMessage({
       snapshot: snapshot(many),
@@ -58,7 +87,10 @@ describe("context builder", () => {
       files,
       budget,
     });
-    const inside = built.text.slice(built.text.indexOf("<materials>\n"), built.text.indexOf("\n</materials>"));
+    const inside = built.text.slice(
+      built.text.indexOf("<materials>\n"),
+      built.text.indexOf("\n</materials>"),
+    );
     expect(inside.length).toBeLessThanOrEqual(1500 + 100);
     expect(inside).toContain("note 0");
     expect(inside).toContain("[truncated]");
@@ -75,8 +107,18 @@ describe("context builder", () => {
         ...snapshot([]),
         target: {
           record: {
-            id: "t1", title: "List", description: "", kind: "html", html: GOOD_HTML, status: "ready",
-            version: 1, order: 1, span: 1, createdBy: "u1", createdAt: 1, updatedAt: 1,
+            id: "t1",
+            title: "List",
+            description: "",
+            kind: "html",
+            html: GOOD_HTML,
+            status: "ready",
+            version: 1,
+            order: 1,
+            span: 1,
+            createdBy: "u1",
+            createdAt: 1,
+            updatedAt: 1,
           },
           state,
         },
@@ -86,7 +128,10 @@ describe("context builder", () => {
       toolId: "t1",
       files: fakeFiles(),
     });
-    const stateText = built.text.slice(built.text.indexOf("<tool_state>"), built.text.indexOf("</tool_state>"));
+    const stateText = built.text.slice(
+      built.text.indexOf("<tool_state>"),
+      built.text.indexOf("</tool_state>"),
+    );
     expect(stateText.length).toBeLessThanOrEqual(DEFAULT_BUDGET.targetState + 200);
     expect(stateText).toContain("item:000 = ");
     expect(stateText).toContain("more keys not shown (500 in total)");
@@ -103,7 +148,9 @@ describe("html validation", () => {
   });
 
   it("allows inline svg namespaces and data URIs", () => {
-    const html = wrap('<svg xmlns="http://www.w3.org/2000/svg"><circle r="4"/></svg><img src="data:image/png;base64,AAAA">');
+    const html = wrap(
+      '<svg xmlns="http://www.w3.org/2000/svg"><circle r="4"/></svg><img src="data:image/png;base64,AAAA">',
+    );
     expect(validateToolHtml(html).ok).toBe(true);
   });
 
@@ -115,7 +162,10 @@ describe("html validation", () => {
     ["css import", '<style>@import "theme.css";</style>'],
     ["js import", '<script type="module">import x from "https://esm.example.com/x.js";</script>'],
     ["dynamic import", '<script>import("//cdn.example.com/x.js");</script>'],
-    ["src set from script", '<script>var i = new Image(); i.src = "https://example.com/t.gif";</script>'],
+    [
+      "src set from script",
+      '<script>var i = new Image(); i.src = "https://example.com/t.gif";</script>',
+    ],
     ["iframe", '<iframe srcdoc="x"></iframe>'],
   ])("rejects %s", (_name, inner) => {
     const result = validateToolHtml(wrap(inner));
@@ -131,7 +181,9 @@ describe("html validation", () => {
   });
 
   it("only warns about network calls, storage and emoji", () => {
-    const result = validateToolHtml(wrap('<script>fetch("/x"); localStorage.a = 1; var s = "\u{1F600}";</script>'));
+    const result = validateToolHtml(
+      wrap('<script>fetch("/x"); localStorage.a = 1; var s = "\u{1F600}";</script>'),
+    );
     expect(result.ok).toBe(true);
     expect(result.warnings).toHaveLength(3);
   });
@@ -161,9 +213,22 @@ describe("system prompt", () => {
 
 describe("provider helpers", () => {
   it("resolves member key, then server config, then nothing", () => {
-    const server = testConfig({ provider: "openai-compatible", model: "local", baseUrl: "http://localhost:11434/v1" });
-    expect(resolveProvider(server, undefined)).toMatchObject({ source: "server", provider: "openai-compatible", baseUrl: "http://localhost:11434/v1" });
-    expect(resolveProvider(server, { provider: "openai", apiKey: "sk-12345678" })).toMatchObject({ source: "member", provider: "openai", model: "gpt-5", baseUrl: null });
+    const server = testConfig({
+      provider: "openai-compatible",
+      model: "local",
+      baseUrl: "http://localhost:11434/v1",
+    });
+    expect(resolveProvider(server, undefined)).toMatchObject({
+      source: "server",
+      provider: "openai-compatible",
+      baseUrl: "http://localhost:11434/v1",
+    });
+    expect(resolveProvider(server, { provider: "openai", apiKey: "sk-12345678" })).toMatchObject({
+      source: "member",
+      provider: "openai",
+      model: "gpt-5",
+      baseUrl: null,
+    });
     expect(resolveProvider(testConfig(), undefined)).toBeNull();
   });
 
@@ -172,19 +237,33 @@ describe("provider helpers", () => {
     const ids = [
       createLanguageModel({ ...base, provider: "anthropic", model: "claude-test" }),
       createLanguageModel({ ...base, provider: "openai", model: "gpt-test" }),
-      createLanguageModel({ ...base, provider: "openai-compatible", model: "local", apiKey: null, baseUrl: "http://localhost:11434/v1" }),
+      createLanguageModel({
+        ...base,
+        provider: "openai-compatible",
+        model: "local",
+        apiKey: null,
+        baseUrl: "http://localhost:11434/v1",
+      }),
     ].map((model) => (typeof model === "string" ? model : model.modelId));
     expect(ids).toEqual(["claude-test", "gpt-test", "local"]);
-    expect(() => createLanguageModel({ ...base, provider: "openai-compatible", model: "local" })).toThrow("base URL");
+    expect(() =>
+      createLanguageModel({ ...base, provider: "openai-compatible", model: "local" }),
+    ).toThrow("base URL");
   });
 
   it("redacts keys in any position", () => {
     const key = "zz-very-secret-key-0123456789";
-    expect(redactSecrets(`failed with ${key} and Bearer abc.def.ghi-123 and sk-proj-abcdef123456`, [key])).toBe(
-      "failed with [redacted] and Bearer [redacted] and [redacted]",
-    );
+    expect(
+      redactSecrets(`failed with ${key} and Bearer abc.def.ghi-123 and sk-proj-abcdef123456`, [
+        key,
+      ]),
+    ).toBe("failed with [redacted] and Bearer [redacted] and [redacted]");
     const failure = describeFailure(Object.assign(new Error(`nope ${key}`), { statusCode: 400 }), {
-      source: "member", provider: "openai", model: "m", apiKey: key, baseUrl: null,
+      source: "member",
+      provider: "openai",
+      model: "m",
+      apiKey: key,
+      baseUrl: null,
     });
     expect(failure.chat + failure.log).not.toContain(key);
   });

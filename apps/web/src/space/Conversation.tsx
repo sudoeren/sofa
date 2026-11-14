@@ -99,7 +99,11 @@ function Message({
           </p>
         )}
         {message.toolId && toolTitle !== undefined ? (
-          <button type="button" className="msg-tool" onClick={() => onShowTool(message.toolId as string)}>
+          <button
+            type="button"
+            className="msg-tool"
+            onClick={() => onShowTool(message.toolId as string)}
+          >
             <span>{toolTitle || "Untitled tool"}</span>
             <ArrowUpRight size={14} aria-hidden="true" />
           </button>

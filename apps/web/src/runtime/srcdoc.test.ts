@@ -120,9 +120,9 @@ describe("buildSrcdoc", () => {
 
   it("cannot be pushed out of position by markup before or around the head", () => {
     const inputs = [
-      '<script>window.early = 1</script><html><head></head><body></body></html>',
-      '<!--><script>early()</script>--><head><script>early2()</script></head>',
-      '</head></html><script>after()</script>',
+      "<script>window.early = 1</script><html><head></head><body></body></html>",
+      "<!--><script>early()</script>--><head><script>early2()</script></head>",
+      "</head></html><script>after()</script>",
       '<body><head><meta http-equiv="Content-Security-Policy" content="script-src *"></head>',
       '<html data-theme="x" onload="go()" "><script>x</script>="1"><body>',
       "<plaintext>never closed",

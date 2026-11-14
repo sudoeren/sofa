@@ -529,6 +529,7 @@ textarea.input {
 }
 .menu-sep {
   height: 1px;
+  border: 0;
   margin: 5px 4px;
   background: var(--border);
 }

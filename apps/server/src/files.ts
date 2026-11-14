@@ -7,7 +7,13 @@ import type { Db, FileRow } from "./db";
 import type { FileStore, StoredFile } from "./types";
 
 /** Raster image types a browser may render inline. SVG is left out: it can carry script. */
-const INLINE_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif"]);
+const INLINE_IMAGE_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+  "image/avif",
+]);
 
 /** Types that a browser could execute or render as a document; served as opaque bytes. */
 const ACTIVE_TYPE = /(html|xml|svg|javascript|ecmascript)/;
@@ -65,15 +71,24 @@ function extensionOf(name: string): string {
 
 export function isTextLike(mime: string, name: string): boolean {
   if (isInlineImage(mime)) return false;
-  return mime.startsWith("text/") || TEXT_MIME_TYPES.has(mime) || TEXT_EXTENSIONS.has(extensionOf(name));
+  return (
+    mime.startsWith("text/") || TEXT_MIME_TYPES.has(mime) || TEXT_EXTENSIONS.has(extensionOf(name))
+  );
 }
 
 /** Response headers for a download. Only allow-listed images are shown inline. */
 export function downloadHeaders(file: StoredFile): Record<string, string> {
   const inline = isInlineImage(file.mime);
-  const type = inline ? file.mime : ACTIVE_TYPE.test(file.mime) ? "application/octet-stream" : file.mime;
+  const type = inline
+    ? file.mime
+    : ACTIVE_TYPE.test(file.mime)
+      ? "application/octet-stream"
+      : file.mime;
   const fallback = file.name.replace(/[^\x20-\x7e]/g, "_").replace(/["\\]/g, "_");
-  const encoded = encodeURIComponent(file.name).replace(/['()*]/g, (ch) => `%${ch.charCodeAt(0).toString(16).toUpperCase()}`);
+  const encoded = encodeURIComponent(file.name).replace(
+    /['()*]/g,
+    (ch) => `%${ch.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
   return {
     "Content-Type": type,
     "Content-Length": String(file.size),
@@ -86,11 +101,21 @@ export function downloadHeaders(file: StoredFile): Record<string, string> {
 
 export type Files = FileStore & {
   /** Store an upload. Throws FileError when a limit is exceeded. */
-  save(spaceId: string, upload: { name: string; mime: string; data: Uint8Array }): Promise<StoredFile>;
+  save(
+    spaceId: string,
+    upload: { name: string; mime: string; data: Uint8Array },
+  ): Promise<StoredFile>;
 };
 
 function toStored(row: FileRow): StoredFile {
-  return { fileId: row.id, spaceId: row.spaceId, name: row.name, mime: row.mime, size: row.size, path: row.path };
+  return {
+    fileId: row.id,
+    spaceId: row.spaceId,
+    name: row.name,
+    mime: row.mime,
+    size: row.size,
+    path: row.path,
+  };
 }
 
 export function createFiles(db: Db, dataDir: string): Files {
@@ -120,7 +145,8 @@ export function createFiles(db: Db, dataDir: string): Files {
 
     async save(spaceId, upload) {
       if (upload.data.byteLength === 0) throw new FileError(400, "The file is empty");
-      if (upload.data.byteLength > LIMITS.fileBytes) throw new FileError(413, "The file is too large");
+      if (upload.data.byteLength > LIMITS.fileBytes)
+        throw new FileError(413, "The file is too large");
       if (db.countFiles(spaceId) >= LIMITS.filesPerSpace) {
         throw new FileError(409, "This space has reached its file limit");
       }

@@ -1,9 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import { listTools, metaMap, putTool } from "@sofra/shared";
-import WebSocket from "ws";
 import { afterEach, describe, expect, it } from "vitest";
-import { type Client, type Running, connect, createSpace, postJson, startServer, waitFor } from "./helpers";
+import WebSocket from "ws";
+import {
+  type Client,
+  connect,
+  createSpace,
+  postJson,
+  type Running,
+  startServer,
+  waitFor,
+} from "./helpers";
 
 let running: Running[] = [];
 let clients: Client[] = [];
@@ -36,7 +44,11 @@ describe("collab", () => {
     expect(await a.ready).toBe("synced");
     expect(await b.ready).toBe("synced");
 
-    expect(metaMap(a.doc).toJSON()).toEqual({ title: "Dinner", createdAt: space.createdAt, locked: false });
+    expect(metaMap(a.doc).toJSON()).toEqual({
+      title: "Dinner",
+      createdAt: space.createdAt,
+      locked: false,
+    });
 
     a.doc.getMap("scratch").set("from", "a");
     await waitFor(() => b.doc.getMap("scratch").get("from") === "a");
@@ -93,7 +105,9 @@ describe("collab", () => {
 
     const second = await start(first.dataDir);
     expect((await fetch(`${second.base}/api/spaces/${space.id}`)).status).toBe(200);
-    expect(await second.server.docs.read(space.id, (doc) => doc.getMap("scratch").toJSON())).toEqual({
+    expect(
+      await second.server.docs.read(space.id, (doc) => doc.getMap("scratch").toJSON()),
+    ).toEqual({
       server: 42,
       client: "kept",
     });
@@ -109,8 +123,12 @@ describe("collab", () => {
     await first.server.docs.transact(space.id, (doc) => {
       doc.getMap("scratch").set("offline", true);
     });
-    await expect(first.server.docs.transact("y".repeat(21), () => 1)).rejects.toThrow("space not found");
-    await expect(first.server.docs.read("y".repeat(21), () => 1)).rejects.toThrow("space not found");
+    await expect(first.server.docs.transact("y".repeat(21), () => 1)).rejects.toThrow(
+      "space not found",
+    );
+    await expect(first.server.docs.read("y".repeat(21), () => 1)).rejects.toThrow(
+      "space not found",
+    );
     await expect(
       first.server.docs.transact(space.id, () => {
         throw new Error("boom");
@@ -120,7 +138,9 @@ describe("collab", () => {
     running = [];
 
     const second = await start(first.dataDir);
-    expect(await second.server.docs.read(space.id, (doc) => doc.getMap("scratch").get("offline"))).toBe(true);
+    expect(
+      await second.server.docs.read(space.id, (doc) => doc.getMap("scratch").get("offline")),
+    ).toBe(true);
     const late = join(second.port, space.id);
     expect(await late.ready).toBe("synced");
     expect(late.doc.getMap("scratch").get("offline")).toBe(true);
@@ -135,11 +155,15 @@ describe("collab", () => {
       });
     }
     await new Promise((resolve) => setTimeout(resolve, 400));
-    expect(await s.server.docs.read(space.id, (doc) => doc.getArray("list").toArray())).toEqual([0, 1, 2]);
+    expect(await s.server.docs.read(space.id, (doc) => doc.getArray("list").toArray())).toEqual([
+      0, 1, 2,
+    ]);
     await s.server.docs.transact(space.id, (doc) => {
       doc.getArray("list").push([3]);
     });
-    expect(await s.server.docs.read(space.id, (doc) => doc.getArray("list").toArray())).toEqual([0, 1, 2, 3]);
+    expect(await s.server.docs.read(space.id, (doc) => doc.getArray("list").toArray())).toEqual([
+      0, 1, 2, 3,
+    ]);
   });
 });
 
@@ -189,7 +213,11 @@ describe("locked spaces", () => {
     };
     const filesUrl = `${s.base}/api/spaces/${space.id}/files`;
     expect((await fetch(filesUrl, { method: "POST", body: form() })).status).toBe(401);
-    const uploaded = await fetch(filesUrl, { method: "POST", body: form(), headers: { Authorization: `Bearer ${token}` } });
+    const uploaded = await fetch(filesUrl, {
+      method: "POST",
+      body: form(),
+      headers: { Authorization: `Bearer ${token}` },
+    });
     expect(uploaded.status).toBe(201);
     const file = (await uploaded.json()) as { url: string };
     expect((await fetch(`${s.base}${file.url}`)).status).toBe(401);
@@ -197,7 +225,10 @@ describe("locked spaces", () => {
     const download = await fetch(`${s.base}${file.url}?t=${token}`);
     expect(download.status).toBe(200);
     expect(await download.text()).toBe("secret notes");
-    expect((await fetch(`${s.base}${file.url}`, { headers: { Authorization: `Bearer ${token}` } })).status).toBe(200);
+    expect(
+      (await fetch(`${s.base}${file.url}`, { headers: { Authorization: `Bearer ${token}` } }))
+        .status,
+    ).toBe(200);
 
     const anonymous = join(s.port, space.id);
     expect(await anonymous.ready).toBe("denied:permission-denied");
@@ -226,8 +257,12 @@ describe("locked spaces", () => {
     expect(await blocked.json()).toHaveProperty("error");
 
     const open = await createSpace(s.base, "Open");
-    expect((await postJson(`${s.base}/api/spaces/${open.id}/unlock`, { password: "x" })).status).toBe(400);
-    expect((await postJson(`${s.base}/api/spaces/${"q".repeat(21)}/unlock`, { password: "x" })).status).toBe(404);
+    expect(
+      (await postJson(`${s.base}/api/spaces/${open.id}/unlock`, { password: "x" })).status,
+    ).toBe(400);
+    expect(
+      (await postJson(`${s.base}/api/spaces/${"q".repeat(21)}/unlock`, { password: "x" })).status,
+    ).toBe(404);
   });
 
   it("keeps the secret file private and stable across restarts", async () => {
@@ -239,7 +274,11 @@ describe("locked spaces", () => {
     await first.server.close();
     running = [];
     const second = await start(first.dataDir);
-    const res = await postJson(`${second.base}/api/spaces/${space.id}/templates/poll`, { user: { id: "u", name: "U" } }, space.token);
+    const res = await postJson(
+      `${second.base}/api/spaces/${space.id}/templates/poll`,
+      { user: { id: "u", name: "U" } },
+      space.token,
+    );
     expect(res.status).toBe(201);
   });
 });

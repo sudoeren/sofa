@@ -19,7 +19,16 @@ type Props = {
 };
 
 /** A column on wide screens, a bottom sheet on narrow ones (see space.css). */
-export function SidePanel({ open, tab, materialCount, pendingCount, tools, onTab, onClose, onShowTool }: Props) {
+export function SidePanel({
+  open,
+  tab,
+  materialCount,
+  pendingCount,
+  tools,
+  onTab,
+  onClose,
+  onShowTool,
+}: Props) {
   const baseId = useId();
   const tabs: { id: PanelTab; label: string }[] = [
     { id: "materials", label: "Materials" },
@@ -40,7 +49,6 @@ export function SidePanel({ open, tab, materialCount, pendingCount, tools, onTab
 
   return (
     <>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: backdrop of the mobile sheet; the close button is the accessible control */}
       <div className="panel-backdrop" onClick={onClose} aria-hidden="true" />
       <aside className="panel" aria-label="Materials and conversation">
         <div className="panel-head">
@@ -75,7 +83,12 @@ export function SidePanel({ open, tab, materialCount, pendingCount, tools, onTab
               </button>
             ))}
           </div>
-          <button type="button" className="icon-btn panel-close" aria-label="Close panel" onClick={onClose}>
+          <button
+            type="button"
+            className="icon-btn panel-close"
+            aria-label="Close panel"
+            onClick={onClose}
+          >
             <X size={18} aria-hidden="true" />
           </button>
         </div>
@@ -85,7 +98,11 @@ export function SidePanel({ open, tab, materialCount, pendingCount, tools, onTab
           id={`${baseId}-panel-${tab}`}
           aria-labelledby={`${baseId}-tab-${tab}`}
         >
-          {tab === "materials" ? <Materials /> : <Conversation tools={tools} onShowTool={onShowTool} />}
+          {tab === "materials" ? (
+            <Materials />
+          ) : (
+            <Conversation tools={tools} onShowTool={onShowTool} />
+          )}
         </div>
       </aside>
     </>

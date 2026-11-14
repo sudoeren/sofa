@@ -51,7 +51,15 @@ const members = [me, { id: "u2", name: "Bo", color: "#222" }];
 
 function view(doc: Y.Doc) {
   return render(
-    <ToolView doc={doc} toolId="t1" me={me} members={members} theme="light" widgets={widgets} getDef={getDef} />,
+    <ToolView
+      doc={doc}
+      toolId="t1"
+      me={me}
+      members={members}
+      theme="light"
+      widgets={widgets}
+      getDef={getDef}
+    />,
   );
 }
 
@@ -101,7 +109,15 @@ describe("ToolView", () => {
     render(
       <div>
         <span>shell</span>
-        <ToolView doc={doc} toolId="t1" me={me} members={members} theme="light" widgets={widgets} getDef={getDef} />
+        <ToolView
+          doc={doc}
+          toolId="t1"
+          me={me}
+          members={members}
+          theme="light"
+          widgets={widgets}
+          getDef={getDef}
+        />
       </div>,
     );
     expect(screen.getByText("shell")).toBeTruthy();
@@ -111,7 +127,9 @@ describe("ToolView", () => {
 
     act(() => {
       (doc.getMap("tools").get("t1") as Y.Map<unknown>).get("state") as Y.Map<JsonValue>;
-      ((doc.getMap("tools").get("t1") as Y.Map<unknown>).get("state") as Y.Map<JsonValue>).delete("explode");
+      ((doc.getMap("tools").get("t1") as Y.Map<unknown>).get("state") as Y.Map<JsonValue>).delete(
+        "explode",
+      );
     });
     fireEvent.click(screen.getByText("Try again"));
     expect(screen.getByText("calm")).toBeTruthy();
@@ -131,7 +149,13 @@ describe("ToolView", () => {
 
   it("keeps the previous content visible under an error", () => {
     const doc = new Y.Doc();
-    addTool(doc, { kind: "widget", widgetType: "counter", config: {}, status: "error", error: "Change failed" });
+    addTool(doc, {
+      kind: "widget",
+      widgetType: "counter",
+      config: {},
+      status: "error",
+      error: "Change failed",
+    });
     view(doc);
     expect(screen.getByRole("alert").textContent).toContain("Change failed");
     expect(screen.getByTestId("label")).toBeTruthy();

@@ -85,7 +85,11 @@ function SpaceEntry({ spaceId }: { spaceId: string }) {
           title="Could not open the space"
           text={load.message}
         >
-          <button type="button" className="btn btn-primary" onClick={() => setAttempt((n) => n + 1)}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setAttempt((n) => n + 1)}
+          >
             Try again
           </button>
         </GateCard>
@@ -157,7 +161,8 @@ function UnlockForm({
       onUnlocked(token);
     } catch (cause) {
       setBusy(false);
-      if (cause instanceof ApiError && cause.status === 403) setError("That password is not right.");
+      if (cause instanceof ApiError && cause.status === 403)
+        setError("That password is not right.");
       else setError(cause instanceof Error ? cause.message : "Could not unlock the space.");
     }
   };

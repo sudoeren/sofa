@@ -121,7 +121,13 @@
 
   function checkKey(key, what) {
     if (typeof key === "string" && key.length > 0 && key.length <= MAX_KEY_LENGTH) return true;
-    report("sofra.state." + what + ": the key must be a string of 1 to " + MAX_KEY_LENGTH + " characters");
+    report(
+      "sofra.state." +
+        what +
+        ": the key must be a string of 1 to " +
+        MAX_KEY_LENGTH +
+        " characters",
+    );
     return false;
   }
 

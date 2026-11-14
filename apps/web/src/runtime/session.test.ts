@@ -34,7 +34,9 @@ type Listener = (event: Record<string, unknown>) => void;
  * closest jsdom gets to a live frame: both ends are the production code, only the
  * transport is simulated.
  */
-function setup(options: { nonce?: string; sdkNonce?: string; state?: Record<string, JsonValue> } = {}) {
+function setup(
+  options: { nonce?: string; sdkNonce?: string; state?: Record<string, JsonValue> } = {},
+) {
   const [doc, remote] = syncedDocs();
   addTool(doc, {}, options.state ?? { title: "Dinner" });
   const store = new ToolStore(doc, "t1");
@@ -83,8 +85,9 @@ function setup(options: { nonce?: string; sdkNonce?: string; state?: Record<stri
       crypto: globalThis.crypto,
       TextEncoder,
     };
-    new Function("window", sdkSource.split(NONCE_PLACEHOLDER).join(options.sdkNonce ?? "n0nce"))(win);
-    // biome-ignore lint/suspicious/noExplicitAny: untyped browser JS
+    new Function("window", sdkSource.split(NONCE_PLACEHOLDER).join(options.sdkNonce ?? "n0nce"))(
+      win,
+    );
     return win.sofra as any;
   };
 

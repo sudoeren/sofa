@@ -1,12 +1,12 @@
 import {
   type ChatMessage,
-  type GenerateBody,
-  type ToolRecord,
-  type ToolState,
   chatArray,
+  type GenerateBody,
   listTools,
   metaMap,
   readToolState,
+  type ToolRecord,
+  type ToolState,
   toolsMap,
 } from "@sofra/shared";
 import type { WidgetDef } from "@sofra/widgets";
@@ -21,7 +21,9 @@ import type { FileStore, SpaceDocs } from "../types";
 
 export const SPACE = "space0000000000000001";
 
-export function fakeDocs(spaceIds: string[] = [SPACE]): SpaceDocs & { doc(spaceId?: string): Y.Doc } {
+export function fakeDocs(
+  spaceIds: string[] = [SPACE],
+): SpaceDocs & { doc(spaceId?: string): Y.Doc } {
   const docs = new Map<string, Y.Doc>();
   for (const id of spaceIds) {
     const doc = new Y.Doc();
@@ -45,7 +47,9 @@ export function fakeDocs(spaceIds: string[] = [SPACE]): SpaceDocs & { doc(spaceI
   };
 }
 
-export function fakeFiles(texts: Record<string, string> = {}): FileStore & { reads: Array<[string, number]> } {
+export function fakeFiles(
+  texts: Record<string, string> = {},
+): FileStore & { reads: Array<[string, number]> } {
   const reads: Array<[string, number]> = [];
   return {
     reads,
@@ -84,7 +88,14 @@ export const voteWidget: WidgetDef<z.infer<typeof voteConfig>> = {
   starter: {
     title: "Quick vote",
     description: "A simple vote",
-    config: { question: "What do you think?", options: [{ id: "a", label: "Yes" }, { id: "b", label: "No" }], multiple: false },
+    config: {
+      question: "What do you think?",
+      options: [
+        { id: "a", label: "Yes" },
+        { id: "b", label: "No" },
+      ],
+      multiple: false,
+    },
     initialState: { "note:intro": "starter" },
   },
   keywords: ["poll", "vote", "choose"],
@@ -102,7 +113,6 @@ export const tasksWidget: WidgetDef<z.infer<typeof tasksConfig>> = {
   keywords: ["checklist", "todo", "packing list"],
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: heterogeneous config types, as in the real catalog
 export const testWidgets: WidgetDef<any>[] = [voteWidget, tasksWidget];
 
 const usage = {
@@ -111,18 +121,23 @@ const usage = {
 };
 
 export type ScriptItem = { text: string } | { call: string; input: unknown };
-export type ScriptStep = ScriptItem[] | { finish: "length" | "content-filter"; items?: ScriptItem[] };
+export type ScriptStep =
+  | ScriptItem[]
+  | { finish: "length" | "content-filter"; items?: ScriptItem[] };
 
 /** One model call as the stream chunks a provider would emit. */
 function streamFor(step: ScriptStep, index: number) {
   const items = Array.isArray(step) ? step : (step.items ?? []);
-  // biome-ignore lint/suspicious/noExplicitAny: chunk union of the provider spec
   const chunks: any[] = [{ type: "stream-start", warnings: [] }];
   let calls = 0;
   items.forEach((item, itemIndex) => {
     if ("text" in item) {
       const id = `text-${index}-${itemIndex}`;
-      chunks.push({ type: "text-start", id }, { type: "text-delta", id, delta: item.text }, { type: "text-end", id });
+      chunks.push(
+        { type: "text-start", id },
+        { type: "text-delta", id, delta: item.text },
+        { type: "text-end", id },
+      );
     } else {
       calls++;
       const id = `call-${index}-${itemIndex}`;
@@ -137,21 +152,29 @@ function streamFor(step: ScriptStep, index: number) {
   });
   const unified = Array.isArray(step) ? (calls > 0 ? "tool-calls" : "stop") : step.finish;
   chunks.push({ type: "finish", finishReason: { unified, raw: undefined }, usage });
-  return { stream: simulateReadableStream({ chunks, initialDelayInMs: null, chunkDelayInMs: null }) };
+  return {
+    stream: simulateReadableStream({ chunks, initialDelayInMs: null, chunkDelayInMs: null }),
+  };
 }
 
 /**
  * A model that answers each call with the next scripted step. `gate` (optional) is
  * awaited before every call, so tests can hold a generation open.
  */
-export function scriptedModel(steps: ScriptStep[], gate?: (callIndex: number) => Promise<void>): MockLanguageModelV4 {
+export function scriptedModel(
+  steps: ScriptStep[],
+  gate?: (callIndex: number) => Promise<void>,
+): MockLanguageModelV4 {
   let index = 0;
   return new MockLanguageModelV4({
     doStream: async () => {
       const current = index++;
       if (gate) await gate(current);
       const step = steps[current];
-      if (!step) throw new Error(`the model was called ${current + 1} times but only ${steps.length} steps are scripted`);
+      if (!step)
+        throw new Error(
+          `the model was called ${current + 1} times but only ${steps.length} steps are scripted`,
+        );
       return streamFor(step, current);
     },
   });
@@ -180,7 +203,11 @@ export function stateOf(doc: Y.Doc, toolId: string): ToolState {
 }
 
 /** Wait until the assistant message has left "pending". */
-export async function settled(doc: Y.Doc, messageId: string, timeoutMs = 4000): Promise<ChatMessage> {
+export async function settled(
+  doc: Y.Doc,
+  messageId: string,
+  timeoutMs = 4000,
+): Promise<ChatMessage> {
   const start = Date.now();
   for (;;) {
     const message = chat(doc).find((m) => m.id === messageId);

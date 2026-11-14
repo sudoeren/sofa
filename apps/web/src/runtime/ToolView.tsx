@@ -124,7 +124,11 @@ function WidgetHost({ doc, record, me, members, widgets, getDef }: WidgetHostPro
   const parsed = useMemo(() => def?.configSchema.safeParse(config), [def, config]);
 
   if (!Widget || !def || !parsed) {
-    return <Message detail={type ? `Type: ${type}` : undefined}>This kind of tool is not available here.</Message>;
+    return (
+      <Message detail={type ? `Type: ${type}` : undefined}>
+        This kind of tool is not available here.
+      </Message>
+    );
   }
   if (!parsed.success) {
     return (
@@ -151,7 +155,10 @@ class WidgetBoundary extends Component<BoundaryProps, BoundaryState> {
     return { error: error instanceof Error ? error : new Error(String(error)) };
   }
 
-  static getDerivedStateFromProps(props: BoundaryProps, state: BoundaryState): BoundaryState | null {
+  static getDerivedStateFromProps(
+    props: BoundaryProps,
+    state: BoundaryState,
+  ): BoundaryState | null {
     return props.resetKey === state.resetKey ? null : { error: null, resetKey: props.resetKey };
   }
 

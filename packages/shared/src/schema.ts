@@ -165,7 +165,11 @@ export function nextToolOrder(doc: Y.Doc): number {
 }
 
 /** Insert a tool. Call inside doc.transact. */
-export function putTool(doc: Y.Doc, record: ToolRecord, initialState: ToolState = {}): Y.Map<unknown> {
+export function putTool(
+  doc: Y.Doc,
+  record: ToolRecord,
+  initialState: ToolState = {},
+): Y.Map<unknown> {
   const tool = new Y.Map<unknown>();
   toolsMap(doc).set(record.id, tool);
   for (const key of TOOL_FIELDS) {

@@ -1,5 +1,18 @@
 import type { ItineraryConfig } from "@sofra/widgets";
 import {
+  cleanDate,
+  cleanTime,
+  formatDayDate,
+  type ItineraryDay,
+  type ItineraryStop,
+  moveOrder,
+  orderAfter,
+  resolveItinerary,
+  type StoredStop,
+  safeLink,
+  toStoredStop,
+} from "@sofra/widgets/defs/itinerary";
+import {
   ArrowDown,
   ArrowUp,
   CalendarPlus,
@@ -16,19 +29,6 @@ import {
   UserPlus,
 } from "lucide-react";
 import { type FormEvent, useMemo, useState } from "react";
-import {
-  cleanDate,
-  cleanTime,
-  formatDayDate,
-  type ItineraryDay,
-  type ItineraryStop,
-  moveOrder,
-  orderAfter,
-  resolveItinerary,
-  type StoredStop,
-  safeLink,
-  toStoredStop,
-} from "@sofra/widgets/defs/itinerary";
 import { Avatar, InlineEdit, newKeyId } from "./shared";
 import type { WidgetProps } from "./types";
 import "./common.css";

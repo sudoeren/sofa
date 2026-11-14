@@ -201,6 +201,7 @@ export function cleanErrorText(text: string): string {
   // Collapse whitespace and drop control characters; it is shown as plain text.
   const flat = text
     .slice(0, MAX_ERROR_LENGTH * 4)
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: stripping control characters is the point
     .replace(/[\u0000-\u001f\u007f]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();

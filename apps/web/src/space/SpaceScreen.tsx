@@ -11,10 +11,10 @@ import { setSpaceTitle } from "../lib/tools";
 import { useChat, useMaterials, useSpaceTitle, useTools } from "../lib/yhooks";
 import { Header } from "./Header";
 import { PromptBar } from "./PromptBar";
-import { type PanelTab, SidePanel } from "./SidePanel";
 import { SettingsDialog } from "./SettingsDialog";
-import { EXAMPLE_PROMPTS, TemplateList } from "./templates";
+import { type PanelTab, SidePanel } from "./SidePanel";
 import { ToolGrid } from "./ToolGrid";
+import { EXAMPLE_PROMPTS, TemplateList } from "./templates";
 import "../styles/space.css";
 
 const WIDE = "(min-width: 900px)";
@@ -149,7 +149,11 @@ export function SpaceScreen({ info, onRename }: Props) {
 
       {status !== "connected" ? (
         <div className="banner" role="status">
-          {status === "connecting" ? <Spinner size={15} /> : <CloudOff size={15} aria-hidden="true" />}
+          {status === "connecting" ? (
+            <Spinner size={15} />
+          ) : (
+            <CloudOff size={15} aria-hidden="true" />
+          )}
           <span>
             {status === "connecting"
               ? "Reconnecting. You can keep working; changes are sent when the connection is back."
@@ -170,14 +174,18 @@ export function SpaceScreen({ info, onRename }: Props) {
                   The table is set. What do you need on it?
                 </h2>
                 <p className="empty-text">
-                  Describe a tool in the box below, or start from one of these. Everyone in the space
-                  can use it right away.
+                  Describe a tool in the box below, or start from one of these. Everyone in the
+                  space can use it right away.
                 </p>
 
                 {templates.length > 0 ? (
                   <>
                     <h3 className="empty-heading">Start from a ready-made tool</h3>
-                    <TemplateList templates={templates} busyId={templateBusy} onPick={pickTemplate} />
+                    <TemplateList
+                      templates={templates}
+                      busyId={templateBusy}
+                      onPick={pickTemplate}
+                    />
                   </>
                 ) : null}
                 {templateError ? (
@@ -190,7 +198,11 @@ export function SpaceScreen({ info, onRename }: Props) {
                 <ul className="prompt-examples">
                   {EXAMPLE_PROMPTS.map((text) => (
                     <li key={text}>
-                      <button type="button" className="prompt-example" onClick={() => fillPrompt(text)}>
+                      <button
+                        type="button"
+                        className="prompt-example"
+                        onClick={() => fillPrompt(text)}
+                      >
                         {text}
                       </button>
                     </li>
@@ -210,7 +222,11 @@ export function SpaceScreen({ info, onRename }: Props) {
                   onChangeWithAi={changeWithAi}
                 />
                 <div className="grid-foot">
-                  <button type="button" className="btn btn-dashed" onClick={() => setGalleryOpen(true)}>
+                  <button
+                    type="button"
+                    className="btn btn-dashed"
+                    onClick={() => setGalleryOpen(true)}
+                  >
                     <Plus size={16} aria-hidden="true" />
                     <span>Add tool</span>
                   </button>
@@ -262,7 +278,9 @@ export function SpaceScreen({ info, onRename }: Props) {
             <TemplateList templates={templates} busyId={templateBusy} onPick={pickTemplate} />
           ) : (
             <p className="muted">
-              {config ? "This server offers no starter tools." : "The starter tools could not be loaded."}
+              {config
+                ? "This server offers no starter tools."
+                : "The starter tools could not be loaded."}
             </p>
           )}
           {templateError ? (
@@ -284,7 +302,12 @@ export function SpaceScreen({ info, onRename }: Props) {
       ) : null}
 
       {settingsOpen ? (
-        <SettingsDialog me={me} config={config} onRename={onRename} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog
+          me={me}
+          config={config}
+          onRename={onRename}
+          onClose={() => setSettingsOpen(false)}
+        />
       ) : null}
     </div>
   );

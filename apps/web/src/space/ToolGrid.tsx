@@ -18,7 +18,16 @@ type Props = {
   onChangeWithAi: (toolId: string) => void;
 };
 
-export function ToolGrid({ doc, tools, me, members, theme, targetId, highlightId, onChangeWithAi }: Props) {
+export function ToolGrid({
+  doc,
+  tools,
+  me,
+  members,
+  theme,
+  targetId,
+  highlightId,
+  onChangeWithAi,
+}: Props) {
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
 

@@ -11,7 +11,15 @@ import {
   TriangleAlert,
   WandSparkles,
 } from "lucide-react";
-import { Component, type DragEvent, memo, type ReactNode, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  type DragEvent,
+  memo,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type * as Y from "yjs";
 import { InlineEdit } from "../components/InlineEdit";
 import { Menu, MenuItem } from "../components/Menu";
@@ -19,7 +27,10 @@ import { deleteTool, moveTool, renameTool, setToolSpan } from "../lib/tools";
 import { ToolView } from "../runtime";
 
 /** A tool that throws while rendering must not take the space down with it. */
-class ToolBoundary extends Component<{ resetKey: string; children: ReactNode }, { failed: boolean }> {
+class ToolBoundary extends Component<
+  { resetKey: string; children: ReactNode },
+  { failed: boolean }
+> {
   override state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -37,7 +48,10 @@ class ToolBoundary extends Component<{ resetKey: string; children: ReactNode }, 
       return (
         <div className="tool-crash" role="alert">
           <TriangleAlert size={18} aria-hidden="true" />
-          <p>This tool ran into a problem and could not be shown. Ask the AI to change it, or delete it.</p>
+          <p>
+            This tool ran into a problem and could not be shown. Ask the AI to change it, or delete
+            it.
+          </p>
         </div>
       );
     }
@@ -125,10 +139,19 @@ export const ToolCard = memo(function ToolCard({
             Delete <strong>{tool.title || "this tool"}</strong> and everything in it?
           </p>
           <div className="tool-confirm-actions">
-            <button ref={cancelRef} type="button" className="btn btn-sm" onClick={() => setConfirming(false)}>
+            <button
+              ref={cancelRef}
+              type="button"
+              className="btn btn-sm"
+              onClick={() => setConfirming(false)}
+            >
               Keep
             </button>
-            <button type="button" className="btn btn-sm btn-danger" onClick={() => deleteTool(doc, tool.id)}>
+            <button
+              type="button"
+              className="btn btn-sm btn-danger"
+              onClick={() => deleteTool(doc, tool.id)}
+            >
               Delete
             </button>
           </div>
@@ -201,7 +224,7 @@ export const ToolCard = memo(function ToolCard({
                 >
                   Move later
                 </MenuItem>
-                <div className="menu-sep" role="separator" />
+                <hr className="menu-sep" />
                 <MenuItem
                   danger
                   icon={<Trash2 size={16} />}
@@ -218,7 +241,9 @@ export const ToolCard = memo(function ToolCard({
         </header>
       )}
       <div className="tool-body">
-        <ToolBoundary resetKey={`${tool.kind}:${tool.widgetType ?? ""}:${tool.version}:${tool.status}`}>
+        <ToolBoundary
+          resetKey={`${tool.kind}:${tool.widgetType ?? ""}:${tool.version}:${tool.status}`}
+        >
           <ToolView doc={doc} toolId={tool.id} me={me} members={members} theme={theme} />
         </ToolBoundary>
       </div>

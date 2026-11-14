@@ -79,7 +79,9 @@ async function request<T>(path: string, options: Options = {}): Promise<T> {
 
   if (!response.ok) {
     const fromServer =
-      payload && typeof payload === "object" && typeof (payload as { error?: unknown }).error === "string"
+      payload &&
+      typeof payload === "object" &&
+      typeof (payload as { error?: unknown }).error === "string"
         ? (payload as { error: string }).error
         : "";
     throw new ApiError(

@@ -1,12 +1,5 @@
 import clsx from "clsx";
-import {
-  type KeyboardEvent,
-  type ReactNode,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
 
 type Props = {
   /** accessible name of the trigger button */

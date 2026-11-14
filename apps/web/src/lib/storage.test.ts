@@ -85,7 +85,10 @@ describe("AI settings", () => {
   });
 
   it("ignores values that are not valid settings", () => {
-    window.localStorage.setItem("sofra:ai", JSON.stringify({ provider: "other", apiKey: "sk-12345678" }));
+    window.localStorage.setItem(
+      "sofra:ai",
+      JSON.stringify({ provider: "other", apiKey: "sk-12345678" }),
+    );
     expect(loadAiSettings()).toBeNull();
     window.localStorage.setItem("sofra:ai", JSON.stringify({ provider: "openai", apiKey: "x" }));
     expect(loadAiSettings()).toBeNull();

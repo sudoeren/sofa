@@ -112,21 +112,31 @@ export function Header({
       <div className="space-header-end">
         <ul className="members" aria-label={`${members.length} in this space`}>
           {shown.map((member) => (
-            <li key={member.id} className="member" data-tip={member.id === me.id ? `${member.name} (you)` : member.name}>
-              {/* biome-ignore lint/a11y/noNoninteractiveTabindex: focusable so the name can be read without a pointer */}
-              <span tabIndex={0} className="member-focus" aria-label={member.id === me.id ? `${member.name} (you)` : member.name}>
+            <li
+              key={member.id}
+              className="member"
+              data-tip={member.id === me.id ? `${member.name} (you)` : member.name}
+            >
+              <button
+                type="button"
+                className="member-focus"
+                aria-label={member.id === me.id ? `${member.name} (you)` : member.name}
+              >
                 <Avatar member={member} />
-              </span>
+              </button>
             </li>
           ))}
           {hidden.length > 0 ? (
             <li className="member" data-tip={hidden.map((member) => member.name).join(", ")}>
-              {/* biome-ignore lint/a11y/noNoninteractiveTabindex: focusable so the names can be read without a pointer */}
-              <span tabIndex={0} className="member-focus" aria-label={`${hidden.length} more: ${hidden.map((member) => member.name).join(", ")}`}>
+              <button
+                type="button"
+                className="member-focus"
+                aria-label={`${hidden.length} more: ${hidden.map((member) => member.name).join(", ")}`}
+              >
                 <span className="avatar avatar-more" aria-hidden="true">
                   +{hidden.length}
                 </span>
-              </span>
+              </button>
             </li>
           ) : null}
         </ul>
@@ -142,9 +152,17 @@ export function Header({
           onClick={invite}
           aria-label="Invite: copy the link to this space"
         >
-          {copied === "copied" ? <Check size={16} aria-hidden="true" /> : <Link2 size={16} aria-hidden="true" />}
+          {copied === "copied" ? (
+            <Check size={16} aria-hidden="true" />
+          ) : (
+            <Link2 size={16} aria-hidden="true" />
+          )}
           <span className="invite-label">
-            {copied === "copied" ? "Link copied" : copied === "failed" ? "Copy the address bar" : "Invite"}
+            {copied === "copied"
+              ? "Link copied"
+              : copied === "failed"
+                ? "Copy the address bar"
+                : "Invite"}
           </span>
         </button>
         <span className="sr-only" role="status" aria-live="polite">
@@ -156,13 +174,21 @@ export function Header({
         </span>
 
         <ThemeToggle />
-        <button type="button" className="icon-btn" aria-label="Settings" title="Settings" onClick={onOpenSettings}>
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label="Settings"
+          title="Settings"
+          onClick={onOpenSettings}
+        >
           <Settings size={18} aria-hidden="true" />
         </button>
         <button
           type="button"
           className={clsx("icon-btn", panelOpen && "is-active")}
-          aria-label={panelOpen ? "Hide materials and conversation" : "Show materials and conversation"}
+          aria-label={
+            panelOpen ? "Hide materials and conversation" : "Show materials and conversation"
+          }
           title="Materials and conversation"
           aria-pressed={panelOpen}
           onClick={onTogglePanel}
