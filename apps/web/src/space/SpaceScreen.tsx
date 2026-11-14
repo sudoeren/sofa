@@ -46,6 +46,8 @@ export function SpaceScreen({ info, onRename }: Props) {
   const [templateError, setTemplateError] = useState("");
   const promptRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // tool ids that existed when this member last sent a request; the first new one is shown
+  const knownToolsRef = useRef<Set<string> | null>(null);
 
   useEffect(() => {
     document.title = title ? `${title} · Sofra` : "Sofra";
@@ -85,6 +87,17 @@ export function SpaceScreen({ info, onRename }: Props) {
     },
     [closePanelIfSheet],
   );
+
+  // bring the tool created by this member's request into view as soon as its card appears
+  useEffect(() => {
+    const known = knownToolsRef.current;
+    if (!known) return;
+    const fresh = tools.find((tool) => !known.has(tool.id));
+    if (fresh) {
+      knownToolsRef.current = null;
+      setHighlightId(fresh.id);
+    }
+  }, [tools]);
 
   // scroll to the highlighted tool once its card exists (a new tool arrives over the socket)
   const highlightPresent = highlightId !== null && tools.some((tool) => tool.id === highlightId);
@@ -248,8 +261,7 @@ export function SpaceScreen({ info, onRename }: Props) {
             onOpenGallery={() => setGalleryOpen(true)}
             onSent={() => {
               setPanelTab("conversation");
-              const element = scrollRef.current;
-              if (element && !targetId) element.scrollTop = element.scrollHeight;
+              if (!targetId) knownToolsRef.current = new Set(tools.map((tool) => tool.id));
             }}
             inputRef={promptRef}
           />
