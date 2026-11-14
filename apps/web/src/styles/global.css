@@ -111,14 +111,10 @@ strong {
   text-decoration: none;
   border-radius: var(--radius-sm);
 }
-.brand-name {
-  font-size: 19px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
-.brand-mark {
-  flex: none;
-  display: block;
+.wordmark {
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.045em;
 }
 
 /* buttons */

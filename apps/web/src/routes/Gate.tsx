@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { BrandMark } from "../components/Brand";
+import { Wordmark } from "../components/Brand";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 /** Centered single-card page used before a space is open (loading, unlock, name, errors). */
@@ -9,8 +9,7 @@ export function Gate({ children }: { children: ReactNode }) {
     <div className="gate">
       <header className="gate-top">
         <Link className="brand" to="/" aria-label="Sofra home">
-          <BrandMark />
-          <span className="brand-name">Sofra</span>
+          <Wordmark />
         </Link>
         <ThemeToggle />
       </header>

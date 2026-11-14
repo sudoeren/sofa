@@ -4,7 +4,7 @@ import { Check, Link2, Lock, PanelRight, Plus, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "../components/Avatar";
-import { BrandMark } from "../components/Brand";
+import { Wordmark } from "../components/Brand";
 import { InlineEdit } from "../components/InlineEdit";
 import { ThemeToggle } from "../components/ThemeToggle";
 import type { ConnectionStatus } from "../lib/space";
@@ -83,7 +83,7 @@ export function Header({
     <header className="space-header">
       <div className="space-header-start">
         <Link className="brand brand-compact" to="/" aria-label="Sofra home">
-          <BrandMark size={26} />
+          <Wordmark size={18} />
         </Link>
         <div className="space-title-wrap">
           <InlineEdit

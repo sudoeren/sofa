@@ -2,7 +2,7 @@ import { LIMITS } from "@sofra/shared";
 import { ArrowRight, Check, Copy, Lock } from "lucide-react";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BrandMark } from "../components/Brand";
+import { Wordmark } from "../components/Brand";
 import { Spinner } from "../components/Spinner";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { createSpace } from "../lib/api";
@@ -151,8 +151,7 @@ export function Landing() {
     <div className="lp">
       <header className="lp-nav">
         <a className="brand" href="/" aria-label="Sofra home">
-          <BrandMark size={24} />
-          <span className="brand-name">Sofra</span>
+          <Wordmark />
         </a>
         <nav className="lp-links" aria-label="Site">
           <a href="#tools">Tools</a>
