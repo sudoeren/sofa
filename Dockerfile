@@ -2,7 +2,7 @@
 
 # Sofra needs Node >= 22.5 (node:sqlite). There are no native modules, so the slim image
 # is enough for both building and running.
-FROM node:24-slim AS build
+FROM node:25-slim AS build
 ENV PNPM_HOME=/pnpm \
     PATH=/pnpm:$PATH \
     COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
@@ -31,7 +31,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm --filter @sofra/server deploy --prod --legacy /deploy
 
 
-FROM node:24-slim AS runtime
+FROM node:25-slim AS runtime
 ENV NODE_ENV=production \
     PORT=8787 \
     SOFRA_DATA_DIR=/data \
