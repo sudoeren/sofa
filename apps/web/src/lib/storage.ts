@@ -131,12 +131,14 @@ export function subscribeAiSettings(listener: () => void): () => void {
 /* theme */
 
 export type Theme = "light" | "dark";
+/** What the member picked; "system" follows the operating system and is the default. */
+export type ThemePreference = Theme | "system";
 
-export function loadStoredTheme(): Theme | null {
+export function loadStoredTheme(): ThemePreference | null {
   const value = read(THEME_KEY);
-  return value === "light" || value === "dark" ? value : null;
+  return value === "light" || value === "dark" || value === "system" ? value : null;
 }
 
-export function saveTheme(theme: Theme): void {
+export function saveTheme(theme: ThemePreference): void {
   write(THEME_KEY, theme);
 }

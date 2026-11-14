@@ -100,6 +100,8 @@ describe("theme", () => {
     expect(loadStoredTheme()).toBeNull();
     saveTheme("dark");
     expect(loadStoredTheme()).toBe("dark");
+    saveTheme("system");
+    expect(loadStoredTheme()).toBe("system");
     window.localStorage.setItem("sofra:theme", "purple");
     expect(loadStoredTheme()).toBeNull();
   });
