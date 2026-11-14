@@ -2,6 +2,8 @@
 
 Shared spaces where a group asks an AI to build the small tools it needs, and everyone uses them at the same time. Open source and self-hosted.
 
+**Try it: [sofra.erencakar.com](https://sofra.erencakar.com)** (public demo; spaces are deleted after 24 hours without changes)
+
 ![Sofra demo](docs/media/demo.gif)
 
 ## What it is
