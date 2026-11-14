@@ -19,16 +19,16 @@ docker compose up -d`;
 
 const STEPS = [
   {
-    title: "Open a space",
-    text: "Give it a name and send the link to your group. No accounts.",
+    title: "Name a space",
+    text: "Send the link to your group. Nobody signs up.",
   },
   {
-    title: "Drop in what you have",
-    text: "Notes, links and files. The AI reads them when it builds something.",
+    title: "Add what you know",
+    text: "Notes, links, files. The AI reads them before it builds anything.",
   },
   {
-    title: "Ask for a tool",
-    text: "Everyone uses it at once. Ask again to change it; what people entered stays.",
+    title: "Ask for anything",
+    text: "It appears for everyone at once. Ask again to change it; nothing anyone entered is lost.",
   },
 ];
 
@@ -165,14 +165,14 @@ export function Landing() {
 
       <main>
         <section className="lp-hero">
-          <p className="lp-eyebrow">Open source and self-hosted</p>
+          <p className="lp-eyebrow">Free and open source</p>
           <h1 className="lp-title">
-            Ask for the tool. <br />
-            Your whole group gets it.
+            Stop planning <br />
+            in the group chat.
           </h1>
           <p className="lp-lead">
-            A shared space where anyone can ask an AI for a poll, a trip plan, a cost splitter or a
-            small game, and everyone uses it at the same time.
+            Open a space and ask for what your group needs: a poll, a trip plan, a cost splitter, a
+            small game. It appears for everyone at once, and asking again changes it.
           </p>
           {startForm}
         </section>
@@ -180,12 +180,12 @@ export function Landing() {
         <section className="lp-demo" aria-label="Preview">
           <DemoSpace />
           <p className="lp-caption">
-            A live preview running in your browser. Vote in the poll, add an expense.
+            This is the real app, running in your browser. Go ahead and vote.
           </p>
         </section>
 
         <section className="lp-section" id="how">
-          <h2 className="lp-h2">How it works</h2>
+          <h2 className="lp-h2">Three steps, no accounts</h2>
           <ol className="lp-steps">
             {STEPS.map((step, index) => (
               <li key={step.title}>
@@ -198,20 +198,20 @@ export function Landing() {
         </section>
 
         <section className="lp-section" id="tools">
-          <h2 className="lp-h2">Eight built-in tools, and anything else</h2>
+          <h2 className="lp-h2">Ready-made tools, or one written for you</h2>
           <p className="lp-sub">
-            Built-in tools work without any AI key. For everything else the AI writes a new tool
-            that runs sandboxed, without network access.
+            Eight built-in tools work without any AI key. Ask for something else and the AI writes
+            it from scratch, in a sandbox with no network access.
           </p>
           <Showcase />
         </section>
 
         <section className="lp-section lp-split" id="self-host">
           <div>
-            <h2 className="lp-h2">Runs on your server</h2>
+            <h2 className="lp-h2">Yours to run</h2>
             <p className="lp-sub">
-              One container, one SQLite file. Your spaces, files and conversations stay with you.
-              Bring a key from any of these, or none at all:
+              One container and one SQLite file. Spaces, files and conversations stay on your
+              server. Bring a key from any of these, or run without one:
             </p>
             <ul className="lp-list">
               {PROVIDERS.map((p) => (
@@ -242,8 +242,8 @@ export function Landing() {
         </section>
 
         <section className="lp-cta">
-          <h2 className="lp-h2">Set the table.</h2>
-          <p className="lp-sub">Start a space now, invite your group in one link.</p>
+          <h2 className="lp-h2">Get everyone on the sofa.</h2>
+          <p className="lp-sub">Start a space, share one link, plan together.</p>
           <button
             type="button"
             className="start-btn"

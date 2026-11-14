@@ -1,6 +1,6 @@
 # Sofa
 
-Shared spaces where a group asks an AI to build the small tools it needs, and everyone uses them at the same time. Open source and self-hosted.
+Stop planning in the group chat. Ask for a poll, a trip plan, a cost splitter or a small game, and it appears for everyone at once. Open source and self-hosted.
 
 **Try it: [sofa.erencakar.com](https://sofa.erencakar.com)** (public demo; spaces are deleted after 24 hours without changes)
 
