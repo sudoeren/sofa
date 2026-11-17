@@ -28,6 +28,7 @@ export function testConfig(
     spaceTtlHours,
     trustProxyHops: 0,
     demo: false,
+    analytics: null,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null },
   };
 }

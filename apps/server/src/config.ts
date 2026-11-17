@@ -14,6 +14,8 @@ export type Config = {
   trustProxyHops: number;
   /** this server is a public demo (SOFA_DEMO=1 or true); reported to the web app */
   demo: boolean;
+  /** analytics script added to the web app's page; null when not configured */
+  analytics: { src: string; websiteId: string } | null;
   ai: {
     provider: AiProvider;
     model: string;
@@ -51,6 +53,21 @@ function parseFlag(value: string | undefined): boolean {
   return v === "1" || v === "true";
 }
 
+/** Both values are needed; an invalid URL or id leaves analytics off. */
+function parseAnalytics(env: NodeJS.ProcessEnv): Config["analytics"] {
+  const src = env.SOFA_ANALYTICS_SRC?.trim();
+  const websiteId = env.SOFA_ANALYTICS_WEBSITE_ID?.trim();
+  if (!src || !websiteId) return null;
+  if (!/^[A-Za-z0-9-]{1,100}$/.test(websiteId)) return null;
+  try {
+    const url = new URL(src);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    return { src: url.href, websiteId };
+  } catch {
+    return null;
+  }
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   let provider = parseProvider(env.SOFA_AI_PROVIDER, env);
   let apiKey: string | null = null;
@@ -74,6 +91,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     spaceTtlHours: Math.max(0, Number(env.SOFA_SPACE_TTL_HOURS) || 0),
     trustProxyHops: Math.max(0, Math.floor(Number(env.SOFA_TRUST_PROXY_HOPS) || 0)),
     demo: parseFlag(env.SOFA_DEMO),
+    analytics: parseAnalytics(env),
     webDir: path.resolve(env.SOFA_WEB_DIR || path.join(import.meta.dirname, "../../web/dist")),
     ai: {
       provider,

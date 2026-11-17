@@ -72,6 +72,7 @@ export function testConfig(ai: Partial<Config["ai"]> = {}): Config {
     spaceTtlHours: 0,
     trustProxyHops: 0,
     demo: false,
+    analytics: null,
     ai: { provider: "none", model: "", apiKey: null, baseUrl: null, ...ai },
   };
 }

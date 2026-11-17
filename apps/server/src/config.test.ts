@@ -43,4 +43,27 @@ describe("loadConfig", () => {
     expect(loadConfig({ SOFA_DEMO: "true" }).demo).toBe(true);
     expect(loadConfig({ SOFA_DEMO: "0" }).demo).toBe(false);
   });
+
+  it("reads the analytics script only when both values are valid", () => {
+    expect(loadConfig({}).analytics).toBeNull();
+    expect(
+      loadConfig({
+        SOFA_ANALYTICS_SRC: "https://stats.example.com/script.js",
+        SOFA_ANALYTICS_WEBSITE_ID: "552bc978-ac65-424b",
+      }).analytics,
+    ).toEqual({ src: "https://stats.example.com/script.js", websiteId: "552bc978-ac65-424b" });
+    expect(
+      loadConfig({ SOFA_ANALYTICS_SRC: "https://stats.example.com/s.js" }).analytics,
+    ).toBeNull();
+    expect(
+      loadConfig({ SOFA_ANALYTICS_SRC: "javascript:alert(1)", SOFA_ANALYTICS_WEBSITE_ID: "abc" })
+        .analytics,
+    ).toBeNull();
+    expect(
+      loadConfig({
+        SOFA_ANALYTICS_SRC: "https://stats.example.com/s.js",
+        SOFA_ANALYTICS_WEBSITE_ID: '"><script>',
+      }).analytics,
+    ).toBeNull();
+  });
 });

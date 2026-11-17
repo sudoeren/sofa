@@ -55,6 +55,24 @@ import { downloadHeaders, FileError, type Files } from "./files";
 import type { LinkPreviewer } from "./links";
 import type { AiService, SpaceDocs } from "./types";
 
+function escapeAttribute(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+/** Adds the configured analytics script to the app shell, before `</head>`. */
+export function injectAnalytics(
+  html: string,
+  analytics: { src: string; websiteId: string },
+): string {
+  const tag = `<script defer src="${escapeAttribute(analytics.src)}" data-website-id="${escapeAttribute(analytics.websiteId)}"></script>`;
+  const at = html.indexOf("</head>");
+  return at === -1 ? `${tag}${html}` : `${html.slice(0, at)}${tag}\n${html.slice(at)}`;
+}
+
 export type RateLimits = {
   /** unlock attempts per space and client address */
   unlock: { limit: number; windowMs: number };
@@ -580,7 +598,7 @@ export function createApp(deps: AppDeps): Hono<Env> {
     // Normalizing against the root first removes any ".." before the path touches webDir.
     const relative = path.posix.normalize(`/${decoded.replaceAll("\\", "/")}`);
     const file = path.join(webDir, relative);
-    if (relative !== "/" && file.startsWith(webDir + path.sep)) {
+    if (relative !== "/" && relative !== "/index.html" && file.startsWith(webDir + path.sep)) {
       const hashed = relative.startsWith("/assets/");
       const found = await sendStatic(
         c,
@@ -591,8 +609,21 @@ export function createApp(deps: AppDeps): Hono<Env> {
       // A missing asset must not be answered with the app shell.
       if (path.extname(relative) !== "") return c.json({ error: "Not found" }, 404);
     }
-    const shell = await sendStatic(c, indexFile, "no-cache");
-    return shell ?? c.json({ error: "Not found" }, 404);
+    if (!config.analytics) {
+      const shell = await sendStatic(c, indexFile, "no-cache");
+      return shell ?? c.json({ error: "Not found" }, 404);
+    }
+    const html = await fsp.readFile(indexFile, "utf8").catch(() => null);
+    if (html === null) return c.json({ error: "Not found" }, 404);
+    const body = injectAnalytics(html, config.analytics);
+    const headers = {
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": String(Buffer.byteLength(body)),
+      "Cache-Control": "no-cache",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "no-referrer",
+    };
+    return new Response(c.req.method === "HEAD" ? null : body, { status: 200, headers });
   });
 
   app.notFound((c) => c.json({ error: "Not found" }, 404));
