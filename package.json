@@ -1,7 +1,7 @@
 {
   "name": "sofa",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Open-source, self-hosted shared spaces where a group asks an AI to build the small tools it needs.",
   "license": "MIT",
   "packageManager": "pnpm@10.34.5",
