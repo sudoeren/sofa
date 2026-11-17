@@ -3,6 +3,7 @@ import { ArrowRight, Check, Copy, Lock } from "lucide-react";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wordmark } from "../components/Brand";
+import { Credit } from "../components/Credit";
 import { DemoNotice } from "../components/DemoNotice";
 import { Spinner } from "../components/Spinner";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -275,7 +276,7 @@ export function Landing() {
       </main>
 
       <footer className="lp-foot">
-        <span>Sofa is MIT licensed.</span>
+        <Credit />
         <a href={REPO_URL} target="_blank" rel="noreferrer">
           Source on GitHub
         </a>

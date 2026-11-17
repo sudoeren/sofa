@@ -692,6 +692,27 @@
   background: var(--accent);
   animation: pulse 1.1s ease-in-out infinite;
 }
+.panel-foot {
+  flex: none;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+.panel-foot a,
+.settings-credit a {
+  color: var(--text);
+  text-decoration: none;
+}
+.panel-foot a:hover,
+.settings-credit a:hover {
+  text-decoration: underline;
+}
+.settings-credit {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
 .panel-body {
   position: relative;
   flex: 1 1 auto;

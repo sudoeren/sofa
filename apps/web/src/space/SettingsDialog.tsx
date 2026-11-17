@@ -2,6 +2,7 @@ import type { MemberInfo, ServerConfig, UserAi } from "@sofa/shared";
 import { Check, Download, Eye, EyeOff, Server } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { Avatar } from "../components/Avatar";
+import { Credit } from "../components/Credit";
 import { Dialog } from "../components/Dialog";
 import { Spinner } from "../components/Spinner";
 import {
@@ -249,6 +250,13 @@ export function SettingsDialog({
           </div>
         </section>
       ) : null}
+
+      <p className="settings-credit">
+        <Credit /> ·{" "}
+        <a href="https://github.com/sudoeren/sofa" target="_blank" rel="noreferrer">
+          Source on GitHub
+        </a>
+      </p>
 
       <p className="settings-notice" role="status" aria-live="polite">
         {notice ? (

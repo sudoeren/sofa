@@ -2,6 +2,7 @@ import type { ToolRecord } from "@sofa/shared";
 import clsx from "clsx";
 import { X } from "lucide-react";
 import { useEffect, useId } from "react";
+import { Credit } from "../components/Credit";
 import { Conversation } from "./Conversation";
 import { Materials } from "./Materials";
 
@@ -103,6 +104,9 @@ export function SidePanel({
           ) : (
             <Conversation tools={tools} onShowTool={onShowTool} />
           )}
+        </div>
+        <div className="panel-foot">
+          <Credit />
         </div>
       </aside>
     </>
